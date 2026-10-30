@@ -558,6 +558,15 @@ body {
 }
 
 /* Quoted notes in the guides ("> note:" lines in the source). */
+
+/* The live diagrams in Lab 3 (drawn in the browser by the Mermaid
+   library): keep them inside the reading column on narrow screens. */
+.prose .mermaid svg,
+.prose .mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
 .prose blockquote {
   border-left: 3px solid var(--gold);   /* a gold bar on the left */
   padding-left: 1rem;
