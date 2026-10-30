@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  ISAAC SIM - LAB 2 (labs/isaac-sim-lab-2.html)
+
+  WHAT THIS PAGE IS:
+  The full text of Instructional Lab 2, copied onto the lab site.
+  Praj asked for the Isaac Sim labs he co-wrote to live here
+  (voice note, 2026-10-29).
+
+  WHERE THE CONTENT CAME FROM:
+  Source document: _labs/lab-02-isaac-sim/index.md in the GitHub repo
+  RoboX2020/Tatwik19.github.io (MIT license), converted to HTML on
+  2026-10-29. The original is also public at
+  https://tatwik19.github.io/labs/lab-02-isaac-sim/
+
+  HOW TO EDIT:
+  The lab text itself sits inside the <div class="prose"> below.
+  Everything outside that div (header, credits, styling hooks) is
+  ordinary site code with comments, same as index.html.
+
+  ONE EXTRA:
+  This page loads a small drawing library (Mermaid) from a public
+  CDN so the guide's diagrams render. If it ever fails, the diagram
+  just shows as plain text - nothing else on the page depends on it.
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 2: UR5e Joint and TCP Control in Isaac Sim - RAS Lab, ASU</title>
+  <meta name="description" content="Instructional Lab 2 for RAS 545: model a UR5e arm in Isaac Sim, control joints with OmniGraph and Python, and drive the tool-center point with inverse kinematics.">
+
+  <!-- The same paint as the rest of the site (one folder up). -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <main>
+    <div class="section-inner">
+
+      <!-- Back to the main directory page. -->
+      <a class="back-link" href="../index.html#isaac-sim">&larr; Back to the lab directory</a>
+
+      <!-- The title block: what this is, who it is for, who wrote it. -->
+      <header class="lab-header">
+        <p class="section-eyebrow">Isaac Sim - Lab 2</p>
+        <h1>UR5e Joint and TCP Control in Isaac Sim</h1>
+        <p class="lab-meta">
+          Course: RAS 545 - Robotics Systems I &middot; Instructor: Prof. Sangram Redkar<br>
+          Authors: Sai Srinivas Tatwik Meesala, Rajesh S Aouti, Prajval Arora<br>
+          Copied here with permission of the authors under the MIT license;
+          original at
+          <a href="https://tatwik19.github.io/labs/lab-02-isaac-sim/">tatwik19.github.io/labs/lab-02-isaac-sim</a>.
+        </p>
+      </header>
+
+      <!--
+        THE LAB GUIDE ITSELF (converted from the authors' document).
+        Long reading text - the ".prose" styles in css/style.css give it
+        roomy headings, dark code blocks and images that fit the screen.
+      -->
+      <div class="prose">
+<p><strong>Instructor:</strong> Prof. <a href="mailto:Sangram.Redkar@asu.edu">Sangram Redkar</a></p>
+<p><strong>Authors:</strong></p>
+<ul>
+<li>Sai Srinivas Tatwik Meesala: <a href="mailto:smeesala@asu.edu">smeesala@asu.edu</a></li>
+<li>Rajesh S Aouti: <a href="mailto:raouti@asu.edu">raouti@asu.edu</a></li>
+<li>Prajval Arora: <a href="mailto:parora24@asu.edu">parora24@asu.edu</a></li>
+</ul>
+<blockquote>
+<p><strong>Required scope:</strong> Complete Parts A–G in order. Save the required USD checkpoints, capture the required screenshots, record the Part 1 GIF, test all five Python operations, and document the results in the formal report.</p>
+</blockquote>
+<h2 id="start-here">Start Here</h2>
+<p>This laboratory has three learning phases:</p>
+<ol>
+<li><strong>Joint control with OmniGraph:</strong> Create the scene, import the UR5e, and command all six joints.</li>
+<li><strong>TCP control with GUI inverse kinematics:</strong> Register the flange as a Robot Site and move it with Robot Poser.</li>
+<li><strong>Joint and TCP control with Python:</strong> Load the provided <code>ur5e_control.py</code> module in Isaac Sim and execute its five operations.</li>
+</ol>
+<p>Complete the parts in order. The later Python exercises depend on the robot and Robot Site configuration created earlier.</p>
+<h2 id="reference-documentation">Reference Documentation</h2>
+<ul>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/omnigraph/omnigraph_shortcuts.html">Commonly Used OmniGraph Shortcuts</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/robot_setup/robot_poser.html">Robot Poser</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/omniverse_usd/robot_schema.html">Robot Schema and Site API</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/robot_simulation/articulation_controller.html">Articulation Controller</a></li>
+</ul>
+<p>This laboratory is written for <strong>Isaac Sim 6.0.1</strong>. Menu names or asset locations may differ in another release.</p>
+<h2 id="what-you-will-do">What You Will Do</h2>
+<p>You will:</p>
+<ol>
+<li>Create a stage containing a ground plane and Physics Scene.</li>
+<li>Add a UR5e robot under <code>/World</code>.</li>
+<li>Inspect the robot articulation, links, and six actuated joints.</li>
+<li>Generate an OmniGraph Joint Position Controller.</li>
+<li>Send absolute joint-position targets in radians.</li>
+<li>Register the UR5e flange as a Robot Site.</li>
+<li>Create and move a TCP target with Robot Poser.</li>
+<li>Load a reusable Python controller in the Isaac Sim Script Editor.</li>
+<li>Command absolute joint angles in degrees.</li>
+<li>Move the TCP to an absolute XYZ coordinate.</li>
+<li>Move the TCP by delta X, Y, and Z.</li>
+<li>Set the TCP orientation using roll, pitch, and yaw.</li>
+<li>Read the current robot, joint, and TCP status.</li>
+</ol>
+<h2 id="learning-goals">Learning Goals</h2>
+<p>By the end of this laboratory, you will be able to:</p>
+<ul>
+<li>Explain the difference between joint-space control and Cartesian TCP control.</li>
+<li>Identify the six UR5e revolute joints in their controller order.</li>
+<li>Use an OmniGraph articulation controller to command joint positions.</li>
+<li>Explain why OmniGraph joint angles are supplied in radians.</li>
+<li>Identify <code>base_link</code>, <code>wrist_3_link</code>, and <code>flange</code> in the UR5e hierarchy.</li>
+<li>Explain the purpose of a Robot Site.</li>
+<li>Use Robot Poser to solve inverse kinematics for a desired TCP pose.</li>
+<li>Distinguish a target TCP pose from the robot's actual flange pose.</li>
+<li>Import and reload a custom Python module in the Script Editor.</li>
+<li>Execute joint-space and TCP-space commands through Python.</li>
+<li>Interpret IK success and failure results.</li>
+<li>Prevent two controllers from commanding the same robot simultaneously.</li>
+</ul>
+<h2 id="control-concepts">Control Concepts</h2>
+<p>The same UR5e is controlled in three different ways:</p>
+<pre class="mermaid"><code>flowchart TD
+    A[&quot;Desired robot motion&quot;] --&gt; B[&quot;OmniGraph joint target&quot;]
+    A --&gt; C[&quot;Robot Poser TCP target&quot;]
+    A --&gt; D[&quot;Python command&quot;]
+    B --&gt; E[&quot;UR5e joint drives&quot;]
+    C --&gt; F[&quot;Inverse kinematics&quot;]
+    D --&gt; G[&quot;Joint command or inverse kinematics&quot;]
+    F --&gt; E
+    G --&gt; E
+</code></pre>
+<h3 id="joint-space-control">Joint-space control</h3>
+<p>Joint-space control specifies a target angle for each joint. The controller does not directly specify where the flange should be located.</p>
+<pre class="text"><code>Six desired joint angles
+          ↓
+Articulation controller
+          ↓
+Six UR5e joint drives
+          ↓
+Robot motion
+</code></pre>
+<h3 id="tcp-control-through-inverse-kinematics">TCP control through inverse kinematics</h3>
+<p>TCP control specifies a desired position and/or orientation for the flange. An inverse-kinematics solver calculates a compatible set of joint angles.</p>
+<pre class="text"><code>Desired TCP pose
+      ↓
+Inverse kinematics
+      ↓
+Six joint targets
+      ↓
+UR5e motion
+</code></pre>
+<blockquote>
+<p><strong>Important:</strong> Inverse kinematics finds a joint configuration for a target pose. It does not, by itself, guarantee a straight Cartesian path or collision-free motion.</p>
+</blockquote>
+<h2 id="required-software-and-files">Required Software and Files</h2>
+<ul>
+<li>Isaac Sim 6.0.1</li>
+<li>A working NVIDIA graphics driver and Isaac Sim installation</li>
+<li>Access to the Isaac Sim asset library</li>
+<li>The provided [<code>ur5e_control.py</code>]({{ '/labs/lab-02-isaac-sim/ur5e_control.py' | relative_url }}) controller module</li>
+<li>A directory for the lab stage, code, screenshots, and GIF</li>
+</ul>
+<blockquote>
+<p><strong>Controller file:</strong> [Download <code>ur5e_control.py</code>]({{ '/labs/lab-02-isaac-sim/ur5e_control.py' | relative_url }})</p>
+</blockquote>
+<p>Create the following structure before beginning:</p>
+<pre class="text"><code>Lab2/
+├── checkpoints/
+├── code/
+│   └── ur5e_control.py
+└── screenshots/
+</code></pre>
+<p>The recommended Ubuntu project location is:</p>
+<pre class="text"><code>/home/&lt;username&gt;/isaac_sim_projects/lab2/
+</code></pre>
+<p>Replace <code>&lt;username&gt;</code> with the user name of the computer being used.</p>
+<h2 id="units-used-in-this-laboratory">Units Used in This Laboratory</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th>Interface</th>
+<th>Unit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OmniGraph joint-position targets</td>
+<td><code>JointCommandArray</code></td>
+<td>radians</td>
+</tr>
+<tr class="even">
+<td>Python joint-position targets</td>
+<td><code>move_joints()</code></td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>TCP X, Y, and Z position</td>
+<td>Robot Poser and Python</td>
+<td>meters</td>
+</tr>
+<tr class="even">
+<td>TCP delta X, Y, and Z</td>
+<td><code>move_tcp_delta()</code></td>
+<td>meters</td>
+</tr>
+<tr class="odd">
+<td>TCP roll, pitch, and yaw</td>
+<td><code>rotate_tcp()</code></td>
+<td>degrees</td>
+</tr>
+<tr class="even">
+<td>Reported joint velocity</td>
+<td><code>get_robot_status()</code></td>
+<td>radians per second</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Common error:</strong> Do not enter degrees into <code>JointCommandArray</code>. For example, <code>0.20</code> radians is approximately <code>11.5°</code>.</p>
+</blockquote>
+<h2 id="laboratory-roadmap">Laboratory Roadmap</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Phase</th>
+<th>Part</th>
+<th>Main task</th>
+<th>Required result</th>
+<th>Checkpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>A</td>
+<td>Create the stage and physics environment</td>
+<td>Ground plane and Physics Scene exist</td>
+<td><code>Lab2_00_environment.usda</code></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>B</td>
+<td>Import and inspect the UR5e</td>
+<td>Robot exists at <code>/World/ur5e</code></td>
+<td><code>Lab2_01_ur5e_imported.usda</code></td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>C</td>
+<td>Create OmniGraph joint control</td>
+<td>Six joints respond to position targets</td>
+<td><code>Lab2_02_omnigraph_joint_control.usda</code></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>D</td>
+<td>Configure the flange as a Robot Site</td>
+<td><code>flange</code> is a recognized robot endpoint</td>
+<td><code>Lab2_03_robot_site.usda</code></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>E</td>
+<td>Use Robot Poser for TCP IK</td>
+<td>Flange follows a named TCP target</td>
+<td><code>Lab2_04_robot_poser_ik.usda</code></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>F</td>
+<td>Prepare Python control</td>
+<td>Module imports and controller initializes</td>
+<td><code>Lab2_05_python_ready.usda</code></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>G</td>
+<td>Execute the five Python operations</td>
+<td>Joint, TCP, rotation, and status commands work</td>
+<td><code>Lab2_06_final.usda</code></td>
+</tr>
+</tbody>
+</table>
+<h1 id="phase-1-ur5e-joint-control-with-omnigraph">Phase 1: UR5e Joint Control with OmniGraph</h1>
+<h1 id="part-a-create-the-stage-and-physics-environment">Part A: Create the Stage and Physics Environment</h1>
+<h2 id="a1-launch-isaac-sim">A1. Launch Isaac Sim</h2>
+<p>Launch Isaac Sim and wait until the interface is completely loaded. Do not create or import objects while the application is still initializing.</p>
+<p>Identify the following interface areas:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Interface area</th>
+<th>Purpose in this lab</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Viewport</td>
+<td>Observe the UR5e and manipulate the TCP target</td>
+</tr>
+<tr class="even">
+<td>Stage panel</td>
+<td>Inspect the robot, links, sites, named poses, and graph</td>
+</tr>
+<tr class="odd">
+<td>Property panel</td>
+<td>Edit transforms, graph commands, and Robot Schema properties</td>
+</tr>
+<tr class="even">
+<td>Timeline</td>
+<td>Start and stop physics simulation</td>
+</tr>
+<tr class="odd">
+<td>Action Graph editor</td>
+<td>Inspect the generated OmniGraph controller</td>
+</tr>
+<tr class="even">
+<td>Script Editor</td>
+<td>Run the Python controller module</td>
+</tr>
+</tbody>
+</table>
+<h2 id="a2-create-and-save-a-new-stage">A2. Create and save a new stage</h2>
+<ol>
+<li><p>Select <strong>File → New Stage</strong>.</p></li>
+<li><p>If prompted to save an existing stage, save it or discard it as directed by the instructor.</p></li>
+<li><p>Select <strong>File → Save As</strong>.</p></li>
+<li><p>Save the new stage as:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_00_environment.usda
+</code></pre></li>
+</ol>
+<h2 id="a3-add-the-ground-plane">A3. Add the ground plane</h2>
+<ol>
+<li><p>Select <strong>Create → Physics → Ground Plane</strong>.</p></li>
+<li><p>Confirm that a ground-plane prim appears under <code>/World</code>.</p></li>
+<li><p>Select the ground plane and verify that it is approximately at the world origin:</p>
+<pre class="text"><code>Translate X = 0.0 m
+Translate Y = 0.0 m
+Translate Z = 0.0 m
+</code></pre></li>
+</ol>
+<h2 id="a4-verify-or-add-the-physics-scene">A4. Verify or add the Physics Scene</h2>
+<p>Adding a ground plane may automatically create a Physics Scene. Inspect the Stage panel.</p>
+<ul>
+<li>If <code>/World/PhysicsScene</code> exists, do not create a duplicate.</li>
+<li>If it does not exist, select <strong>Create → Physics → Physics Scene</strong>.</li>
+</ul>
+<p>The Physics Scene provides gravity and simulation settings for the stage.</p>
+<h2 id="a5-save-and-capture-evidence">A5. Save and capture evidence</h2>
+<p>Save the stage. Capture:</p>
+<pre class="text"><code>screenshots/01_environment.png
+</code></pre>
+<p>The screenshot must show the ground plane and Physics Scene in the Stage panel.</p>
+<h3 id="validation-checkpoint-a">Validation checkpoint A</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+The stage is saved.</li>
+<li><input type="checkbox" disabled="" />
+A ground plane exists near the world origin.</li>
+<li><input type="checkbox" disabled="" />
+Exactly one Physics Scene exists.</li>
+<li><input type="checkbox" disabled="" />
+The environment screenshot was captured.</li>
+</ul>
+<h1 id="part-b-import-and-inspect-the-ur5e">Part B: Import and Inspect the UR5e</h1>
+<h2 id="b1-locate-the-robot-asset">B1. Locate the robot asset</h2>
+<ol>
+<li><p>Open the Isaac Sim Asset Browser or Content Browser.</p></li>
+<li><p>Search for:</p>
+<pre class="text"><code>ur5e.usd
+</code></pre></li>
+<li><p>Select the Universal Robots UR5e asset.</p></li>
+<li><p>Drag the asset into the viewport or under <code>/World</code> in the Stage panel.</p></li>
+</ol>
+<p>Add the following immediately after <strong>B1. Locate the robot asset</strong> as an alternative method.</p>
+<h3 id="troubleshooting-add-the-ur5e-using-the-script-editor">Troubleshooting: Add the UR5e Using the Script Editor</h3>
+<p>If the <strong>Isaac Sim</strong> asset collection does not appear in the Content Browser, the UR5e can be added directly using Python.</p>
+<ol>
+<li><p>Stop the simulation using the timeline controls.</p></li>
+<li><p>Open the Script Editor:</p>
+<pre class="text"><code>Window → Script Editor
+</code></pre></li>
+</ol>
+<img width="870" height="882" alt="image" src="https://github.com/user-attachments/assets/11e15d08-bc8c-4355-9465-080954ebc54e" />
+
+<ol start="3">
+<li><p>Paste the following code into the Script Editor:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="im">from</span> isaacsim.storage.native <span class="im">import</span> get_assets_root_path</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="im">import</span> isaacsim.core.experimental.utils.stage <span class="im">as</span> stage_utils</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>assets_root <span class="op">=</span> get_assets_root_path()</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>ur5e_path <span class="op">=</span> (</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a>    assets_root</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a>    <span class="op">+</span> <span class="st">&quot;/Isaac/Robots/UniversalRobots/ur5e/ur5e.usd&quot;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Loading UR5e from:&quot;</span>, ur5e_path)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true"></a>stage_utils.add_reference_to_stage(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true"></a>    usd_path<span class="op">=</span>ur5e_path,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true"></a>    path<span class="op">=</span><span class="st">&quot;/World/ur5e&quot;</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true"></a>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;UR5e added at /World/ur5e&quot;</span>)</span></code></pre></div></li>
+<li><p>Click <strong>Run</strong> at the bottom of the Script Editor.</p></li>
+<li><p>Wait for the robot asset and its materials to load.</p></li>
+<li><p>In the Stage panel, confirm that the following prim exists:</p>
+<pre class="text"><code>/World/ur5e
+</code></pre></li>
+<li><p>Select <code>/World/ur5e</code> and press <code>F</code> to focus the viewport camera on the robot.</p></li>
+<li><p>Confirm that the UR5e is visible and positioned above the ground plane.</p></li>
+</ol>
+<img width="870" height="882" alt="image" src="https://github.com/user-attachments/assets/7b5855d2-44c3-412a-9511-c3400e547b29" />
+
+<blockquote>
+<p><strong>Important:</strong> Run this script only once. Running it again after <code>/World/ur5e</code> already exists may produce a duplicate-reference warning or unexpected stage behavior.</p>
+</blockquote>
+<h4 id="troubleshooting-the-asset-root">Troubleshooting the asset root</h4>
+<p>If the Script Editor reports that the asset root cannot be found:</p>
+<ol>
+<li><p>Close Isaac Sim.</p></li>
+<li><p>Open a terminal.</p></li>
+<li><p>Relaunch Isaac Sim with the official cloud asset root:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="bu">cd</span> ~/isaacsim</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="ex">./isaac-sim.sh</span> <span class="kw">\</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a>  <span class="ex">--/persistent/isaac/asset_root</span>/<span class="va">default=</span><span class="st">&quot;https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0&quot;</span></span></code></pre></div></li>
+<li><p>Reopen the stage and repeat the Script Editor procedure.</p></li>
+</ol>
+<h4 id="expected-result">Expected result</h4>
+<p>The Stage panel should contain:</p>
+<pre class="text"><code>/World
+├── PhysicsScene
+├── GroundPlane
+└── ur5e
+</code></pre>
+<p>The robot root must remain:</p>
+<pre class="text"><code>/World/ur5e
+</code></pre>
+<p>Do not rename the robot’s internal links or joints.</p>
+<p>Asset folder organization can vary slightly between Isaac Sim installations. Use the search field if the robot is not visible in the expected Universal Robots folder.</p>
+<img width="3134" height="1030" alt="image-1" src="https://github.com/user-attachments/assets/e22b2aa8-1e3a-4cfa-a434-de1023de41ff" />
+
+<img width="1577" height="920" alt="image" src="https://github.com/user-attachments/assets/ea6350ec-f743-40a1-add7-1b9f9815cdeb" />
+
+<h2 id="b2-verify-the-robot-prim-path">B2. Verify the robot prim path</h2>
+<p>The robot must be located at:</p>
+<pre class="text"><code>/World/ur5e
+</code></pre>
+<p>If the imported prim has another name, rename only the root prim to <code>ur5e</code>. Do not rename its internal links or joints.</p>
+<h2 id="b3-verify-the-robot-transform">B3. Verify the robot transform</h2>
+<p>Select <code>/World/ur5e</code> and place the robot at the world origin unless the instructor specifies another location:</p>
+<pre class="text"><code>Translate X = 0.0 m
+Translate Y = 0.0 m
+Translate Z = 0.0 m
+</code></pre>
+<p>Confirm visually that the robot base is on the ground plane and not below it.</p>
+<h2 id="b4-inspect-the-ur5e-hierarchy">B4. Inspect the UR5e hierarchy</h2>
+<p>Expand <code>/World/ur5e</code> in the Stage panel. Locate at least the following items:</p>
+<pre class="text"><code>/World/ur5e/base_link
+/World/ur5e/wrist_3_link
+/World/ur5e/wrist_3_link/flange
+</code></pre>
+<p>The important distinction is:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Prim</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>base_link</code></td>
+<td>Base of the kinematic chain used in this lab</td>
+</tr>
+<tr class="even">
+<td><code>wrist_3_link</code></td>
+<td>Final physical wrist link</td>
+</tr>
+<tr class="odd">
+<td><code>flange</code></td>
+<td>Tool attachment frame used as the TCP</td>
+</tr>
+<tr class="even">
+<td><code>Gripper</code></td>
+<td>Optional gripper container; it is not the TCP for this lab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="b5-identify-the-six-controlled-joints">B5. Identify the six controlled joints</h2>
+<p>The UR5e controller uses the following order:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Index</th>
+<th>Joint name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td><code>shoulder_pan_joint</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td><code>shoulder_lift_joint</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td><code>elbow_joint</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td><code>wrist_1_joint</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td><code>wrist_2_joint</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td><code>wrist_3_joint</code></td>
+</tr>
+</tbody>
+</table>
+<img width="1279" height="1030" alt="image-2" src="https://github.com/user-attachments/assets/8a0ff49a-baa1-4a23-9941-67dc47df631c" />
+
+<p>This order is important whenever six command values are supplied as one array.</p>
+<h2 id="b6-save-and-capture-evidence">B6. Save and capture evidence</h2>
+<p>Save As:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_01_ur5e_imported.usda
+</code></pre>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/02_ur5e_hierarchy.png
+</code></pre>
+<p>The screenshot must show the complete robot and the expanded UR5e hierarchy.</p>
+<h3 id="validation-checkpoint-b">Validation checkpoint B</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+The UR5e is visible in the viewport.</li>
+<li><input type="checkbox" disabled="" />
+The robot root path is <code>/World/ur5e</code>.</li>
+<li><input type="checkbox" disabled="" />
+The base is positioned on the ground plane.</li>
+<li><input type="checkbox" disabled="" />
+<code>base_link</code>, <code>wrist_3_link</code>, and <code>flange</code> were located.</li>
+<li><input type="checkbox" disabled="" />
+The six controlled joints and their order were recorded.</li>
+</ul>
+<h1 id="part-c-control-the-ur5e-joints-with-omnigraph">Part C: Control the UR5e Joints with OmniGraph</h1>
+<h2 id="c1-stop-the-simulation-before-creating-the-graph">C1. Stop the simulation before creating the graph</h2>
+<p>Press <strong>Stop</strong> on the timeline. Creating the graph while the simulation is stopped makes the setup easier to inspect and prevents unexpected commands.</p>
+<h2 id="c2-generate-the-joint-position-controller">C2. Generate the Joint Position Controller</h2>
+<ol>
+<li><p>Select <strong>Tools → Robotics → OmniGraph Controllers → Joint Position Controller</strong>.</p></li>
+<li><p>In the controller setup window, set <strong>Robot Prim</strong> to:</p>
+<pre class="text"><code>/World/ur5e
+</code></pre></li>
+</ol>
+<img width="804" height="1001" alt="image-3" src="https://github.com/user-attachments/assets/1b549e7a-0828-48a3-b2a1-8a7caf5d46ef" />
+
+<ol start="3">
+<li>Keep the proposed graph path unless instructed otherwise.</li>
+<li>Leave <strong>Add to Existing Graph</strong> cleared for this first graph.</li>
+<li>Create the graph.</li>
+</ol>
+<blockquote>
+<p><strong>Important:</strong> The shortcut does not check whether another graph already controls the same robot. Create only one joint-position graph for the UR5e.</p>
+</blockquote>
+<h2 id="c3-inspect-the-generated-graph">C3. Inspect the generated graph</h2>
+<p>Open <strong>Window → Graph Editors → Action Graph</strong> if the graph is not already displayed. <img width="2697" height="1957" alt="image-4" src="https://github.com/user-attachments/assets/1116f4f9-3255-4c27-97b5-facae6308b1e" /></p>
+<p>The generated graph should contain nodes with the following roles:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Node</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Playback/tick node</td>
+<td>Executes the graph repeatedly while the timeline is playing</td>
+</tr>
+<tr class="even">
+<td><code>JointNameArray</code></td>
+<td>Defines which robot joints receive commands and their order</td>
+</tr>
+<tr class="odd">
+<td><code>JointCommandArray</code></td>
+<td>Stores the desired joint-position values</td>
+</tr>
+<tr class="even">
+<td><code>ArticulationController</code></td>
+<td>Sends the commands to the UR5e articulation drives</td>
+</tr>
+</tbody>
+</table>
+<p>The command flow is:</p>
+<pre class="text"><code>Playback tick
+      ↓
+Joint names + joint position commands
+      ↓
+Articulation Controller
+      ↓
+UR5e joint drives
+</code></pre>
+<h2 id="c4-verify-the-joint-name-order">C4. Verify the joint-name order</h2>
+<ol>
+<li><p>Select the <code>JointNameArray</code> node.</p></li>
+<li><p>In the Property panel, confirm that it contains the six UR5e joints in this order:</p>
+<pre class="text"><code>shoulder_pan_joint
+shoulder_lift_joint
+elbow_joint
+wrist_1_joint
+wrist_2_joint
+wrist_3_joint
+</code></pre></li>
+</ol>
+<img width="954" height="1957" alt="image-5" src="https://github.com/user-attachments/assets/751d673c-4931-40f6-b47f-ce270d8b7c42" />
+
+<ol start="3">
+<li>Do not reorder the names unless the command array is reordered in exactly the same way.</li>
+</ol>
+<h2 id="c5-enter-a-safe-joint-position-command">C5. Enter a safe joint-position command</h2>
+<ol>
+<li><p>Select the <code>JointCommandArray</code> node.</p></li>
+<li><p>Enter the following six position targets:</p>
+<pre class="text"><code>[0.20, -0.40, 0.40, -0.30, 0.20, 0.10]
+</code></pre></li>
+<li><p>Confirm that the array contains exactly six values.</p></li>
+</ol>
+<p>These are <strong>absolute joint targets in radians</strong>. They do not mean “move each joint by this amount.” For example, the first value requests that <code>shoulder_pan_joint</code> move toward <code>0.20</code> radians.</p>
+<h2 id="c6-run-the-graph">C6. Run the graph</h2>
+<ol>
+<li>Press <strong>Play</strong>.</li>
+<li>Observe the UR5e moving toward the commanded configuration.</li>
+<li>Change only the first value from <code>0.20</code> to <code>0.10</code>.</li>
+<li>Observe that the shoulder-pan joint responds while the other target values remain unchanged.</li>
+<li>Restore the first value to <code>0.20</code> if required.</li>
+<li>Press <strong>Stop</strong> after the observations are complete.</li>
+</ol>
+<p>Expected result:</p>
+<ul>
+<li>The robot moves only when the timeline is playing.</li>
+<li>The six values map to the six joints in the same order as <code>JointNameArray</code>.</li>
+<li>The robot moves toward absolute targets rather than adding an increment to its current angles.</li>
+</ul>
+<img width="3142" height="1957" alt="image-6" src="https://github.com/user-attachments/assets/0094ee70-c563-4f1e-bd0a-5dbe83da3121" />
+
+<h2 id="c7-save-capture-and-record-the-gif">C7. Save, capture, and record the GIF</h2>
+<p>Save As:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_02_omnigraph_joint_control.usda
+</code></pre>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/03_omnigraph_controller.png
+</code></pre>
+<p>The screenshot must show the generated graph, including the joint-name, joint-command, and articulation-controller nodes.</p>
+<p>Record or insert the instructor-provided GIF at:</p>
+<pre class="text"><code>gifs/lab2_part1_omnigraph_joint_control.gif
+</code></pre>
+<p>The GIF should show:</p>
+<ol>
+<li>Opening the Joint Position Controller shortcut.</li>
+<li>Selecting <code>/World/ur5e</code>.</li>
+<li>Creating the graph.</li>
+<li>Editing <code>JointCommandArray</code>.</li>
+<li>Pressing Play and observing the robot motion.</li>
+</ol>
+<h3 id="validation-checkpoint-c">Validation checkpoint C</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+One Joint Position Controller graph exists.</li>
+<li><input type="checkbox" disabled="" />
+The robot path is <code>/World/ur5e</code>.</li>
+<li><input type="checkbox" disabled="" />
+The graph lists the correct six joints.</li>
+<li><input type="checkbox" disabled="" />
+The command array contains six values in radians.</li>
+<li><input type="checkbox" disabled="" />
+The UR5e moves to the requested joint configuration.</li>
+<li><input type="checkbox" disabled="" />
+The graph screenshot and Part 1 GIF are available.</li>
+</ul>
+<h1 id="phase-2-tcp-control-with-gui-inverse-kinematics">Phase 2: TCP Control with GUI Inverse Kinematics</h1>
+<h1 id="part-d-configure-the-flange-as-a-robot-site">Part D: Configure the Flange as a Robot Site</h1>
+<h2 id="d1-understand-why-the-robot-site-is-required">D1. Understand why the Robot Site is required</h2>
+<p>The prim <code>/World/ur5e/wrist_3_link/flange</code> is an <code>Xform</code> representing the tool attachment frame. Robot Poser must recognize it as part of the robot's kinematic description before it can use the flange as an IK endpoint.</p>
+<p>Applying the <strong>Site API</strong> identifies the flange as a point of interest on the robot. Adding it to the robot's links relationship associates that site with the UR5e.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Operation</th>
+<th style="text-align: right;">Is the flange Robot Site required?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OmniGraph joint-angle control</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr class="even">
+<td>Python joint-angle control</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr class="odd">
+<td>GUI TCP control using <code>flange</code></td>
+<td style="text-align: right;">Yes</td>
+</tr>
+<tr class="even">
+<td>Python TCP control using <code>flange</code></td>
+<td style="text-align: right;">Yes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="d2-apply-site-api-to-the-flange">D2. Apply Site API to the flange</h2>
+<ol>
+<li><p>Press <strong>Stop</strong>.</p></li>
+<li><p>Expand:</p>
+<pre class="text"><code>/World/ur5e/wrist_3_link
+</code></pre></li>
+<li><p>Select:</p>
+<pre class="text"><code>/World/ur5e/wrist_3_link/flange
+</code></pre></li>
+<li><p>In the Property panel, click <strong>Add</strong>.</p></li>
+<li><p>Select <strong>Isaac → Robot Schema → Site API</strong>.</p></li>
+<li><p>Confirm that a Robot Site or Site API section appears in the flange properties.</p></li>
+</ol>
+<img width="955" height="1957" alt="image-7" src="https://github.com/user-attachments/assets/642059ed-0f4f-42fb-823f-dda5efafeef5" />
+
+<h2 id="d3-add-the-flange-to-the-ur5e-robot-links">D3. Add the flange to the UR5e robot links</h2>
+<ol>
+<li><p>Select the robot root:</p>
+<pre class="text"><code>/World/ur5e
+</code></pre></li>
+<li><p>Locate the Robot Schema or Robot API properties.</p></li>
+<li><p>Find the <strong>Robot Links</strong> relationship.</p></li>
+</ol>
+<img width="955" height="1957" alt="image-8" src="https://github.com/user-attachments/assets/96b1838e-170c-4a7d-9ee5-6e240fff23cd" />
+
+<ol start="4">
+<li><p>Choose <strong>Add Link</strong>.</p></li>
+<li><p>Select the <code>flange</code> prim at:</p>
+<pre class="text"><code>/World/ur5e/wrist_3_link/flange
+</code></pre></li>
+</ol>
+<img width="801" height="800" alt="image-9" src="https://github.com/user-attachments/assets/3d7e7f89-4b5d-43a4-b8d6-cd57532f718a" />
+
+<ol start="6">
+<li>Confirm that <code>flange</code> appears in the Robot Links list.</li>
+</ol>
+<img width="939" height="798" alt="image-10" src="https://github.com/user-attachments/assets/25d05177-d826-464d-ab85-c4ab7c10d58e" />
+
+<p>Do not add the optional <code>/World/ur5e/Gripper</code> container as the TCP for this lab.</p>
+<h2 id="d4-save-and-capture-evidence">D4. Save and capture evidence</h2>
+<p>Save As:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_03_robot_site.usda
+</code></pre>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/04_flange_robot_site.png
+</code></pre>
+<p>The screenshot must show <code>flange</code> selected and the Site API section visible.</p>
+<h3 id="validation-checkpoint-d">Validation checkpoint D</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Site API is applied to <code>flange</code>.</li>
+<li><input type="checkbox" disabled="" />
+<code>flange</code> is included in the UR5e Robot Links relationship.</li>
+<li><input type="checkbox" disabled="" />
+The site configuration is saved in the USD stage.</li>
+<li><input type="checkbox" disabled="" />
+The Robot Site screenshot was captured.</li>
+</ul>
+<h1 id="part-e-move-the-tcp-with-robot-poser">Part E: Move the TCP with Robot Poser</h1>
+<h2 id="e1-open-robot-poser">E1. Open Robot Poser</h2>
+<ol>
+<li>Select <strong>Tools → Robotics → Robot Poser</strong>.</li>
+</ol>
+<img width="939" height="798" alt="image-11" src="https://github.com/user-attachments/assets/4b15aec6-ba91-4f17-8bff-83ae69e9f8a5" />
+
+<ol start="2">
+<li><p>In <strong>Active Robot</strong>, select:</p>
+<pre class="text"><code>/World/ur5e
+</code></pre></li>
+<li><p>If the UR5e does not appear in the list, confirm that the robot root has Robot API and that the correct stage is open.</p></li>
+</ol>
+<img width="992" height="798" alt="image-12" src="https://github.com/user-attachments/assets/fe46a399-6947-4063-a300-7bd212016043" />
+<img width="992" height="865" alt="image-13" src="https://github.com/user-attachments/assets/20337995-dd00-431d-b5a9-6bbcd348d4f8" />
+
+<h2 id="e2-define-the-ik-chain">E2. Define the IK chain</h2>
+<p>Set:</p>
+<pre class="text"><code>Start Site: base_link
+End Site: flange
+</code></pre>
+<p>If more than one <code>base_link</code> appears, hover over or inspect the path and select the one under <code>/World/ur5e</code>.</p>
+<p>The selected chain begins at the robot base and ends at the flange TCP.</p>
+<h2 id="e3-create-a-named-tcp-pose">E3. Create a named TCP pose</h2>
+<ol>
+<li><p>Click <strong>Add</strong> in Robot Poser.</p></li>
+<li><p>A new named-pose row appears.</p></li>
+<li><p>Rename the pose:</p>
+<pre class="text"><code>TCP
+</code></pre></li>
+<li><p>Confirm that the pose uses <code>base_link</code> as the start and <code>flange</code> as the end.</p></li>
+</ol>
+<p>The target is normally stored beneath a named-pose scope under the robot. Its exact display path may resemble:</p>
+<pre class="text"><code>/World/ur5e/Named_Poses/TCP
+</code></pre>
+<h2 id="e4-enable-target-tracking">E4. Enable target tracking</h2>
+<ol>
+<li>Click <strong>Track Target</strong> for the <code>TCP</code> pose.</li>
+<li>Select the <code>TCP</code> named-pose prim in the Stage panel or viewport.</li>
+</ol>
+<img width="992" height="865" alt="image-13" src="https://github.com/user-attachments/assets/5c8b56bd-3ecc-49b6-8adb-9f317338205f" />
+
+<ol start="3">
+<li>Use the move gizmo or the Transform properties to change the target position.</li>
+<li>Make small changes first, such as <code>0.01 m</code> or <code>0.02 m</code> along one axis.</li>
+<li>Observe the robot updating as inverse kinematics solves for new joint angles.</li>
+</ol>
+<p>When the timeline is stopped, applying a pose updates the robot configuration directly. When the timeline is playing, the pose is applied through the robot's joint targets and the simulated drives move the robot toward the solution. Use the playing simulation when demonstrating physical motion.</p>
+<p>A sample reachable target used during development was:</p>
+<pre class="text"><code>X = 0.50 m
+Y = 0.50 m
+Z = 0.20 m
+</code></pre>
+<p>Reachability also depends on the target orientation and the robot's current configuration. If the sample is not reachable from the current pose, return to the last valid target and move in smaller increments.</p>
+<img width="3150" height="1791" alt="image-15" src="https://github.com/user-attachments/assets/e5553c17-1ada-4b3d-84f4-760c01141e85" />
+
+<h2 id="e5-change-the-target-orientation">E5. Change the target orientation</h2>
+<p>Use the rotate gizmo or orientation fields to make a small rotation. Robot Poser treats both translation and orientation as parts of the desired TCP pose.</p>
+<p>Observe the distinction:</p>
+<pre class="text"><code>Named TCP target = desired pose
+Flange          = actual robot endpoint
+Robot Poser     = IK solver connecting the two
+</code></pre>
+<h2 id="e6-recognize-ik-failure">E6. Recognize IK failure</h2>
+<p>Move the target far outside the UR5e workspace. When the solver cannot find a valid solution, the robot chain may be outlined in red and the robot will not reach the target.</p>
+<p>Return the target to the last reachable location and confirm that normal tracking resumes.</p>
+<h2 id="e7-stop-target-tracking">E7. Stop target tracking</h2>
+<p>Click <strong>Track Target</strong> again so tracking is <strong>off</strong>.</p>
+<p>This step is mandatory before Python control. If tracking remains active, Robot Poser can continue writing joint targets every frame and interfere with Python commands.</p>
+<h2 id="e8-save-and-capture-evidence">E8. Save and capture evidence</h2>
+<p>Save As:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_04_robot_poser_ik.usda
+</code></pre>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/05_robot_poser_tcp.png
+</code></pre>
+<p>The screenshot must show Robot Poser, the <code>TCP</code> pose, <code>base_link</code>, <code>flange</code>, and the robot at a valid IK pose.</p>
+<h3 id="validation-checkpoint-e">Validation checkpoint E</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Robot Poser recognizes <code>/World/ur5e</code>.</li>
+<li><input type="checkbox" disabled="" />
+The chain starts at <code>base_link</code> and ends at <code>flange</code>.</li>
+<li><input type="checkbox" disabled="" />
+A named pose called <code>TCP</code> exists.</li>
+<li><input type="checkbox" disabled="" />
+The flange follows the reachable target.</li>
+<li><input type="checkbox" disabled="" />
+An unreachable-target condition was observed and corrected.</li>
+<li><input type="checkbox" disabled="" />
+Track Target is off before continuing.</li>
+</ul>
+<h1 id="phase-3-joint-and-tcp-control-with-python">Phase 3: Joint and TCP Control with Python</h1>
+<h1 id="part-f-prepare-the-stage-and-python-module">Part F: Prepare the Stage and Python Module</h1>
+<h2 id="f1-create-a-controller-safe-stage-copy">F1. Create a controller-safe stage copy</h2>
+<p>The OmniGraph controller from Part C and Robot Poser tracking can both issue joint targets. Python must be the only active controller during Part G.</p>
+<ol>
+<li><p>Confirm that <strong>Track Target is off</strong> for every named pose.</p></li>
+<li><p>Select <strong>File → Save As</strong>.</p></li>
+<li><p>Save a Python-control copy as:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_05_python_ready.usda
+</code></pre></li>
+<li><p>In this new copy only, disable the Joint Position Controller graph. If a clear graph-enable control is not available, delete the generated graph prim from this copy.</p></li>
+<li><p>Do not delete the graph from <code>Lab2_02_omnigraph_joint_control.usda</code>; that checkpoint preserves the Part C work.</p></li>
+</ol>
+<p>Before continuing, verify:</p>
+<ul>
+<li>Robot Poser Track Target is off.</li>
+<li>The OmniGraph joint controller is disabled or absent in the Python-stage copy.</li>
+<li>The flange Site API remains configured.</li>
+</ul>
+<h2 id="f2-download-and-place-ur5e_controlpy">F2. Download and place <code>ur5e_control.py</code></h2>
+<p>Create this directory using the Ubuntu file manager:</p>
+<pre class="text"><code>/home/&lt;username&gt;/isaac_sim_projects/lab2/
+</code></pre>
+<p>Download [<code>ur5e_control.py</code>]({{ '/labs/lab-02-isaac-sim/ur5e_control.py' | relative_url }}) and copy it into that directory:</p>
+<pre class="text"><code>/home/&lt;username&gt;/isaac_sim_projects/lab2/ur5e_control.py
+</code></pre>
+<p>Do not rename the file. Confirm that the extension is <code>.py</code>, not <code>.py.txt</code>.</p>
+<p>The file is designed to run <strong>inside Isaac Sim only</strong>. This laboratory does not use a terminal command-line interface or a separate standalone Isaac Sim process.</p>
+<h2 id="f3-open-the-script-editor">F3. Open the Script Editor</h2>
+<ol>
+<li>Open the stage <code>Lab2_05_python_ready.usda</code>.</li>
+<li>Select <strong>Window → Script Editor</strong>.</li>
+<li>Press <strong>Play</strong> so the articulation and physics simulation are initialized.</li>
+<li>Keep Robot Poser Track Target off.</li>
+</ol>
+<h2 id="f4-import-the-module-and-create-the-controller">F4. Import the module and create the controller</h2>
+<p>Paste the following into the Script Editor. Update the path if the file was placed elsewhere.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true"></a><span class="im">import</span> os</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true"></a><span class="im">import</span> sys</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true"></a><span class="im">import</span> importlib</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true"></a>module_directory <span class="op">=</span> os.path.expanduser(</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true"></a>    <span class="st">&quot;~/isaac_sim_projects/lab2&quot;</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true"></a>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true"></a><span class="cf">if</span> module_directory <span class="kw">not</span> <span class="kw">in</span> sys.path:</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true"></a>    sys.path.append(module_directory)</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true"></a></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true"></a><span class="im">import</span> ur5e_control</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true"></a>importlib.<span class="bu">reload</span>(ur5e_control)</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true"></a></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true"></a>robot <span class="op">=</span> ur5e_control.UR5eController()</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true"></a></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;UR5e controller ready&quot;</span>)</span></code></pre></div>
+<h3 id="before-running-make-sure-you-click-play-in-isaac-sim-wait-about-one-second-and-keep-the-simulation-playing">BEFORE RUNNING MAKE SURE YOU Click Play in Isaac Sim. Wait about one second AND Keep the simulation playing.</h3>
+<p>Click <strong>Run</strong>.</p>
+<p>Expected output:</p>
+<pre class="text"><code>UR5e controller ready
+</code></pre>
+<img width="1605" height="1173" alt="image-16" src="https://github.com/user-attachments/assets/ad9718c0-5466-4ad7-9e7e-187905e64d63" />
+
+<p>No robot motion is expected during initialization.</p>
+<h3 id="why-importlibreload-is-used">Why <code>importlib.reload()</code> is used</h3>
+<p>Isaac Sim keeps imported modules in memory. If <code>ur5e_control.py</code> is edited and imported again, Python may continue using the earlier in-memory version. <code>importlib.reload()</code> loads the current file contents.</p>
+<h3 id="when-the-controller-must-be-recreated">When the controller must be recreated</h3>
+<p>Run the initialization block again after any of the following:</p>
+<ul>
+<li>Opening another stage.</li>
+<li>Pressing Stop and restarting the simulation.</li>
+<li>Reloading or modifying <code>ur5e_control.py</code>.</li>
+<li>Deleting and re-importing the UR5e.</li>
+</ul>
+<h3 id="validation-checkpoint-f">Validation checkpoint F</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+The Python-stage copy is open.</li>
+<li><input type="checkbox" disabled="" />
+Track Target is off.</li>
+<li><input type="checkbox" disabled="" />
+The OmniGraph joint controller is disabled or absent.</li>
+<li><input type="checkbox" disabled="" />
+The timeline is playing.</li>
+<li><input type="checkbox" disabled="" />
+<code>ur5e_control.py</code> imports successfully.</li>
+<li><input type="checkbox" disabled="" />
+<code>robot = ur5e_control.UR5eController()</code> completes without an error.</li>
+</ul>
+<h1 id="part-g-execute-the-five-python-operations">Part G: Execute the Five Python Operations</h1>
+<p>The module exposes exactly five student-facing operations:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">No.</th>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td><code>move_joints()</code></td>
+<td>Move to absolute joint angles</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td><code>move_tcp_to()</code></td>
+<td>Move the TCP to an absolute XYZ point</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td><code>move_tcp_delta()</code></td>
+<td>Move the TCP by delta X, Y, and Z</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td><code>rotate_tcp()</code></td>
+<td>Set the absolute TCP roll, pitch, and yaw</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td><code>get_robot_status()</code></td>
+<td>Read the current joint and TCP state</td>
+</tr>
+</tbody>
+</table>
+<p>Keep the timeline playing while executing the motion commands.</p>
+<h2 id="g1-operation-1--move-by-joint-angles">G1. Operation 1 — Move by joint angles</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true"></a><span class="im">from</span> pprint <span class="im">import</span> pprint</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true"></a>result <span class="op">=</span> robot.move_joints(</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true"></a>    [<span class="dv">0</span>, <span class="op">-</span><span class="dv">30</span>, <span class="dv">30</span>, <span class="op">-</span><span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">0</span>]</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true"></a>)</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true"></a></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true"></a>pprint(result)</span></code></pre></div>
+<p>The six values are absolute angles in <strong>degrees</strong> and use this order:</p>
+<pre class="text"><code>0 → shoulder_pan_joint
+1 → shoulder_lift_joint
+2 → elbow_joint
+3 → wrist_1_joint
+4 → wrist_2_joint
+5 → wrist_3_joint
+</code></pre>
+<img width="2806" height="1474" alt="image-17" src="https://github.com/user-attachments/assets/cad1999c-1e09-42cf-9265-61d756a9b36a" />
+
+<p>Expected result:</p>
+<ul>
+<li>The robot moves to the requested joint configuration.</li>
+<li>The returned dictionary reports <code>"applied": True</code>.</li>
+<li>The returned <code>joint_order</code> confirms how the six values were mapped.</li>
+<li><code>target_angles_degrees</code> reports the applied targets.</li>
+</ul>
+<p>The command is absolute. Repeating the same command does not add another <code>[0, -30, 30, -20, 10, 0]</code> degrees.</p>
+<h3 id="move-selected-joints-only">Move selected joints only</h3>
+<p>The same operation also accepts joint names:</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true"></a>result <span class="op">=</span> robot.move_joints({</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true"></a>    <span class="st">&quot;shoulder_pan_joint&quot;</span>: <span class="dv">15</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true"></a>    <span class="st">&quot;elbow_joint&quot;</span>: <span class="dv">30</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true"></a>})</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true"></a></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true"></a>pprint(result)</span></code></pre></div>
+<p>Only the listed targets are changed. The omitted joints retain their current positions as their new targets.</p>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/06_python_joint_control.png
+</code></pre>
+<h2 id="g2-operation-2--move-the-tcp-to-an-absolute-xyz-point">G2. Operation 2 — Move the TCP to an absolute XYZ point</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true"></a>result <span class="op">=</span> robot.move_tcp_to(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true"></a>    x<span class="op">=</span><span class="fl">0.50</span>,</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true"></a>    y<span class="op">=</span><span class="fl">0.45</span>,</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true"></a>    z<span class="op">=</span><span class="fl">0.25</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true"></a>)</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true"></a></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true"></a>pprint(result)</span></code></pre></div>
+<img width="2806" height="1474" alt="image-18" src="https://github.com/user-attachments/assets/4ac070a4-c232-4f14-9df1-40b28ad9d9da" />
+
+<p>Interpretation:</p>
+<ul>
+<li><code>x</code>, <code>y</code>, and <code>z</code> are absolute TCP coordinates in meters.</li>
+<li>The coordinates are expressed in the robot coordinate frame used by the controller.</li>
+<li>The current TCP orientation is preserved.</li>
+<li>Robot Poser solves IK and applies the resulting joint targets.</li>
+</ul>
+<p>Expected result when the pose is reachable:</p>
+<pre class="text"><code>&#39;success&#39;: True
+&#39;target_position_m&#39;: [0.5, 0.45, 0.25]
+</code></pre>
+<p>If <code>success</code> is <code>False</code>, the function does not apply the failed solution. Choose a closer point or return to the last reachable pose.</p>
+<blockquote>
+<p><strong>Important:</strong> This command requests a final TCP pose. It does not guarantee that the flange follows a straight line from its initial pose to the target.</p>
+</blockquote>
+<h2 id="g3-operation-3--move-the-tcp-by-delta-x-y-and-z">G3. Operation 3 — Move the TCP by delta X, Y, and Z</h2>
+<p>Move the TCP by <code>0.02 m</code> in positive X:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true"></a>result <span class="op">=</span> robot.move_tcp_delta(</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true"></a>    delta_x<span class="op">=</span><span class="fl">0.02</span>,</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true"></a>)</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true"></a></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true"></a>pprint(result)</span></code></pre></div>
+<p>Move along three axes in one command:</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true"></a>result <span class="op">=</span> robot.move_tcp_delta(</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true"></a>    delta_x<span class="op">=</span><span class="fl">0.02</span>,</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true"></a>    delta_y<span class="op">=-</span><span class="fl">0.01</span>,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true"></a>    delta_z<span class="op">=</span><span class="fl">0.03</span>,</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true"></a>)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true"></a>pprint(result)</span></code></pre></div>
+<p>Interpretation:</p>
+<ul>
+<li><code>delta_x=0.02</code> means <code>+2 cm</code> along robot X.</li>
+<li><code>delta_y=-0.01</code> means <code>-1 cm</code> along robot Y.</li>
+<li><code>delta_z=0.03</code> means <code>+3 cm</code> along robot Z.</li>
+<li>Any omitted delta defaults to zero.</li>
+<li>The current TCP orientation is preserved.</li>
+</ul>
+<p>The result reports:</p>
+<ul>
+<li>Whether IK succeeded.</li>
+<li>The requested delta in meters.</li>
+<li>The calculated absolute target position.</li>
+</ul>
+<p>Do not repeatedly run a delta command without observing the robot. Every successful run starts from the current TCP position, so repeated calls accumulate motion.</p>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/07_python_tcp_translation.png
+</code></pre>
+<h2 id="g4-operation-4--rotate-the-tcp">G4. Operation 4 — Rotate the TCP</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true"></a>result <span class="op">=</span> robot.rotate_tcp(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true"></a>    roll_x<span class="op">=</span><span class="dv">180</span>,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true"></a>    pitch_y<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true"></a>    yaw_z<span class="op">=</span><span class="dv">90</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true"></a>)</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true"></a>pprint(result)</span></code></pre></div>
+<p>Interpretation:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>roll_x</code></td>
+<td>Rotation about X in degrees</td>
+</tr>
+<tr class="even">
+<td><code>pitch_y</code></td>
+<td>Rotation about Y in degrees</td>
+</tr>
+<tr class="odd">
+<td><code>yaw_z</code></td>
+<td>Rotation about Z in degrees</td>
+</tr>
+</tbody>
+</table>
+<p>This operation:</p>
+<ul>
+<li>Preserves the current TCP X, Y, and Z position.</li>
+<li>Sets an <strong>absolute</strong> Euler orientation.</li>
+<li>Uses IK to calculate the joint angles required to produce that orientation.</li>
+<li>Does not expose quaternions to the student-facing interface.</li>
+</ul>
+<p>Expected result for a reachable orientation:</p>
+<pre class="text"><code>&#39;success&#39;: True
+&#39;target_rotation_degrees&#39;: [180, 0, 90]
+</code></pre>
+<p>The robot joints must move even though only TCP rotation is requested. The flange orientation can change only through joint motion.</p>
+<p>If the result is unsuccessful, return to a reachable TCP point and request a smaller orientation change.</p>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/08_python_tcp_rotation.png
+</code></pre>
+<h2 id="g5-operation-5--get-the-current-robot-status">G5. Operation 5 — Get the current robot status</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true"></a>status <span class="op">=</span> robot.get_robot_status()</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true"></a>pprint(status)</span></code></pre></div>
+<p>The returned status contains:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>robot_path</code></td>
+<td>UR5e root prim path</td>
+</tr>
+<tr class="even">
+<td><code>base_path</code></td>
+<td>IK start-link path</td>
+</tr>
+<tr class="odd">
+<td><code>tcp_path</code></td>
+<td>IK endpoint/TCP path</td>
+</tr>
+<tr class="even">
+<td><code>timeline_playing</code></td>
+<td>Whether Isaac Sim is currently playing</td>
+</tr>
+<tr class="odd">
+<td><code>joint_names</code></td>
+<td>Six controlled joints in controller order</td>
+</tr>
+<tr class="even">
+<td><code>joint_positions_degrees</code></td>
+<td>Current joint angles in degrees</td>
+</tr>
+<tr class="odd">
+<td><code>joint_velocities_radians_per_second</code></td>
+<td>Current joint velocities</td>
+</tr>
+<tr class="even">
+<td><code>tcp_position_m</code></td>
+<td>Current TCP X, Y, and Z in meters</td>
+</tr>
+<tr class="odd">
+<td><code>tcp_rotation_degrees</code></td>
+<td>Current TCP roll, pitch, and yaw in degrees</td>
+</tr>
+</tbody>
+</table>
+<p>Wait for the robot to settle and run the status command again. The joint velocities should approach zero after the final pose is reached.</p>
+<p>Capture:</p>
+<pre class="text"><code>screenshots/09_python_robot_status.png
+</code></pre>
+<p>The screenshot must show the Script Editor output containing joint positions and the TCP pose.</p>
+<h2 id="g6-compare-the-three-control-methods">G6. Compare the three control methods</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Student specifies</th>
+<th>Internal result</th>
+<th>Units entered</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OmniGraph joint control</td>
+<td>Six joint targets</td>
+<td>Joint-drive targets</td>
+<td>radians</td>
+</tr>
+<tr class="even">
+<td>Robot Poser GUI</td>
+<td>Desired target pose</td>
+<td>IK-generated joint targets</td>
+<td>meters and GUI orientation values</td>
+</tr>
+<tr class="odd">
+<td>Python <code>move_joints()</code></td>
+<td>Six angles or selected named joints</td>
+<td>Joint-drive targets</td>
+<td>degrees</td>
+</tr>
+<tr class="even">
+<td>Python TCP functions</td>
+<td>Desired TCP position or orientation</td>
+<td>IK-generated joint targets</td>
+<td>meters and degrees</td>
+</tr>
+</tbody>
+</table>
+<h3 id="validation-checkpoint-g">Validation checkpoint G</h3>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+<code>move_joints()</code> moved all six joints using an ordered list.</li>
+<li><input type="checkbox" disabled="" />
+<code>move_joints()</code> moved selected joints using their names.</li>
+<li><input type="checkbox" disabled="" />
+<code>move_tcp_to()</code> reached a valid absolute XYZ target.</li>
+<li><input type="checkbox" disabled="" />
+<code>move_tcp_delta()</code> produced the expected incremental translation.</li>
+<li><input type="checkbox" disabled="" />
+<code>rotate_tcp()</code> changed orientation while preserving position.</li>
+<li><input type="checkbox" disabled="" />
+<code>get_robot_status()</code> reported the current joint and TCP state.</li>
+<li><input type="checkbox" disabled="" />
+Each IK command returned <code>success: True</code> for the submitted run.</li>
+<li><input type="checkbox" disabled="" />
+The required Python screenshots were captured.</li>
+</ul>
+<p>Save the final stage as:</p>
+<pre class="text"><code>Lab2/checkpoints/Lab2_06_final.usda
+</code></pre>
+<h1 id="troubleshooting">Troubleshooting</h1>
+<h2 id="the-ur5e-asset-cannot-be-found">The UR5e asset cannot be found</h2>
+<ul>
+<li>Confirm that the asset library is connected.</li>
+<li>Search for <code>ur5e.usd</code> rather than navigating manually through folders.</li>
+<li>Confirm that the correct Isaac Sim version is running.</li>
+</ul>
+<h2 id="the-omnigraph-controller-does-not-move-the-robot">The OmniGraph controller does not move the robot</h2>
+<ul>
+<li>Confirm that the timeline is playing.</li>
+<li>Confirm that the controller's robot prim is <code>/World/ur5e</code>.</li>
+<li>Confirm that <code>JointCommandArray</code> contains exactly six values.</li>
+<li>Confirm that the values are in radians.</li>
+<li>Confirm that another graph was not created for the same robot.</li>
+</ul>
+<h2 id="the-wrong-joint-moves">The wrong joint moves</h2>
+<ul>
+<li>Compare <code>JointNameArray</code> with <code>JointCommandArray</code>.</li>
+<li>Verify that both arrays contain six entries in the same order.</li>
+<li>Remember that array indices begin at zero.</li>
+</ul>
+<h2 id="flange-is-not-available-in-robot-poser"><code>flange</code> is not available in Robot Poser</h2>
+<ul>
+<li>Confirm that Site API was applied to <code>/World/ur5e/wrist_3_link/flange</code>.</li>
+<li>Confirm that <code>flange</code> was added to the UR5e Robot Links relationship.</li>
+<li>Save the stage and reopen Robot Poser.</li>
+</ul>
+<h2 id="robot-poser-shows-a-red-outline">Robot Poser shows a red outline</h2>
+<ul>
+<li>The requested target is unreachable or the IK solver failed to converge.</li>
+<li>Move the target closer to the previous valid pose.</li>
+<li>Change one position or orientation component at a time.</li>
+<li>Confirm that the chain is <code>base_link</code> to <code>flange</code>.</li>
+</ul>
+<h2 id="python-reports-modulenotfounderror-ur5e_control">Python reports <code>ModuleNotFoundError: ur5e_control</code></h2>
+<ul>
+<li>Confirm that <code>ur5e_control.py</code> is in the directory added to <code>sys.path</code>.</li>
+<li>Confirm that the file is not named <code>ur5e_control.py.txt</code>.</li>
+<li>Check the spelling and capitalization of the directory and filename.</li>
+<li>Run the complete initialization block again.</li>
+</ul>
+<h2 id="python-reports-that-the-robot-base-or-tcp-cannot-be-found">Python reports that the robot, base, or TCP cannot be found</h2>
+<p>Verify these exact paths in the Stage panel:</p>
+<pre class="text"><code>/World/ur5e
+/World/ur5e/base_link
+/World/ur5e/wrist_3_link/flange
+</code></pre>
+<p>If the root robot prim has a different name, rename it to <code>ur5e</code> or update the controller file as directed by the instructor.</p>
+<h2 id="python-reports-that-the-robot-schema-is-invalid">Python reports that the Robot Schema is invalid</h2>
+<ul>
+<li>Confirm that the official Isaac Sim UR5e asset was imported.</li>
+<li>Confirm that Robot API exists on <code>/World/ur5e</code>.</li>
+<li>Confirm that the stage containing the Robot Site configuration is open.</li>
+</ul>
+<h2 id="a-python-motion-returns-success-false">A Python motion returns <code>success: False</code></h2>
+<ul>
+<li>The requested TCP pose is not currently reachable.</li>
+<li>Move the target closer to the current TCP pose.</li>
+<li>Reduce the requested change.</li>
+<li>Test position and orientation separately.</li>
+<li>Confirm that the flange Robot Site is correctly configured.</li>
+</ul>
+<h2 id="the-robot-moves-back-or-appears-to-fight-the-python-command">The robot moves back or appears to fight the Python command</h2>
+<p>Another controller is still active.</p>
+<ol>
+<li>Turn off Robot Poser <strong>Track Target</strong>.</li>
+<li>Disable or remove the OmniGraph joint controller from the Python-stage copy.</li>
+<li>Recreate the Python controller object.</li>
+<li>Reissue the command.</li>
+</ol>
+<h2 id="python-worked-before-stop-but-now-produces-an-error">Python worked before Stop but now produces an error</h2>
+<p>Press <strong>Play</strong>, then rerun:</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true"></a>importlib.<span class="bu">reload</span>(ur5e_control)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true"></a>robot <span class="op">=</span> ur5e_control.UR5eController()</span></code></pre></div>
+<p>The articulation wrapper should be recreated after a timeline or stage reset.</p>
+<h1 id="required-deliverables">Required Deliverables</h1>
+<p>Submit the following checkpoint stages:</p>
+<pre class="text"><code>Lab2_00_environment.usda
+Lab2_01_ur5e_imported.usda
+Lab2_02_omnigraph_joint_control.usda
+Lab2_03_robot_site.usda
+Lab2_04_robot_poser_ik.usda
+Lab2_05_python_ready.usda
+Lab2_06_final.usda
+</code></pre>
+<p>Submit the linked Python file:</p>
+<ul>
+<li>[<code>ur5e_control.py</code>]({{ '/labs/lab-02-isaac-sim/ur5e_control.py' | relative_url }})</li>
+</ul>
+<p>Submit these screenshots:</p>
+<pre class="text"><code>01_environment.png
+02_ur5e_hierarchy.png
+03_omnigraph_controller.png
+04_flange_robot_site.png
+05_robot_poser_tcp.png
+06_python_joint_control.png
+07_python_tcp_translation.png
+08_python_tcp_rotation.png
+09_python_robot_status.png
+</code></pre>
+<p>Submit the Part 1 GIF:</p>
+<pre class="text"><code>lab2_part1_omnigraph_joint_control.gif
+</code></pre>
+<p>Submit a short demonstration video showing:</p>
+<ol>
+<li>OmniGraph joint control.</li>
+<li>GUI TCP control with Robot Poser.</li>
+<li>Track Target being turned off.</li>
+<li>Python joint control.</li>
+<li>Python absolute and delta TCP translation.</li>
+<li>Python TCP rotation.</li>
+<li>The final robot status output.</li>
+</ol>
+<h2 id="report-expectations">Report Expectations</h2>
+<p>Submit one comprehensive formal lab report using the <a href="https://docs.google.com/document/d/1HOYJqnCjeE1o-8Ghffh58nG2FxjORW-J/edit?usp=sharing&amp;ouid=109541660202730576301&amp;rtpof=true&amp;sd=true">RAS 545 Lab Report Template</a>.</p>
+<p>The report must contain:</p>
+<ol>
+<li>Title page.</li>
+<li>Lab objectives and learning goals.</li>
+<li>Software and hardware configuration.</li>
+<li>Procedure for Parts A–G.</li>
+<li>Results and validation evidence.</li>
+<li>Observations and troubleshooting.</li>
+<li>Required screenshots and GIF.</li>
+<li>Explanation of joint-space control.</li>
+<li>Explanation of TCP control and inverse kinematics.</li>
+<li>Explanation of why the flange requires Site API.</li>
+<li>Comparison of OmniGraph, GUI Robot Poser, and Python control.</li>
+<li>Explanation of absolute versus delta commands.</li>
+<li>Explanation of why Track Target and the OmniGraph controller must not remain active during Python control.</li>
+<li>Key learnings.</li>
+<li>Conclusion.</li>
+<li>References.</li>
+</ol>
+<p>For each part, record:</p>
+<ul>
+<li>The procedure followed.</li>
+<li>The corresponding checkpoint filename.</li>
+<li>The screenshot filename.</li>
+<li>The command or target values used.</li>
+<li>The observed robot response.</li>
+<li>Whether IK succeeded.</li>
+<li>Any error and its correction.</li>
+<li>One key learning.</li>
+</ul>
+<h1 id="lab-check-off">Lab Check-Off</h1>
+<p>Notify the teaching staff after the final stage, screenshots, GIF, report, and demonstration video are ready.</p>
+<p>The check-off must confirm:</p>
+<ol>
+<li>The stage contains a ground plane and Physics Scene.</li>
+<li>The UR5e exists at <code>/World/ur5e</code>.</li>
+<li>The OmniGraph controller moves the six UR5e joints.</li>
+<li><code>flange</code> has Site API and is included in Robot Links.</li>
+<li>Robot Poser moves the flange through a named TCP target.</li>
+<li>Track Target is off before Python commands are used.</li>
+<li>No OmniGraph controller competes with Python control.</li>
+<li>All five Python operations execute successfully.</li>
+<li>The student can explain the units used by each interface.</li>
+<li>The student can explain why IK success does not imply collision-free or straight-line motion.</li>
+</ol>
+<h1 id="final-validation">Final Validation</h1>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+The Lab 2 directory structure was created.</li>
+<li><input type="checkbox" disabled="" />
+The stage contains one ground plane and one Physics Scene.</li>
+<li><input type="checkbox" disabled="" />
+The UR5e root path is <code>/World/ur5e</code>.</li>
+<li><input type="checkbox" disabled="" />
+The six UR5e joint names and their order were verified.</li>
+<li><input type="checkbox" disabled="" />
+The OmniGraph Joint Position Controller was created.</li>
+<li><input type="checkbox" disabled="" />
+Joint commands were entered in radians.</li>
+<li><input type="checkbox" disabled="" />
+The robot responded correctly to the OmniGraph commands.</li>
+<li><input type="checkbox" disabled="" />
+Site API was applied to <code>flange</code>.</li>
+<li><input type="checkbox" disabled="" />
+<code>flange</code> was added to the Robot Links relationship.</li>
+<li><input type="checkbox" disabled="" />
+A named <code>TCP</code> pose was created in Robot Poser.</li>
+<li><input type="checkbox" disabled="" />
+A reachable TCP target was achieved.</li>
+<li><input type="checkbox" disabled="" />
+An unreachable-target condition was recognized.</li>
+<li><input type="checkbox" disabled="" />
+Track Target was turned off.</li>
+<li><input type="checkbox" disabled="" />
+The OmniGraph controller was disabled or removed from the Python-stage copy.</li>
+<li><input type="checkbox" disabled="" />
+<code>ur5e_control.py</code> was placed in the project directory.</li>
+<li><input type="checkbox" disabled="" />
+The Python controller initialized while the timeline was playing.</li>
+<li><input type="checkbox" disabled="" />
+<code>move_joints()</code> was tested.</li>
+<li><input type="checkbox" disabled="" />
+<code>move_tcp_to()</code> was tested.</li>
+<li><input type="checkbox" disabled="" />
+<code>move_tcp_delta()</code> was tested.</li>
+<li><input type="checkbox" disabled="" />
+<code>rotate_tcp()</code> was tested.</li>
+<li><input type="checkbox" disabled="" />
+<code>get_robot_status()</code> was tested.</li>
+<li><input type="checkbox" disabled="" />
+Each submitted IK command returned success.</li>
+<li><input type="checkbox" disabled="" />
+All checkpoint stages were saved.</li>
+<li><input type="checkbox" disabled="" />
+All required screenshots were captured.</li>
+<li><input type="checkbox" disabled="" />
+The Part 1 GIF was included.</li>
+<li><input type="checkbox" disabled="" />
+The formal report was completed.</li>
+<li><input type="checkbox" disabled="" />
+The demonstration video was recorded.</li>
+<li><input type="checkbox" disabled="" />
+Teaching staff were notified for check-off.</li>
+</ul>
+<h2 id="completion-requirement">Completion Requirement</h2>
+<p>The laboratory is complete when the student can demonstrate all three control workflows and explain their differences:</p>
+<pre class="text"><code>OmniGraph joint targets
+Robot Poser GUI TCP target with IK
+Python joint and TCP commands
+</code></pre>
+<p>The student must also demonstrate that only one controller is actively commanding the UR5e at a time.</p>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Same footer as the main page, minus the nav bar (a reading page
+       does not need it). -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">Built with plain HTML, CSS and a sprinkle of JavaScript - <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <!-- The automatic footer year. -->
+  <script src="../js/main.js"></script>
+
+  <!--
+    The diagram drawer (Mermaid), loaded from the jsDelivr CDN.
+    It finds the guide's "mermaid" code blocks and draws them as
+    diagrams. This is the ONLY external script on the site.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    // When the page is ready, turn every mermaid code block into a drawing.
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.mermaid) { mermaid.initialize({ startOnLoad: true }); }
+    });
+  </script>
+</body>
+</html>

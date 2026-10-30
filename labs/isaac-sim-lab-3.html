@@ -1,0 +1,3824 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  ISAAC SIM - LAB 3 (labs/isaac-sim-lab-3.html)
+
+  WHAT THIS PAGE IS:
+  The full text of Instructional Lab 3, copied onto the lab site.
+  Praj asked for the Isaac Sim labs he co-wrote to live here
+  (voice note, 2026-10-29).
+
+  WHERE THE CONTENT CAME FROM:
+  Source document: _labs/lab-03-isaac-sim/index.md in the GitHub repo
+  RoboX2020/Tatwik19.github.io (MIT license), converted to HTML on
+  2026-10-29. The original is also public at
+  https://tatwik19.github.io/labs/lab-03-isaac-sim/
+
+  HOW TO EDIT:
+  The lab text itself sits inside the <div class="prose"> below.
+  Everything outside that div (header, credits, styling hooks) is
+  ordinary site code with comments, same as index.html.
+
+  ONE EXTRA:
+  This page loads a small drawing library (Mermaid) from a public
+  CDN so the guide's diagrams render. If it ever fails, the diagram
+  just shows as plain text - nothing else on the page depends on it.
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 3: TurtleBot 3 ROS2 Integration, Sensors, Localization, and Navigation - RAS Lab, ASU</title>
+  <meta name="description" content="Instructional Lab 3 for RAS 545: build a ROS 2-enabled TurtleBot 3 simulation with camera and laser sensors, odometry and localization, visualization, and Nav2 navigation.">
+
+  <!-- The same paint as the rest of the site (one folder up). -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <main>
+    <div class="section-inner">
+
+      <!-- Back to the main directory page. -->
+      <a class="back-link" href="../index.html#isaac-sim">&larr; Back to the lab directory</a>
+
+      <!-- The title block: what this is, who it is for, who wrote it. -->
+      <header class="lab-header">
+        <p class="section-eyebrow">Isaac Sim - Lab 3</p>
+        <h1>TurtleBot 3 ROS2 Integration, Sensors, Localization, and Navigation</h1>
+        <p class="lab-meta">
+          Course: RAS 545 - Robotics Systems I &middot; Instructor: Prof. Sangram Redkar<br>
+          Authors: Sai Srinivas Tatwik Meesala, Rajesh S Aouti, Prajval Arora<br>
+          Copied here with permission of the authors under the MIT license;
+          original at
+          <a href="https://tatwik19.github.io/labs/lab-03-isaac-sim/">tatwik19.github.io/labs/lab-03-isaac-sim</a>.
+        </p>
+      </header>
+
+      <!--
+        THE LAB GUIDE ITSELF (converted from the authors' document).
+        Long reading text - the ".prose" styles in css/style.css give it
+        roomy headings, dark code blocks and images that fit the screen.
+      -->
+      <div class="prose">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  mermaid.initialize({ startOnLoad: false, theme: "default" });
+  document.querySelectorAll("pre > code.language-mermaid").forEach(function (code) {
+    var pre = code.parentElement;
+    var div = document.createElement("div");
+    div.className = "mermaid";
+    div.textContent = code.textContent;
+    pre.replaceWith(div);
+  });
+  mermaid.run();
+});
+</script>
+
+<style>
+@media print {
+  .mermaid,
+  pre,
+  table,
+  blockquote {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+</style>
+
+<p><strong>Instructor:</strong> Prof. <a href="mailto:Sangram.Redkar@asu.edu">Sangram Redkar</a></p>
+<p><strong>Authors:</strong></p>
+<ul>
+<li><p>Sai Srinivas Tatwik Meesala: <a href="mailto:smeesala@asu.edu">smeesala@asu.edu</a></p></li>
+<li><p>Rajesh S Aouti: <a href="mailto:raouti@asu.edu">raouti@asu.edu</a></p></li>
+<li><p>Prajval Arora: <a href="mailto:parora24@asu.edu">parora24@asu.edu</a></p></li>
+</ul>
+<blockquote>
+<p><strong>Required scope:</strong> Students are required to complete Parts A–F and submit the required deliverables. Parts G–J are supplementary and optional after the Part F submission.</p>
+</blockquote>
+<h2 id="start-here">Start Here</h2>
+<p>Complete the laboratory in the following order:</p>
+<ol>
+<li>Read the software and hardware requirements.</li>
+<li>Download the starter USD file.</li>
+<li>Complete Part A before creating any Action Graph.</li>
+<li>Save a checkpoint file after every major part.</li>
+<li>Do not continue to the next part until the validation command succeeds.</li>
+<li>Record screenshots for every checkpoint.</li>
+</ol>
+<h2 id="submission-summary">Submission Summary</h2>
+<p>Submit:</p>
+<ol>
+<li>Checkpoint USD or USDA files.</li>
+<li>Lab report.</li>
+<li>Demonstration video.</li>
+<li>ROS 2 commands and configuration files.</li>
+<li>Required screenshots.</li>
+<li>Final diagnostic output.</li>
+</ol>
+<p>The required submission covers Parts A–F. Parts G–J may be completed as supplementary work after submission and are not required for the initial check-off.</p>
+<p>The report must document each required part, A through F. After completing every part, capture the required screenshots, save the corresponding checkpoint file, record the validation results, and add the procedure, results, and observations to the report before continuing.</p>
+<h2 id="laboratory-roadmap">Laboratory Roadmap</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Stage</th>
+<th>Main task</th>
+<th>Required result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>Validate the starter USD</td>
+<td>Robot simulates without ROS 2</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>Publish <code>/clock</code></td>
+<td>ROS 2 receives simulation time</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>Control the robot</td>
+<td><code>/cmd_vel</code> moves the robot</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>Add lidar</td>
+<td><code>/scan</code> publishes LaserScan data</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td>Add camera</td>
+<td>Camera image topics publish</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>Publish odometry and TF</td>
+<td><code>odom → base_footprint</code> exists</td>
+</tr>
+<tr class="odd">
+<td>G</td>
+<td>Inspect QoS <em>(optional)</em></td>
+<td>QoS compatibility is understood</td>
+</tr>
+<tr class="even">
+<td>H</td>
+<td>Run localization <em>(optional)</em></td>
+<td>AMCL publishes <code>map → odom</code></td>
+</tr>
+<tr class="odd">
+<td>I</td>
+<td>Run Nav2 <em>(optional)</em></td>
+<td>Robot reaches a goal</td>
+</tr>
+<tr class="even">
+<td>J</td>
+<td>Complete diagnostics <em>(optional)</em></td>
+<td>All required outputs are verified</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-lab-overview">1. Lab Overview</h2>
+<p>This laboratory transforms a prepared TurtleBot 3 simulation model into a ROS2-enabled mobile robot. You will progressively add and validate the core capabilities needed for autonomous operation in simulation.</p>
+<h3 id="at-a-glance">At a glance</h3>
+<p>By the end of this lab, you will build a complete ROS2 mobile robot in Isaac Sim and verify that it can:</p>
+<ul>
+<li>publish simulation time on <code>/clock</code></li>
+<li>receive velocity commands on <code>/cmd_vel</code></li>
+<li>drive using differential-wheel control</li>
+<li>publish LIDAR data on <code>/scan</code></li>
+<li>publish camera data on <code>/camera/image_raw</code></li>
+<li>publish odometry and TF transforms</li>
+<li>localize the robot using AMCL and a saved map</li>
+<li>navigate to a goal using Nav2</li>
+</ul>
+<p>The system is assembled incrementally, and each section ends with a validation checkpoint to confirm that the current stage is functioning correctly.</p>
+<h3 id="learning-outcomes">Learning outcomes</h3>
+<p>After completing this laboratory, you will be able to:</p>
+<ul>
+<li>configure and validate real-time ROS2 communication in Isaac Sim</li>
+<li>build a differential-drive mobile robot controller</li>
+<li>publish sensor data from a simulated LIDAR and camera</li>
+<li>publish odometry and TF information for robot localization</li>
+<li>configure AMCL and Nav2 for map-based navigation</li>
+</ul>
+<blockquote>
+<p>Important: This lab is intentionally structured as a layered robotics integration exercise. Complete each section in order, and do not proceed until the current checkpoint is working.</p>
+</blockquote>
+<blockquote>
+<p>Critical constraint: The TF tree must not contain both <code>world -&gt; odom</code> and <code>map -&gt; odom</code>. Use only the valid transform chain required by this lab.</p>
+</blockquote>
+<p>The required system architecture is:</p>
+<pre class="text"><code>Isaac Sim
+│
+├── Physics simulation
+├── TurtleBot articulation
+├── Camera sensor
+├── RTX lidar sensor
+├── ROS2 Action Graphs
+│
+└── ROS2
+    ├── /clock
+    ├── /cmd_vel
+    ├── /odom
+    ├── /tf
+    ├── /scan
+    ├── /camera/image_raw
+    └── /map
+
+Nav2
+├── Map server
+├── AMCL
+├── Global costmap
+├── Local costmap
+├── Planner
+└── Controller
+</code></pre>
+<p>The final TF tree must be:</p>
+<pre class="text"><code>map
+└── odom
+    └── base_footprint
+        ├── base_link
+        ├── base_scan
+        ├── wheel_left_link
+        ├── wheel_right_link
+        ├── caster_back_link
+        └── Camera_1
+</code></pre>
+<p>Do not create or publish:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<p>For this laboratory, AMCL publishes:</p>
+<pre class="text"><code>map → odom
+</code></pre>
+<p>Isaac Sim publishes:</p>
+<pre class="text"><code>odom → base_footprint
+base_footprint → robot links
+</code></pre>
+<p>A frame must not have two competing parents.</p>
+<h2 id="2-what-you-will-do">2. What You Will Do</h2>
+<p>You will begin with the supplied TurtleBot USD file. The supplied file contains:</p>
+<ul>
+<li>A TurtleBot 3 Burger model</li>
+<li>Robot visual geometry</li>
+<li>Robot collision geometry</li>
+<li>Rigid-body physics</li>
+<li>Articulation and joints</li>
+<li>A ground plane</li>
+<li>Lighting</li>
+<li>A world observation camera</li>
+</ul>
+<p>The supplied file intentionally does not contain:</p>
+<ul>
+<li>ROS2 Action Graphs</li>
+<li>A ROS2 clock publisher</li>
+<li>A velocity command subscriber</li>
+<li>A lidar sensor</li>
+<li>A camera mounted on the robot</li>
+<li>A camera publisher</li>
+<li>An odometry publisher</li>
+<li>TF publishers</li>
+<li>A localization system</li>
+<li>Nav2</li>
+</ul>
+<p>You must add these components during the laboratory.</p>
+<h2 id="3-learning-goals">3. Learning Goals</h2>
+<p>By the end of this laboratory, you will be able to:</p>
+<ul>
+<li>Open and inspect a USD stage in Isaac Sim.</li>
+<li>Identify a robot root prim and robot link prims.</li>
+<li>Explain the difference between visual geometry and collision geometry.</li>
+<li>Verify that a robot has physics and articulation settings.</li>
+<li>Create an Isaac Sim Action Graph.</li>
+<li>Add and connect OmniGraph nodes.</li>
+<li>Create a ROS2 context.</li>
+<li>Publish Isaac Sim simulation time to <code>/clock</code>.</li>
+<li>Subscribe to <code>geometry_msgs/msg/Twist</code>.</li>
+<li>Convert linear and angular velocity commands into wheel velocities.</li>
+<li>Control a differential-drive robot.</li>
+<li>Add and position an RTX lidar sensor.</li>
+<li>Publish <code>sensor_msgs/msg/LaserScan</code>.</li>
+<li>Add and position a camera sensor.</li>
+<li>Publish RGB camera images and camera information.</li>
+<li>Publish nav_msgs/msg/Odometry.</li>
+<li>Publish and inspect TF transforms.</li>
+<li>Understand ROS2 Quality of Service.</li>
+<li>Run map-based localization with AMCL.</li>
+<li>Use RViz2 to set an initial pose and send a navigation goal.</li>
+<li>Use ROS2 diagnostic commands to identify configuration errors.</li>
+</ul>
+<h2 id="4-before-you-start">4. Before You Start</h2>
+<h3 id="41-required-software">4.1 Required software</h3>
+<p>The computer must have the following software installed and validated:</p>
+<ul>
+<li>Ubuntu Linux</li>
+<li>ROS2 Humble</li>
+<li>Isaac Sim 6.0.1</li>
+<li>RViz2</li>
+<li>Nav2</li>
+<li><code>tf2_tools</code></li>
+<li><code>rqt_image_view</code></li>
+<li><code>teleop_twist_keyboard</code></li>
+</ul>
+<p>Open a terminal and run:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span></code></pre></div>
+<p>Set the ROS2 domain to zero:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span></code></pre></div>
+<p>Verify ROS2:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ex">ros2</span> --version</span></code></pre></div>
+<p>Verify that ROS2 can discover itself:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ex">ros2</span> topic list</span></code></pre></div>
+<img width="777" height="686" alt="Screenshot from 2026-09-16 01-49-44" src="https://github.com/user-attachments/assets/5533b094-9c1b-47a6-93be-b66536751d17" />
+
+<p>At this point, <code>/clock</code>, <code>/scan</code>, <code>/odom</code>, and <code>/tf</code> may not exist yet. They will be created during this laboratory.</p>
+<h3 id="42-required-files">4.2 Required files</h3>
+<p>The instructor will provide:</p>
+<pre class="text"><code>student_handout_turtlebot3_ros2_scene.usda
+turtlebot3_map.yaml
+turtlebot3_map.pgm
+</code></pre>
+<p>Download the supplied USD scene file here: <a href="https://drive.google.com/open?id=145-zNYgi4R1KAI2FLV9ktzn_v1z0Xt1R&amp;usp=drive_fs">student_handout_turtlebot3_ros2_scene.usda</a></p>
+<p>The map YAML file must reference the map image using a valid path.</p>
+<p>A typical map YAML file is:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="fu">image</span><span class="kw">:</span><span class="at"> turtlebot3_map.pgm</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="fu">mode</span><span class="kw">:</span><span class="at"> trinary</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="fu">resolution</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.05</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="fu">origin</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="fl">-6.2</span><span class="kw">,</span><span class="at"> </span><span class="fl">-3.32</span><span class="kw">,</span><span class="at"> </span><span class="dv">0</span><span class="kw">]</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="fu">negate</span><span class="kw">:</span><span class="at"> </span><span class="dv">0</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a><span class="fu">occupied_thresh</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.65</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="fu">free_thresh</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.25</span></span></code></pre></div>
+<p>Do not change these values unless instructed.</p>
+<h3 id="43-create-a-working-directory">4.3 Create a working directory</h3>
+<p>Run:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="fu">mkdir</span> -p ~/RAS545/Lab3/assets</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="fu">mkdir</span> -p ~/RAS545/Lab3/work</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="fu">mkdir</span> -p ~/RAS545/Lab3/maps</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="fu">mkdir</span> -p ~/RAS545/Lab3/logs</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="fu">mkdir</span> -p ~/RAS545/Lab3/results</span></code></pre></div>
+<p>Place the supplied USD file in:</p>
+<pre class="text"><code>~/RAS545/Lab3/assets/student_handout_turtlebot3_ros2_scene.usda
+</code></pre>
+<p>Place the map files in:</p>
+<pre class="text"><code>~/RAS545/Lab3/maps/turtlebot3_map.yaml
+~/RAS545/Lab3/maps/turtlebot3_map.pgm
+</code></pre>
+<p>Verify the files:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="fu">ls</span> -l ~/RAS545/Lab3/assets</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="fu">ls</span> -l ~/RAS545/Lab3/maps</span></code></pre></div>
+<p>You should see the USD file, YAML file, and PGM file.</p>
+<h3 id="44-important-file-format-note">4.4 Important file-format note</h3>
+<p>USD files may use either of these extensions:</p>
+<pre class="text"><code>.usd
+.usda
+</code></pre>
+<p><code>.usd</code> is normally a binary USD file. <code>.usda</code> is a text-based USD file.</p>
+<p><code>.uda</code> is not a standard USD file extension. If the course deliverable says <code>.uda</code>, confirm whether <code>.usda</code> was intended.</p>
+<h2 id="5-isaac-sim-and-usd-conventions">5. Isaac Sim and USD Conventions</h2>
+<h3 id="51-coordinate-convention">5.1 Coordinate convention</h3>
+<p>This laboratory uses the following coordinate convention:</p>
+<pre class="text"><code>+X: forward
++Y: left
++Z: upward
+</code></pre>
+<p>For the TurtleBot:</p>
+<ul>
+<li>Forward motion uses positive linear velocity in X.</li>
+<li>Rotation is about the Z axis.</li>
+<li>Positive angular velocity rotates counterclockwise when viewed from above.</li>
+</ul>
+<h3 id="52-important-prim-paths">5.2 Important prim paths</h3>
+<p>The supplied stage uses these paths:</p>
+<pre class="text"><code>/turtlebot3_burger
+/turtlebot3_burger/base_footprint
+/turtlebot3_burger/base_link
+/turtlebot3_burger/base_scan
+/turtlebot3_burger/caster_back_link
+/turtlebot3_burger/wheel_left_link
+/turtlebot3_burger/wheel_right_link
+</code></pre>
+<img width="414" height="413" alt="Screenshot from 2026-09-16 02-24-40" src="https://github.com/user-attachments/assets/c47d852a-114c-4987-afdf-53de3b2955e7" />
+
+<p>The robot root prim is:</p>
+<pre class="text"><code>/turtlebot3_burger
+</code></pre>
+<p>The articulation target used in this laboratory is:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint
+</code></pre>
+<p>The lidar mounting link is:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan
+</code></pre>
+<h3 id="53-starter-robot-position">5.3 Starter robot position</h3>
+<p>The supplied robot root is positioned approximately at:</p>
+<pre class="text"><code>Translation:
+X = 1.8 m
+Y = 0.0 m
+Z = 0.0 m
+
+Rotation:
+X = 0 degrees
+Y = 0 degrees
+Z = 0 degrees
+
+Scale:
+X = 1
+Y = 1
+Z = 1
+</code></pre>
+<img width="541" height="220" alt="Screenshot from 2026-09-18 23-13-26" src="https://github.com/user-attachments/assets/d543594f-9ed6-4b40-9860-1345b665e35e" />
+
+<p>Do not change the robot root transform during the first part of the laboratory.</p>
+<h3 id="54-starter-physics-values">5.4 Starter physics values</h3>
+<p>The supplied TurtleBot already contains robot physics.</p>
+<p>Important values include:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Prim</th>
+<th>Property</th>
+<th style="text-align: right;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/turtlebot3_burger/base_link</code></td>
+<td>Mass</td>
+<td style="text-align: right;"><code>0.825735 kg</code></td>
+</tr>
+<tr class="even">
+<td><code>/turtlebot3_burger/base_scan</code></td>
+<td>Mass</td>
+<td style="text-align: right;"><code>0.114 kg</code></td>
+</tr>
+<tr class="odd">
+<td><code>/turtlebot3_burger/caster_back_link</code></td>
+<td>Mass</td>
+<td style="text-align: right;"><code>0.005 kg</code></td>
+</tr>
+<tr class="even">
+<td><code>/turtlebot3_burger/wheel_left_link</code></td>
+<td>Mass</td>
+<td style="text-align: right;"><code>0.02849894 kg</code></td>
+</tr>
+<tr class="odd">
+<td><code>/turtlebot3_burger/wheel_right_link</code></td>
+<td>Mass</td>
+<td style="text-align: right;"><code>0.02849894 kg</code></td>
+</tr>
+<tr class="even">
+<td>Wheel distance</td>
+<td>Distance between wheel centers</td>
+<td style="text-align: right;"><code>0.16 m</code></td>
+</tr>
+<tr class="odd">
+<td>Wheel radius</td>
+<td>Wheel radius</td>
+<td style="text-align: right;"><code>0.025 m</code></td>
+</tr>
+</tbody>
+</table>
+<p>Do not remove or recreate the robot physics. The purpose of this laboratory is ROS2 integration, not reconstruction of the TurtleBot model.</p>
+<h1 id="part-a-open-and-validate-the-starter-usd-file">Part A: Open and Validate the Starter USD File</h1>
+<h2 id="a1-open-isaac-sim">A1. Open Isaac Sim</h2>
+<p>First source ROS2:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span></code></pre></div>
+<p>Start Isaac Sim using the installed Isaac Sim launcher.</p>
+<p>Wait for Isaac Sim to finish loading before opening the USD file.</p>
+<p>Open the file using:</p>
+<pre class="text"><code>File → Open
+</code></pre>
+<p>Navigate to:</p>
+<pre class="text"><code>/home/&lt;your_username&gt;/RAS545/Lab3/assets/student_handout_turtlebot3_ros2_scene.usda
+</code></pre>
+<p>Replace <code>&lt;your_username&gt;</code> with your Linux username.</p>
+<p>Alternatively, use the keyboard shortcut:</p>
+<pre class="text"><code>Ctrl + O
+</code></pre>
+<p>Select:</p>
+<pre class="text"><code>student_handout_turtlebot3_ros2_scene.usda
+</code></pre>
+<p>Click:</p>
+<pre class="text"><code>Open
+</code></pre>
+<h2 id="a2-verify-the-stage-panel">A2. Verify the Stage panel</h2>
+<p>If the Stage panel is not visible, open it using:</p>
+<pre class="text"><code>Window → Panels → Stage
+</code></pre>
+<p>Verify that the Stage panel contains:</p>
+<pre class="text"><code>World
+Environment
+physicsScene
+turtlebot3_burger
+</code></pre>
+<p>Expand:</p>
+<pre class="text"><code>turtlebot3_burger
+</code></pre>
+<p>You should find:</p>
+<pre class="text"><code>base_footprint
+base_link
+base_scan
+caster_back_link
+wheel_left_link
+wheel_right_link
+visuals
+colliders
+joints
+</code></pre>
+<img width="439" height="874" alt="Screenshot from 2026-09-15 01-44-08" src="https://github.com/user-attachments/assets/3b8a49dd-5d04-448d-8915-6e7f606e2d90" />
+
+<p>The starter file should not contain completed ROS Action Graphs.</p>
+<p>The starter file should not contain:</p>
+<pre class="text"><code>ActionGraph
+ROS_Clock
+ROS_Odometry
+ROS_Camera
+ROS_Lidar
+ROS_GenericPub
+TFWorld2Odom
+</code></pre>
+<p>The starter file should not contain:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint/Camera_1
+</code></pre>
+<p>The starter file should not contain an active RTX lidar sensor named:</p>
+<pre class="text"><code>Example_Rotary
+Example_Rotary_2D
+</code></pre>
+<h2 id="a3-check-the-robot-root-transform">A3. Check the robot root transform</h2>
+<p>In the Stage panel, select:</p>
+<pre class="text"><code>turtlebot3_burger
+</code></pre>
+<p>Open the Property panel:</p>
+<pre class="text"><code>Window → Property
+</code></pre>
+<img width="454" height="646" alt="Screenshot from 2026-09-15 01-44-46" src="https://github.com/user-attachments/assets/c400e5c4-1409-4037-96f4-e1df6e7aad37" />
+
+<p>Find the Transform section.</p>
+<p>Verify approximately:</p>
+<pre class="text"><code>Translate X = 1.8
+Translate Y = 0.0
+Translate Z = 0.0
+
+Rotate X = 0
+Rotate Y = 0
+Rotate Z = 0
+
+Scale X = 1
+Scale Y = 1
+Scale Z = 1
+</code></pre>
+<p>If the values are different by a small amount, do not modify them without instructor approval.</p>
+<h2 id="a4-check-that-physics-is-present">A4. Check that physics is present</h2>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint
+</code></pre>
+<p>In the Property panel, verify that physics-related schemas or sections are present.</p>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_link
+</code></pre>
+<p>Verify that the mass is approximately:</p>
+<pre class="text"><code>0.825735 kg
+</code></pre>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/wheel_left_link
+</code></pre>
+<p>Verify that the wheel has collision geometry.</p>
+<p>Repeat for:</p>
+<pre class="text"><code>/turtlebot3_burger/wheel_right_link
+</code></pre>
+<h2 id="a5-test-the-simulation-without-ros2">A5. Test the simulation without ROS2</h2>
+<p>Press the Play button at the top of Isaac Sim.</p>
+<p>Observe the robot for approximately ten seconds.</p>
+<p>Expected result:</p>
+<ul>
+<li>The robot remains on the ground.</li>
+<li>The robot does not fall through the plane.</li>
+<li>The robot does not explode or separate.</li>
+<li>The robot does not move because no velocity controller has been added yet.</li>
+</ul>
+<p>Press Stop.</p>
+<h3 id="validation-checkpoint-a">Validation checkpoint A</h3>
+<p>Take a screenshot showing:</p>
+<ul>
+<li>The Isaac Sim viewport</li>
+<li>The TurtleBot</li>
+<li>The Stage panel</li>
+<li>The robot prim hierarchy</li>
+</ul>
+<p>Save the stage as:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_00_student_start.usda
+</code></pre>
+<p>Use:</p>
+<pre class="text"><code>File → Save As
+</code></pre>
+<p>Do not overwrite the original starter file.</p>
+<h1 id="part-b-create-the-ros2-clock-graph">Part B: Create the ROS2 Clock Graph</h1>
+<h2 id="objective">Objective</h2>
+<p>ROS2 nodes must use Isaac Sim simulation time. You will create a graph that publishes simulation time on:</p>
+<pre class="text"><code>/clock
+</code></pre>
+<p>Do not continue until <code>/clock</code> is working.</p>
+<h2 id="how-to-read-an-isaac-sim-action-graph">How to Read an Isaac Sim Action Graph</h2>
+<blockquote>
+<p><strong>Node-name convention:</strong> In Isaac Sim 6.0.1, ROS bridge node names use <code>ROS2</code> without a space. For example, search for <code>ROS2 Context</code>, not <code>ROS 2 Context</code>. The surrounding explanation may continue to use the normal phrase “ROS 2.”</p>
+</blockquote>
+<p>An Action Graph contains two different types of connections.</p>
+<ul>
+<li><strong>Solid arrows</strong> carry data.</li>
+<li><strong>Dashed arrows</strong> carry execution signals.</li>
+</ul>
+<p>A node may have the correct data connection but still not operate if its execution input is not connected.</p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;EXECUTION signal&quot;| Publish[&quot;Publisher or Controller&quot;]
+    Context[&quot;ROS2 Context&quot;] --&gt;|&quot;context handle&quot;| Publish
+    Data[&quot;Sensor or simulation data&quot;] --&gt;|&quot;DATA&quot;| Publish
+    Time[&quot;Isaac Read Simulation Time&quot;] --&gt;|&quot;timestamp&quot;| Publish
+</code></pre>
+<p>Read every graph in this order:</p>
+<ol>
+<li>Find the <code>On Playback Tick</code> node.</li>
+<li>Follow the dashed execution arrows.</li>
+<li>Find the <code>ROS2 Context</code> node.</li>
+<li>Follow the context connection.</li>
+<li>Follow the solid data arrows.</li>
+<li>Check every node's Property panel.</li>
+<li>Press Play and validate the result in ROS2.</li>
+</ol>
+<blockquote>
+<p><strong>Important:</strong> A graph is not complete when the nodes are merely present. A graph is complete only when the nodes, properties, and connections are correct.</p>
+</blockquote>
+<blockquote>
+<p><strong>Visual rule:</strong> If an output port is connected, a visible wire must leave that port. If an input port is required, a visible wire must enter that input port.</p>
+</blockquote>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;execIn&quot;| Clock[&quot;ROS2 Publish Clock&quot;]
+    Time[&quot;Isaac Read Simulation Time&quot;] --&gt;|&quot;timeStamp&quot;| Clock
+    Context[&quot;ROS2 Context&quot;] --&gt;|&quot;context&quot;| Clock
+    Clock --&gt;|&quot;/clock&quot;| ROS[&quot;ROS2 network&quot;]
+</code></pre>
+<h3 id="clock-graph-required-port-connections">Clock Graph: Required Port Connections</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Source node</th>
+<th>Output port</th>
+<th>Destination node</th>
+<th>Input port</th>
+<th>Connection type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>On Playback Tick</code></td>
+<td><code>tick</code></td>
+<td><code>ROS2 Publish Clock</code></td>
+<td><code>execIn</code></td>
+<td>Execution</td>
+</tr>
+<tr class="even">
+<td><code>ROS2 Context</code></td>
+<td><code>context</code></td>
+<td><code>ROS2 Publish Clock</code></td>
+<td><code>context</code></td>
+<td>Data</td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Read Simulation Time</code></td>
+<td><code>simulationTime</code></td>
+<td><code>ROS2 Publish Clock</code></td>
+<td><code>timeStamp</code></td>
+<td>Data</td>
+</tr>
+</tbody>
+</table>
+<p>The final graph must visually resemble:</p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;1. execution&quot;| Clock[&quot;ROS2 Publish Clock&quot;]
+    Context[&quot;ROS2 Context&quot;] --&gt;|&quot;2. context&quot;| Clock
+    Time[&quot;Isaac Read Simulation Time&quot;] --&gt;|&quot;3. timestamp&quot;| Clock
+</code></pre>
+<blockquote>
+<p><strong>Stop and verify:</strong> Do not continue until the graph contains all three connections shown above.</p>
+</blockquote>
+<h2 id="b1-select-the-graph-parent">B1. Select the graph parent</h2>
+<p>In the Stage panel, select:</p>
+<pre class="text"><code>World
+</code></pre>
+<p>The new graph will be created below:</p>
+<pre class="text"><code>/World
+</code></pre>
+<h2 id="b2-open-the-action-graph-editor">B2. Open the Action Graph editor</h2>
+<p>Open:</p>
+<pre class="text"><code>Window → Graph Editors → Action Graph
+</code></pre>
+<img width="542" height="554" alt="Screenshot from 2026-09-15 01-48-20" src="https://github.com/user-attachments/assets/37df4988-ad49-48cd-8a0b-7b8708f15aad" />
+
+<p>An Action Graph panel should appear.</p>
+<p>Click:</p>
+<pre class="text"><code>New Action Graph
+</code></pre>
+<p>Name the graph:</p>
+<pre class="text"><code>ROS_Clock
+</code></pre>
+<p>The expected graph path is:</p>
+<pre class="text"><code>/World/ROS_Clock
+</code></pre>
+<h2 id="b3-add-the-required-nodes">B3. Add the required nodes</h2>
+<p>In the Action Graph node search panel, search for and add these nodes:</p>
+<ol>
+<li><code>On Playback Tick</code></li>
+<li><code>ROS2 Context</code></li>
+<li><code>Isaac Read Simulation Time</code></li>
+<li><code>ROS2 Publish Clock</code></li>
+</ol>
+<img width="302" height="367" alt="image" src="https://github.com/user-attachments/assets/fb570d22-591f-4a1b-8d2e-4dc97bed4861" />
+
+<p>Place the nodes from left to right in this order:</p>
+<pre class="text"><code>On Playback Tick
+        │
+        ├── Isaac Read Simulation Time
+        │
+        └── ROS2 Publish Clock
+</code></pre>
+<p>Use the following recommended layout. The exact pixel position is not required, but keeping the graph arranged this way makes it easier to debug.</p>
+<pre class="text"><code>Left column                  Middle column             Right column
+
+On Playback Tick  ────────▶  ROS2 Publish Clock
+                                    ▲
+ROS2 Context  ──────────────────────┘
+                                    ▲
+Isaac Read Simulation Time ─────────┘
+</code></pre>
+<h2 id="b4-configure-the-ros2-context-node">B4. Configure the ROS2 Context node</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Context
+</code></pre>
+<p>In the Property panel, configure:</p>
+<pre class="text"><code>Domain ID = 0
+Use Domain ID Environment Variable = Disabled
+</code></pre>
+<p>If the field is named <code>useDomainIDEnvVar</code>, set it to:</p>
+<pre class="text"><code>False
+</code></pre>
+<img width="532" height="465" alt="Screenshot from 2026-09-16 01-42-09" src="https://github.com/user-attachments/assets/60a2247b-456f-42ae-b242-29f23dbe1c7e" />
+
+<p>The ROS2 Context node must provide its context output to the ROS2 Publish Clock node.</p>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Publish Clock.inputs:context
+</code></pre>
+<h2 id="b5-configure-isaac-read-simulation-time">B5. Configure Isaac Read Simulation Time</h2>
+<p>Select:</p>
+<pre class="text"><code>Isaac Read Simulation Time
+</code></pre>
+<p>Use simulation time.</p>
+<p>If the node contains a property named:</p>
+<pre class="text"><code>resetOnStop
+</code></pre>
+<p>set it to:</p>
+<pre class="text"><code>False
+</code></pre>
+<img width="532" height="465" alt="Screenshot from 2026-09-16 01-42-41" src="https://github.com/user-attachments/assets/1854ebc1-f635-4710-ac22-73aad3ac8827" />
+
+<p>Leave reference time numerator and denominator at their default values.</p>
+<p>The output should be:</p>
+<pre class="text"><code>simulationTime
+</code></pre>
+<h2 id="b6-configure-the-ros2-publish-clock-node">B6. Configure the ROS2 Publish Clock node</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Publish Clock
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Topic Name = /clock
+Queue Size = 10
+</code></pre>
+<img width="532" height="465" alt="Screenshot from 2026-09-16 01-44-49" src="https://github.com/user-attachments/assets/57fe4ca8-f4ca-46b2-b01a-52c2849bff88" />
+
+<p>If <code>qosProfile</code> is available, leave it at its default value.</p>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+ROS2 Publish Clock.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Read Simulation Time.outputs:simulationTime
+    →
+ROS2 Publish Clock.inputs:timeStamp
+</code></pre>
+<p>The final connections must include:</p>
+<pre class="text"><code>On Playback Tick.tick
+    → ROS2 Publish Clock.execIn
+
+ROS2 Context.context
+    → ROS2 Publish Clock.context
+
+Isaac Read Simulation Time.simulationTime
+    → ROS2 Publish Clock.timeStamp
+</code></pre>
+<img width="1027" height="576" alt="011_ROS_Clock" src="https://github.com/user-attachments/assets/99e9b5b6-f4c5-4aa9-a58a-ecba57f7fb9f" />
+
+<h2 id="b7-test-clock">B7. Test <code>/clock</code></h2>
+<p>Press Play in Isaac Sim.</p>
+<p>Open a separate terminal and run:</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> clock</span></code></pre></div>
+<p>Expected output:</p>
+<pre class="text"><code>/clock
+</code></pre>
+<p>Now run:</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /clock --once</span></code></pre></div>
+<p>Expected output contains:</p>
+<pre class="text"><code>clock:
+  sec: ...
+  nanosec: ...
+</code></pre>
+<p>Check the publishing rate:</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /clock</span></code></pre></div>
+<p>The rate should be greater than zero. <img width="777" height="686" alt="Screenshot from 2026-09-16 01-49-44" src="https://github.com/user-attachments/assets/70f0e701-7948-4a03-ae00-cb66f9decc81" /></p>
+<p>Press Ctrl+C to stop <code>ros2 topic hz</code>.</p>
+<p>If <code>/clock</code> does not appear:</p>
+<ol>
+<li>Confirm Isaac Sim is playing.</li>
+<li>Confirm the graph path is <code>/World/ROS_Clock</code>.</li>
+<li>Confirm the ROS2 Context is connected.</li>
+<li>Confirm <code>On Playback Tick.tick</code> is connected to <code>ROS2 Publish Clock.execIn</code>.</li>
+<li>Confirm the topic name is exactly <code>/clock</code>.</li>
+<li>Confirm the terminal sourced ROS2 Humble.</li>
+</ol>
+<h3 id="validation-checkpoint-b">Validation checkpoint B</h3>
+<p>The following command must succeed:</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /clock --once</span></code></pre></div>
+<h4 id="evidence-to-capture">Evidence to Capture</h4>
+<!-- ![Annotated ROS2 clock Action Graph](/assets/images/lab-03/ros-clock-graph.png) -->
+
+<p>Take one screenshot showing:</p>
+<ul>
+<li>The complete <code>ROS_Clock</code> Action Graph.</li>
+<li>All four nodes.</li>
+<li>All three connections.</li>
+<li>The Property panel for <code>ROS2 Publish Clock</code>.</li>
+<li>The topic name <code>/clock</code>.</li>
+</ul>
+<p>The screenshot must be readable. Do not submit a screenshot in which the node names or wires cannot be read. <img width="1831" height="1109" alt="image" src="https://github.com/user-attachments/assets/721de5c9-d4d9-49c8-89e8-421419db905f" /></p>
+<p>Save the stage as:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_01_ros_clock.usda
+</code></pre>
+<h1 id="part-c-create-the-turtlebot-drive-action-graph">Part C: Create the TurtleBot Drive Action Graph</h1>
+<h2 id="objective-1">Objective</h2>
+<p>You will create a ROS2 subscriber for:</p>
+<pre class="text"><code>/cmd_vel
+</code></pre>
+<p>The subscriber will receive:</p>
+<pre class="text"><code>geometry_msgs/msg/Twist
+</code></pre>
+<p>The command will be converted into wheel velocities using a differential-drive controller.</p>
+<p>The required signal flow is:</p>
+<pre class="mermaid"><code>flowchart TD
+    Cmd[&quot;/cmd_vel&lt;br/&gt;geometry_msgs/msg/Twist&quot;]
+    Sub[&quot;ROS2 Subscribe Twist&quot;]
+    Linear[&quot;linearVelocity&quot;]
+    Angular[&quot;angularVelocity&quot;]
+    Scale[&quot;Scale To/From Stage Units&quot;]
+    BreakLinear[&quot;Break 3 Vector&lt;br/&gt;linear&quot;]
+    BreakAngular[&quot;Break 3 Vector&lt;br/&gt;angular&quot;]
+    Diff[&quot;Differential Controller&quot;]
+    Array[&quot;Make Array&lt;br/&gt;wheel joint names&quot;]
+    Art[&quot;Articulation Controller&quot;]
+    Wheels[&quot;wheel_left_joint&lt;br/&gt;wheel_right_joint&quot;]
+
+    Cmd --&gt; Sub
+    Sub --&gt;|&quot;linearVelocity&quot;| Scale
+    Scale --&gt; BreakLinear
+    BreakLinear --&gt;|&quot;x&quot;| Diff
+    Sub --&gt;|&quot;angularVelocity&quot;| BreakAngular
+    BreakAngular --&gt;|&quot;z&quot;| Diff
+    Diff --&gt;|&quot;velocityCommand&quot;| Art
+    Array --&gt;|&quot;jointNames&quot;| Art
+    Art --&gt; Wheels
+</code></pre>
+<p>The graph also requires an execution signal:</p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;execIn&quot;| Sub[&quot;ROS2 Subscribe Twist&quot;]
+    Tick -.-&gt;|&quot;execIn&quot;| Diff[&quot;Differential Controller&quot;]
+    Tick -.-&gt;|&quot;execIn&quot;| Art[&quot;Articulation Controller&quot;]
+</code></pre>
+<p>The first diagram shows data flow. The second diagram shows execution flow.</p>
+<p>Both diagrams are required.</p>
+<p>The differential-drive parameters are:</p>
+<pre class="text"><code>Maximum linear speed = 0.22 m/s
+Maximum angular speed = 1.0 rad/s
+Wheel distance = 0.16 m
+Wheel radius = 0.025 m
+</code></pre>
+<h2 id="c1-select-the-robot-root">C1. Select the robot root</h2>
+<p>In the Stage panel, select:</p>
+<pre class="text"><code>turtlebot3_burger
+</code></pre>
+<p>Do not select <code>base_link</code> or a wheel link.</p>
+<p>The graph will be created below:</p>
+<pre class="text"><code>/turtlebot3_burger
+</code></pre>
+<h2 id="c2-create-the-drive-graph">C2. Create the drive graph</h2>
+<p>Open:</p>
+<pre class="text"><code>Window → Graph Editors → Action Graph
+</code></pre>
+<p>Click:</p>
+<pre class="text"><code>New Action Graph
+</code></pre>
+<p>Name the graph:</p>
+<pre class="text"><code>ROS_Drive
+</code></pre>
+<p>The expected graph path is:</p>
+<pre class="text"><code>/turtlebot3_burger/ROS_Drive
+</code></pre>
+<h2 id="c3-add-the-graph-nodes">C3. Add the graph nodes</h2>
+<p>Add the following nodes:</p>
+<ol>
+<li><code>On Playback Tick</code></li>
+<li><code>ROS2 Context</code></li>
+<li><code>ROS2 Subscribe Twist</code></li>
+<li><code>Scale To/From Stage Units</code></li>
+<li><code>Break 3 Vector</code></li>
+<li><code>Break 3 Vector</code></li>
+<li><code>Differential Controller</code></li>
+<li><code>Constant Token</code></li>
+<li><code>Constant Token</code></li>
+<li><code>Make Array</code></li>
+<li><code>Articulation Controller</code></li>
+</ol>
+<blockquote>
+<p><strong>Version note:</strong> Search for <code>Make Array</code>. If your Isaac Sim installation displays the equivalent node as <code>Construct Array</code>, use that node but rename the node instance to <code>make_array</code> so that all port references remain consistent.</p>
+</blockquote>
+<p>Rename the nodes so they are easy to identify:</p>
+<pre class="text"><code>scale_linear_velocity
+break_linear_velocity
+break_angular_velocity
+constant_left_joint
+constant_right_joint
+</code></pre>
+<p>If Isaac Sim automatically assigns different names, that is acceptable. The node types and properties must be correct.</p>
+<h3 id="drive-graph-connection-table">Drive Graph Connection Table</h3>
+<img width="1831" height="1109" alt="image" src="https://github.com/user-attachments/assets/375a5783-b805-4cb1-9e07-ba762730b839" />
+
+<p>Connect one row at a time. After each connection, verify that the wire remains attached to the correct port.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Step</th>
+<th>Source node</th>
+<th>Output port</th>
+<th>Destination node</th>
+<th>Input port</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td><code>on_playback_tick</code></td>
+<td><code>outputs:tick</code></td>
+<td><code>ros2_subscribe_twist</code></td>
+<td><code>inputs:execIn</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td><code>on_playback_tick</code></td>
+<td><code>outputs:tick</code></td>
+<td><code>differential_controller</code></td>
+<td><code>inputs:execIn</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td><code>on_playback_tick</code></td>
+<td><code>outputs:tick</code></td>
+<td><code>articulation_controller</code></td>
+<td><code>inputs:execIn</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td><code>ros2_context</code></td>
+<td><code>outputs:context</code></td>
+<td><code>ros2_subscribe_twist</code></td>
+<td><code>inputs:context</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td><code>ros2_subscribe_twist</code></td>
+<td><code>outputs:linearVelocity</code></td>
+<td><code>scale_linear_velocity</code></td>
+<td><code>inputs:value</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td><code>scale_linear_velocity</code></td>
+<td><code>outputs:result</code></td>
+<td><code>break_linear_velocity</code></td>
+<td><code>inputs:vector</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td><code>break_linear_velocity</code></td>
+<td><code>outputs:x</code></td>
+<td><code>differential_controller</code></td>
+<td><code>inputs:linearVelocity</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td><code>ros2_subscribe_twist</code></td>
+<td><code>outputs:angularVelocity</code></td>
+<td><code>break_angular_velocity</code></td>
+<td><code>inputs:vector</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td><code>break_angular_velocity</code></td>
+<td><code>outputs:z</code></td>
+<td><code>differential_controller</code></td>
+<td><code>inputs:angularVelocity</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td><code>differential_controller</code></td>
+<td><code>outputs:velocityCommand</code></td>
+<td><code>articulation_controller</code></td>
+<td><code>inputs:velocityCommand</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td><code>constant_left_joint</code></td>
+<td><code>outputs:value</code></td>
+<td><code>make_array</code></td>
+<td><code>inputs:input0</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12</td>
+<td><code>constant_right_joint</code></td>
+<td><code>outputs:value</code></td>
+<td><code>make_array</code></td>
+<td><code>inputs:input1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">13</td>
+<td><code>make_array</code></td>
+<td><code>outputs:array</code></td>
+<td><code>articulation_controller</code></td>
+<td><code>inputs:jointNames</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Common error:</strong> Connect <code>angularVelocity.z</code>, not <code>angularVelocity.x</code> or <code>angularVelocity.y</code>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Common error:</strong> Connect <code>linearVelocity.x</code>, not the entire three-dimensional vector.</p>
+</blockquote>
+<blockquote>
+<p><strong>Common error:</strong> The wheel order must be <code>wheel_left_joint</code> followed by <code>wheel_right_joint</code>.</p>
+</blockquote>
+<h2 id="c4-configure-the-ros2-context">C4. Configure the ROS2 Context</h2>
+<p>Select the ROS2 Context node.</p>
+<p>Set:</p>
+<pre class="text"><code>Domain ID = 0
+Use Domain ID Environment Variable = Disabled
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Subscribe Twist.inputs:context
+</code></pre>
+<h2 id="c5-configure-the-twist-subscriber">C5. Configure the Twist subscriber</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Subscribe Twist
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Topic Name = /cmd_vel
+Queue Size = 10
+</code></pre>
+<p>If <code>qosProfile</code> is available, leave it at the default value.</p>
+<p>The node must subscribe to:</p>
+<pre class="text"><code>geometry_msgs/msg/Twist
+</code></pre>
+<p>The node produces:</p>
+<pre class="text"><code>linearVelocity
+angularVelocity
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+ROS2 Subscribe Twist.inputs:execIn
+</code></pre>
+<p>Do not connect the subscriber execution output to the differential controller execution input. The differential controller must execute every simulation frame.</p>
+<h2 id="c6-configure-the-linear-velocity-conversion">C6. Configure the linear velocity conversion</h2>
+<p>Select the first <code>Break 3 Vector</code> node and rename it:</p>
+<pre class="text"><code>break_linear_velocity
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Subscribe Twist.outputs:linearVelocity
+    →
+Scale To/From Stage Units.inputs:value
+</code></pre>
+<p>Set the scale node conversion to:</p>
+<pre class="text"><code>Convert to stage units
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Scale To/From Stage Units.outputs:result
+    →
+break_linear_velocity.inputs:tuple
+</code></pre>
+<p>The <code>break_linear_velocity</code> node produces:</p>
+<pre class="text"><code>x
+y
+z
+</code></pre>
+<p>Connect the X component:</p>
+<pre class="text"><code>break_linear_velocity.outputs:x
+    →
+Differential Controller.inputs:linearVelocity
+</code></pre>
+<p>Do not use the Y or Z components.</p>
+<h2 id="c7-configure-angular-velocity">C7. Configure angular velocity</h2>
+<p>Select the second <code>Break 3 Vector</code> node and rename it:</p>
+<pre class="text"><code>break_angular_velocity
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Subscribe Twist.outputs:angularVelocity
+    →
+break_angular_velocity.inputs:tuple
+</code></pre>
+<p>The node produces:</p>
+<pre class="text"><code>x
+y
+z
+</code></pre>
+<p>Connect the Z component:</p>
+<pre class="text"><code>break_angular_velocity.outputs:z
+    →
+Differential Controller.inputs:angularVelocity
+</code></pre>
+<p>Do not use the X or Y components.</p>
+<h2 id="c8-configure-the-differential-controller">C8. Configure the Differential Controller</h2>
+<p>Select:</p>
+<pre class="text"><code>Differential Controller
+</code></pre>
+<p>Set the following values:</p>
+<pre class="text"><code>Max Linear Speed = 0.22
+Max Angular Speed = 1.0
+Wheel Distance = 0.16
+Wheel Radius = 0.025
+</code></pre>
+<p>Leave the following values at their defaults unless your instructor provides different values:</p>
+<pre class="text"><code>Max Acceleration
+Max Deceleration
+Max Angular Acceleration
+Max Wheel Speed
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+Differential Controller.inputs:execIn
+</code></pre>
+<p>The differential controller produces:</p>
+<pre class="text"><code>velocityCommand
+</code></pre>
+<h2 id="c9-configure-the-wheel-joint-names">C9. Configure the wheel joint names</h2>
+<p>Select the first Constant Token node.</p>
+<p>Set:</p>
+<pre class="text"><code>Value = wheel_left_joint
+</code></pre>
+<p>Select the second Constant Token node.</p>
+<p>Set:</p>
+<pre class="text"><code>Value = wheel_right_joint
+</code></pre>
+<p>The order is important:</p>
+<pre class="text"><code>Index 0: wheel_left_joint
+Index 1: wheel_right_joint
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>constant_left_joint.outputs:value
+    →
+make_array.inputs:input0
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>constant_right_joint.outputs:value
+    →
+make_array.inputs:input1
+</code></pre>
+<p>Select:</p>
+<pre class="text"><code>Make Array
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Array Size = 2
+Array Type = token[]
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>make_array.outputs:array
+    →
+articulation_controller.inputs:jointNames
+</code></pre>
+<h2 id="c10-configure-the-articulation-controller">C10. Configure the Articulation Controller</h2>
+<p>Select:</p>
+<pre class="text"><code>Articulation Controller
+</code></pre>
+<p>Set the target prim to:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint
+</code></pre>
+<p>If the Property panel provides a prim picker:</p>
+<ol>
+<li>Click the picker icon.</li>
+<li>Select <code>/turtlebot3_burger/base_footprint</code> in the Stage panel.</li>
+<li>Confirm the selected target.</li>
+</ol>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+Articulation Controller.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Differential Controller.outputs:velocityCommand
+    →
+Articulation Controller.inputs:velocityCommand
+</code></pre>
+<p>The final drive graph must contain these connections:</p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;execIn&quot;| Sub[&quot;ROS2 Subscribe Twist&quot;]
+    Tick -.-&gt;|&quot;execIn&quot;| Diff[&quot;Differential Controller&quot;]
+    Tick -.-&gt;|&quot;execIn&quot;| Art[&quot;Articulation Controller&quot;]
+
+    Context[&quot;ROS2 Context&quot;] --&gt;|&quot;context&quot;| Sub
+
+    Sub --&gt;|&quot;linearVelocity&quot;| Scale[&quot;Scale To/From Stage Units&quot;]
+    Scale --&gt;|&quot;result&quot;| BreakL[&quot;Break Linear Vector&quot;]
+    BreakL --&gt;|&quot;x&quot;| Diff
+
+    Sub --&gt;|&quot;angularVelocity&quot;| BreakA[&quot;Break Angular Vector&quot;]
+    BreakA --&gt;|&quot;z&quot;| Diff
+
+    Diff --&gt;|&quot;velocityCommand&quot;| Art
+
+    Left[&quot;Constant Token\nwheel_left_joint&quot;] --&gt;|&quot;value&quot;| Arr[&quot;Make Array&quot;]
+    Right[&quot;Constant Token\nwheel_right_joint&quot;] --&gt;|&quot;value&quot;| Arr
+    Arr --&gt;|&quot;array&quot;| Art
+</code></pre>
+<h2 id="c11-test-the-drive-graph">C11. Test the drive graph</h2>
+<h3 id="final-drive-graph-appearance">Final Drive Graph Appearance</h3>
+<p>Before pressing Play, compare your graph with this structure:</p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;]
+
+    Context[&quot;ROS2 Context&quot;]
+    Twist[&quot;ROS2 Subscribe Twist&quot;]
+    Scale[&quot;Scale To/From Stage Units&quot;]
+    LinearBreak[&quot;Break 3 Vector&lt;br/&gt;linear&quot;]
+    AngularBreak[&quot;Break 3 Vector&lt;br/&gt;angular&quot;]
+    Diff[&quot;Differential Controller&quot;]
+    Left[&quot;Constant Token&lt;br/&gt;wheel_left_joint&quot;]
+    Right[&quot;Constant Token&lt;br/&gt;wheel_right_joint&quot;]
+    Array[&quot;Make Array&quot;]
+    Art[&quot;Articulation Controller&quot;]
+
+    Tick -.-&gt; Twist
+    Tick -.-&gt; Diff
+    Tick -.-&gt; Art
+    Context --&gt; Twist
+
+    Twist --&gt;|&quot;linearVelocity&quot;| Scale
+    Scale --&gt; LinearBreak
+    LinearBreak --&gt;|&quot;x&quot;| Diff
+
+    Twist --&gt;|&quot;angularVelocity&quot;| AngularBreak
+    AngularBreak --&gt;|&quot;z&quot;| Diff
+
+    Diff --&gt;|&quot;velocityCommand&quot;| Art
+    Left --&gt; Array
+    Right --&gt; Array
+    Array --&gt;|&quot;jointNames&quot;| Art
+</code></pre>
+<blockquote>
+<p><strong>Checkpoint:</strong> If your graph does not contain three dashed execution wires from <code>On Playback Tick</code>, stop and repair the graph before testing.</p>
+</blockquote>
+<p>Press Play in Isaac Sim. <img width="184" height="86" alt="image" src="https://github.com/user-attachments/assets/e1569838-0a38-40c5-a841-cf48bb178c50" /></p>
+<p>In a sourced terminal, verify that the command topic exists:</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb126-3"><a href="#cb126-3" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> cmd_vel</span></code></pre></div>
+<p>Expected output:</p>
+<pre class="text"><code>/cmd_vel
+</code></pre>
+<p>Send a slow forward command:</p>
+<div class="sourceCode" id="cb128"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true"></a><span class="ex">ros2</span> topic pub --rate 5 /cmd_vel geometry_msgs/msg/Twist <span class="kw">\</span></span>
+<span id="cb128-2"><a href="#cb128-2" aria-hidden="true"></a><span class="st">&quot;{linear: {x: 0.10, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}&quot;</span></span></code></pre></div>
+<p>The robot should move forward slowly.</p>
+<p>Stop the command with:</p>
+<pre class="text"><code>Ctrl+C
+</code></pre>
+<p>Immediately send a zero command:</p>
+<div class="sourceCode" id="cb130"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true"></a><span class="ex">ros2</span> topic pub --once /cmd_vel geometry_msgs/msg/Twist <span class="kw">\</span></span>
+<span id="cb130-2"><a href="#cb130-2" aria-hidden="true"></a><span class="st">&quot;{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}&quot;</span></span></code></pre></div>
+<p>Test rotation:</p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true"></a><span class="ex">ros2</span> topic pub --rate 5 /cmd_vel geometry_msgs/msg/Twist <span class="kw">\</span></span>
+<span id="cb131-2"><a href="#cb131-2" aria-hidden="true"></a><span class="st">&quot;{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.5}}&quot;</span></span></code></pre></div>
+<p>The robot should rotate counterclockwise.</p>
+<p>Stop the command with:</p>
+<pre class="text"><code>Ctrl+C
+</code></pre>
+<p>Send another zero command.</p>
+<div class="sourceCode" id="cb133"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true"></a><span class="fu">## F13. Test keyboard teleoperation</span></span>
+<span id="cb133-2"><a href="#cb133-2" aria-hidden="true"></a></span>
+<span id="cb133-3"><a href="#cb133-3" aria-hidden="true"></a>Install the keyboard teleoperation package:</span>
+<span id="cb133-4"><a href="#cb133-4" aria-hidden="true"></a></span>
+<span id="cb133-5"><a href="#cb133-5" aria-hidden="true"></a><span class="in">```bash</span></span>
+<span id="cb133-6"><a href="#cb133-6" aria-hidden="true"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb133-7"><a href="#cb133-7" aria-hidden="true"></a><span class="fu">sudo</span> apt install -y ros-humble-teleop-twist-keyboard</span></code></pre></div>
+<p>Open a new terminal and source ROS 2:</p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span></code></pre></div>
+<p>Verify the command topic:</p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> cmd_vel</span></code></pre></div>
+<p>Expected output:</p>
+<pre class="text"><code>/cmd_vel
+</code></pre>
+<p>Verify that Isaac Sim is subscribed:</p>
+<div class="sourceCode" id="cb137"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /cmd_vel -v</span></code></pre></div>
+<p>The output should show at least one subscriber.</p>
+<p>Make sure Isaac Sim is open and the simulation is playing.</p>
+<p>Start keyboard teleoperation:</p>
+<div class="sourceCode" id="cb138"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true"></a><span class="ex">ros2</span> run teleop_twist_keyboard teleop_twist_keyboard <span class="kw">\</span></span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true"></a><span class="ex">--ros-args</span> -r cmd_vel:=/cmd_vel</span></code></pre></div>
+<p>Use these keys:</p>
+<pre class="text"><code>        u    i    o
+        j    k    l
+        m    ,    .
+</code></pre>
+<p>Keyboard controls:</p>
+<pre class="text"><code>i = move forward
+, = move backward
+j = rotate counterclockwise
+l = rotate clockwise
+u = move forward and rotate counterclockwise
+o = move forward and rotate clockwise
+m = move backward and rotate counterclockwise
+. = move backward and rotate clockwise
+k = stop
+q = increase speed
+z = decrease speed
+</code></pre>
+<p>The robot should respond to the keyboard commands.</p>
+<p>To stop the robot immediately:</p>
+<pre class="text"><code>Press k
+</code></pre>
+<p>Stop the teleoperation node:</p>
+<pre class="text"><code>Ctrl+C
+</code></pre>
+<p>Send a final zero-velocity command:</p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true"></a><span class="ex">ros2</span> topic pub --once /cmd_vel geometry_msgs/msg/Twist <span class="kw">\</span></span>
+<span id="cb143-2"><a href="#cb143-2" aria-hidden="true"></a><span class="st">&quot;{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}&quot;</span></span></code></pre></div>
+<p>The robot must stop moving before continuing.</p>
+<pre><code></code></pre>
+<h3 id="drive-troubleshooting">Drive troubleshooting</h3>
+<p>If the robot does not move, check:</p>
+<pre class="text"><code>Topic name = /cmd_vel
+Message type = geometry_msgs/msg/Twist
+Target prim = /turtlebot3_burger/base_footprint
+Left joint = wheel_left_joint
+Right joint = wheel_right_joint
+Wheel distance = 0.16
+Wheel radius = 0.025
+</code></pre>
+<p>If the robot moves backward:</p>
+<ul>
+<li>Check the sign of the linear velocity.</li>
+<li>Check the wheel joint order.</li>
+<li>Check the wheel joint axis.</li>
+<li>Check whether the left and right joint names were reversed.</li>
+</ul>
+<p>If the robot spins while commanded forward:</p>
+<ul>
+<li>Check the wheel joint order.</li>
+<li>Check the wheel radius.</li>
+<li>Check the wheel distance.</li>
+<li>Check the wheel joint orientations.</li>
+</ul>
+<h3 id="validation-checkpoint-c">Validation checkpoint C</h3>
+<p>The robot must:</p>
+<ul>
+<li>Move forward using <code>/cmd_vel</code>.</li>
+<li>Stop when a zero command is sent.</li>
+<li>Rotate using angular velocity.</li>
+<li>Remain physically stable.</li>
+</ul>
+<h4 id="evidence-to-capture-1">Evidence to Capture</h4>
+<!-- ![Annotated ROS2 drive Action Graph](/assets/images/lab-03/ros-drive-graph.png) -->
+
+<p>Take one screenshot showing:</p>
+<ul>
+<li>The complete <code>ROS_Drive</code> graph.</li>
+<li>The three dashed execution connections from <code>On Playback Tick</code>.</li>
+<li>The <code>Differential Controller</code>.</li>
+<li>The <code>Articulation Controller</code>.</li>
+<li>The two wheel joint names.</li>
+<li>The Property panel showing:
+<ul>
+<li><code>Max Linear Speed = 0.22</code></li>
+<li><code>Max Angular Speed = 1.0</code></li>
+<li><code>Wheel Distance = 0.16</code></li>
+<li><code>Wheel Radius = 0.025</code></li>
+</ul></li>
+</ul>
+<p>Save the stage as:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_02_ros_drive.usda
+</code></pre>
+<h1 id="part-d-add-and-publish-a-2d-rtx-lidar">Part D: Add and Publish a 2D RTX Lidar</h1>
+<h2 id="objective-2">Objective</h2>
+<p>You will add a 2D RTX lidar sensor and publish:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<p>The ROS message type must be:</p>
+<pre class="text"><code>sensor_msgs/msg/LaserScan
+</code></pre>
+<p>The sensor frame will be:</p>
+<pre class="text"><code>base_scan
+</code></pre>
+<p>The official Isaac Sim RTX lidar tutorial is available at:</p>
+<p><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_rtx_lidar.html">Isaac Sim 6.0.1 RTX Lidar Sensors</a></p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;exec&quot;| Run[&quot;Isaac Run One Simulation Frame&quot;]
+    Run --&gt;|&quot;step&quot;| Product[&quot;Isaac Create Render Product&quot;]
+    Lidar[&quot;Lidar2D&lt;br/&gt;/turtlebot3_burger/base_scan/Lidar2D&quot;] --&gt;|&quot;cameraPrim&quot;| Product
+    Product --&gt;|&quot;renderProductPath&quot;| Helper[&quot;ROS2 RTX Lidar Helper&quot;]
+    Context[&quot;ROS2 Context&quot;] --&gt;|&quot;context&quot;| Helper
+    Product --&gt;|&quot;execOut&quot;| Helper
+    Helper --&gt;|&quot;/scan&quot;| Scan[&quot;sensor_msgs/msg/LaserScan&quot;]
+</code></pre>
+<p>Required helper properties:</p>
+<pre class="text"><code>Type = laser_scan
+Topic Name = /scan
+Frame ID = base_scan
+Enabled = True
+Queue Size = 10
+</code></pre>
+<p>If the helper exposes a <code>Use System Time</code> property, leave it disabled unless the instructor explicitly instructs otherwise.</p>
+<h2 id="d1-stop-simulation">D1. Stop simulation</h2>
+<p>Before adding the sensor, press:</p>
+<pre class="text"><code>Stop
+</code></pre>
+<p>Do not add or move an RTX lidar while the simulation is running.</p>
+<h2 id="d2-select-the-lidar-mounting-link">D2. Select the lidar mounting link</h2>
+<p>In the Stage panel, select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan
+</code></pre>
+<p>This link is already part of the TurtleBot model.</p>
+<p>The existing <code>base_scan</code> link has approximately:</p>
+<pre class="text"><code>Translation relative to base_link:
+X = -0.032 m
+Y = 0.000 m
+Z = 0.182 m
+
+Rotation:
+X = 0 degrees
+Y = 0 degrees
+Z = 0 degrees
+</code></pre>
+<p>Do not change the <code>base_scan</code> link transform.</p>
+<h2 id="d3-create-the-rtx-lidar">D3. Create the RTX lidar</h2>
+<p>Use the Isaac Sim menu:</p>
+<pre class="text"><code>Create → Issac → Sensors → RTX Lidar → NVIDIA → Example Rotary 2D
+</code></pre>
+<img width="541" height="220" alt="Screenshot from 2026-09-18 23-10-37" src="https://github.com/user-attachments/assets/c6172ffd-c605-4ec6-80a7-85afef4152e1" />
+
+<p>A new lidar prim will be created.</p>
+<p>Rename the new sensor:</p>
+<pre class="text"><code>Lidar2D
+</code></pre>
+<p>Move or reparent the sensor under:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan
+</code></pre>
+<p>The final sensor path must be:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D
+</code></pre>
+<p>If Isaac Sim initially creates the sensor under <code>/World</code>, drag it in the Stage panel onto:</p>
+<pre class="text"><code>base_scan
+</code></pre>
+<img width="1097" height="738" alt="Screenshot from 2026-09-18 23-07-50" src="https://github.com/user-attachments/assets/7bc711d8-25f1-42dc-8096-bb70e1ac0bb9" />
+
+<p>When Isaac Sim asks whether to reparent the prim, accept the operation.</p>
+<h2 id="d4-configure-the-lidar-transform">D4. Configure the lidar transform</h2>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D
+</code></pre>
+<p>In the Property panel, open the Transform section.</p>
+<p>Set the sensor transform relative to <code>base_scan</code>:</p>
+<pre class="text"><code>Translation:
+X = 0.000 m
+Y = 0.000 m
+Z = 0.000 m
+
+Rotation:
+X = 0 degrees
+Y = 0 degrees
+Z = 0 degrees
+
+Scale:
+X = 1
+Y = 1
+Z = 1
+</code></pre>
+<img width="541" height="220" alt="image" src="https://github.com/user-attachments/assets/7a74a4da-e895-4d7e-9593-6f19441290af" />
+
+<p>The sensor should overlap the visual lidar housing.</p>
+<p>Do not use a second lidar.</p>
+<p>Do not add:</p>
+<pre class="text"><code>Example_Rotary
+</code></pre>
+<p>or:</p>
+<pre class="text"><code>Example_Rotary_2D
+</code></pre>
+<p>as an additional sensor.</p>
+<h2 id="d5-configure-lidar-rate">D5. Configure lidar rate</h2>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D
+</code></pre>
+<p>In the Property panel, search for:</p>
+<pre class="text"><code>tickRate
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>omni:sensor:tickRate = 10 Hz
+</code></pre>
+<img width="545" height="314" alt="image" src="https://github.com/user-attachments/assets/15c12bdd-b41c-42cb-a6a5-1067d8f3e600" />
+
+<p>If the sensor exposes a scan-rate property, set:</p>
+<pre class="text"><code>scanRateBaseHz = 10 Hz
+</code></pre>
+<p>The tick rate and scan rate should match.</p>
+<p>In Isaac Sim 6.0, the sensor tick rate controls the publish rate. The older <code>frameSkipCount</code> setting should not be used as the primary rate control.</p>
+<h2 id="d6-create-the-lidar-action-graph">D6. Create the lidar Action Graph</h2>
+<h3 id="lidar-sensor-and-lidar-graph-are-different-objects">Lidar Sensor and Lidar Graph Are Different Objects</h3>
+<p>The lidar system contains two separate parts:</p>
+<ol>
+<li>The physical or simulated sensor prim.</li>
+<li>The ROS2 Action Graph that publishes the sensor data.</li>
+</ol>
+<pre class="mermaid"><code>flowchart TD
+    Sensor[&quot;/turtlebot3_burger/base_scan/Lidar2D&quot;]
+    Product[&quot;Isaac Create Render Product&quot;]
+    Helper[&quot;ROS2 RTX Lidar Helper&quot;]
+    Topic[&quot;/scan&quot;]
+    Frame[&quot;frame_id: base_scan&quot;]
+
+    Sensor --&gt;|&quot;cameraPrim&quot;| Product
+    Product --&gt;|&quot;renderProductPath&quot;| Helper
+    Helper --&gt; Topic
+    Helper --&gt; Frame
+</code></pre>
+<p>Do not confuse:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D
+</code></pre>
+<p>with:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D/ROS_Lidar2D
+</code></pre>
+<p>The first is the sensor. The second is the Action Graph.</p>
+<p>Select the lidar prim:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D
+</code></pre>
+<p>Open:</p>
+<pre class="text"><code>Window → Graph Editors → Action Graph
+</code></pre>
+<p>Click:</p>
+<pre class="text"><code>New Action Graph
+</code></pre>
+<p>Name it:</p>
+<pre class="text"><code>ROS_Lidar2D
+</code></pre>
+<p>The expected graph path is:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D/ROS_Lidar2D
+</code></pre>
+<img width="544" height="372" alt="image" src="https://github.com/user-attachments/assets/8a102fca-602d-4a8a-a90b-0d39f647c0dd" />
+
+<h2 id="d7-add-lidar-graph-nodes">D7. Add lidar graph nodes</h2>
+<p>Add:</p>
+<ol>
+<li><code>On Playback Tick</code></li>
+<li><code>ROS2 Context</code></li>
+<li><code>Isaac Run One Simulation Frame</code></li>
+<li><code>Isaac Create Render Product</code></li>
+<li><code>ROS2 RTX Lidar Helper</code></li>
+</ol>
+<p>Arrange them:</p>
+<pre class="text"><code>On Playback Tick
+        ↓
+Isaac Run One Simulation Frame
+        ↓
+Isaac Create Render Product
+        ↓
+ROS2 RTX Lidar Helper
+</code></pre>
+<h2 id="d8-configure-the-lidar-graph">D8. Configure the lidar graph</h2>
+<!-- ![Annotated LIDAR graph and sensor properties](/assets/images/lab-03/lidar-graph.png) -->
+
+<p>Configure the ROS2 Context:</p>
+<pre class="text"><code>Domain ID = 0
+Use Domain ID Environment Variable = Disabled
+</code></pre>
+<p>Configure <code>Isaac Create Render Product</code>:</p>
+<pre class="text"><code>Camera Prim = /turtlebot3_burger/base_scan/Lidar2D
+Enabled = True
+</code></pre>
+<img width="1005" height="397" alt="image" src="https://github.com/user-attachments/assets/5f01d044-360b-4920-a83e-d64ad690a82c" />
+
+<p>If width and height fields are visible, use:</p>
+<pre class="text"><code>Width = 640
+Height = 480
+</code></pre>
+<img width="550" height="402" alt="Screenshot from 2026-09-18 23-22-24" src="https://github.com/user-attachments/assets/bb3a9f99-3b81-4368-bace-81c7efa76be8" />
+
+<p>The exact resolution is not used by the LaserScan message, but these values provide a predictable render-product configuration.</p>
+<p>Configure <code>ROS2 RTX Lidar Helper</code>:</p>
+<pre class="text"><code>Type = laser_scan
+Topic Name = /scan
+Frame ID = base_scan
+Enabled = True
+</code></pre>
+<p>If the helper exposes a <code>Use System Time</code> property, leave it disabled unless told otherwise.</p>
+<p>If <code>qosProfile</code> is available, leave it at the default value.</p>
+<p>Set:</p>
+<pre class="text"><code>Queue Size = 10
+</code></pre>
+<p>Leave:</p>
+<pre class="text"><code>Frame Skip Count
+</code></pre>
+<p>at its default value.</p>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+Isaac Run One Simulation Frame.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Run One Simulation Frame.outputs:step
+    →
+Isaac Create Render Product.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Create Render Product.outputs:execOut
+    →
+ROS2 RTX Lidar Helper.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Create Render Product.outputs:renderProductPath
+    →
+ROS2 RTX Lidar Helper.inputs:renderProductPath
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 RTX Lidar Helper.inputs:context
+</code></pre>
+<p>Set the render product camera prim exactly to:</p>
+<pre class="text"><code>/turtlebot3_burger/base_scan/Lidar2D
+</code></pre>
+<img width="1322" height="588" alt="image" src="https://github.com/user-attachments/assets/67885264-7321-4650-97c0-d2ac92e29d01" />
+
+<h2 id="d9-test-scan">D9. Test <code>/scan</code></h2>
+<p>Press Play.</p>
+<p>In a sourced terminal, run:</p>
+<div class="sourceCode" id="cb189"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb189-1"><a href="#cb189-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb189-2"><a href="#cb189-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb189-3"><a href="#cb189-3" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> scan</span></code></pre></div>
+<p>Expected output:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<p>Check the message type:</p>
+<div class="sourceCode" id="cb191"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb191-1"><a href="#cb191-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /scan</span></code></pre></div>
+<p>Expected output:</p>
+<pre class="text"><code>sensor_msgs/msg/LaserScan
+</code></pre>
+<p>Check the rate:</p>
+<div class="sourceCode" id="cb193"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb193-1"><a href="#cb193-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /scan</span></code></pre></div>
+<p>The rate should be greater than zero.</p>
+<p>Check one message:</p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb194-1"><a href="#cb194-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /scan --once</span></code></pre></div>
+<p>Verify:</p>
+<pre class="text"><code>header.frame_id: base_scan
+</code></pre>
+<p>The message should also contain:</p>
+<pre class="text"><code>angle_min
+angle_max
+angle_increment
+range_min
+range_max
+ranges
+</code></pre>
+<img width="725" height="475" alt="image" src="https://github.com/user-attachments/assets/8571e122-c8fb-4400-8070-4761cb019ced" />
+
+<h2 id="d10-view-the-lidar-in-rviz2">D10. View the lidar in RViz2</h2>
+<p>Start RViz2:</p>
+<div class="sourceCode" id="cb197"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb197-1"><a href="#cb197-1" aria-hidden="true"></a><span class="ex">rviz2</span> --ros-args -p use_sim_time:=true</span></code></pre></div>
+<p>In RViz2:</p>
+<ol>
+<li><p>Set <strong>Fixed Frame</strong> to:</p>
+<pre class="text"><code>base_scan
+</code></pre></li>
+<li><p>Click:</p>
+<pre class="text"><code>Add
+</code></pre></li>
+<li><p>Select:</p>
+<pre class="text"><code>LaserScan
+</code></pre></li>
+</ol>
+<img width="1196" height="845" alt="image" src="https://github.com/user-attachments/assets/7f7c835f-3d81-4d77-b6af-98207455714b" />
+
+<ol start="4">
+<li><p>Set the LaserScan topic to:</p>
+<pre class="text"><code>/scan
+</code></pre></li>
+<li><p>Set the LaserScan size to:</p>
+<pre class="text"><code>0.03 m
+</code></pre></li>
+<li><p>Set the LaserScan color to a visible color.</p></li>
+</ol>
+<p>The lidar scan should be visible around the robot.</p>
+<p>At this stage, it is acceptable to use <code>base_scan</code> as the RViz Fixed Frame because the complete robot TF tree has not yet been created.</p>
+<img width="1565" height="845" alt="image" src="https://github.com/user-attachments/assets/30221f14-26a9-4cfc-9ab7-ff81836609d1" />
+
+<h3 id="validation-checkpoint-d">Validation checkpoint D</h3>
+<p>The following commands must succeed:</p>
+<div class="sourceCode" id="cb203"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb203-1"><a href="#cb203-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /scan</span>
+<span id="cb203-2"><a href="#cb203-2" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /scan</span>
+<span id="cb203-3"><a href="#cb203-3" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /scan --once</span></code></pre></div>
+<h4 id="evidence-to-capture-2">Evidence to Capture</h4>
+<p>Take one screenshot showing:</p>
+<ul>
+<li>The <code>Lidar2D</code> prim under <code>base_scan</code>.</li>
+<li>The lidar transform values.</li>
+<li>The complete <code>ROS_Lidar2D</code> graph.</li>
+<li>The ROS2 RTX Lidar Helper properties.</li>
+<li><code>/scan</code> visible in RViz2.</li>
+</ul>
+<img width="737" height="452" alt="image" src="https://github.com/user-attachments/assets/e0a7aa39-42dc-4511-9ace-29be42d3fd59" />
+
+<p>Save:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_03_lidar.usda
+</code></pre>
+<h1 id="part-e-add-and-publish-a-camera">Part E: Add and Publish a Camera</h1>
+<h2 id="objective-3">Objective</h2>
+<p>You will add a camera to the TurtleBot and publish:</p>
+<pre class="text"><code>/camera/image_raw
+/camera/camera_info
+</code></pre>
+<p>The camera frame will be:</p>
+<pre class="text"><code>Camera_1
+</code></pre>
+<p>The official Isaac Sim camera tutorial is available at:</p>
+<p><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_camera.html">Isaac Sim 6.0.1 ROS2 Cameras</a></p>
+<h3 id="camera-graph-overview">Camera Graph Overview</h3>
+<p>The camera graph has one render-product pipeline and two ROS2 outputs.</p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;exec&quot;| Run[&quot;Isaac Run One Simulation Frame&quot;]
+    Run --&gt;|&quot;step&quot;| Product[&quot;Isaac Create Render Product&quot;]
+    Camera[&quot;Camera_1&lt;br/&gt;/turtlebot3_burger/base_footprint/Camera_1&quot;] --&gt;|&quot;cameraPrim&quot;| Product
+
+    Product --&gt;|&quot;renderProductPath&quot;| RGB[&quot;ROS2 Camera Helper&quot;]
+    Product --&gt;|&quot;renderProductPath&quot;| Info[&quot;ROS2 Camera Info Helper&quot;]
+
+    Context[&quot;ROS2 Context&quot;] --&gt;|&quot;context&quot;| RGB
+    Context --&gt;|&quot;context&quot;| Info
+
+    RGB --&gt;|&quot;/camera/image_raw&quot;| Image[&quot;sensor_msgs/msg/Image&quot;]
+    Info --&gt;|&quot;/camera/camera_info&quot;| CameraInfo[&quot;sensor_msgs/msg/CameraInfo&quot;]
+</code></pre>
+<p>The camera graph must produce two independent ROS2 topics:</p>
+<pre class="text"><code>/camera/image_raw
+/camera/camera_info
+</code></pre>
+<blockquote>
+<p><strong>Important:</strong> The <code>ROS2 Camera Helper</code> and <code>ROS2 Camera Info Helper</code> are separate nodes. Each must receive the render-product path.</p>
+</blockquote>
+<h2 id="e1-stop-simulation">E1. Stop simulation</h2>
+<p>Press:</p>
+<pre class="text"><code>Stop
+</code></pre>
+<p>before adding the camera.</p>
+<h2 id="e2-select-the-camera-parent">E2. Select the camera parent</h2>
+<p>In the Stage panel, select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint
+</code></pre>
+<p>The camera will be attached to <code>base_footprint</code>.</p>
+<h2 id="e3-create-the-camera">E3. Create the camera</h2>
+<p>Use:</p>
+<pre class="text"><code>Create → Camera
+</code></pre>
+<p>Rename the camera:</p>
+<pre class="text"><code>Camera_1
+</code></pre>
+<p>Reparent the camera under:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint
+</code></pre>
+<p>The final camera path must be:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint/Camera_1
+</code></pre>
+<img width="646" height="355" alt="image" src="https://github.com/user-attachments/assets/84278802-ffe9-470c-bdb3-90dfe639be01" />
+
+<h2 id="e4-configure-the-camera-transform">E4. Configure the camera transform</h2>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint/Camera_1
+</code></pre>
+<p>In the Property panel, open Transform.</p>
+<p>Set:</p>
+<pre class="text"><code>Translation:
+X = 0.100 m
+Y = 0.000 m
+Z = 0.200 m
+</code></pre>
+<p>Set the camera rotation using the Euler rotation fields:</p>
+<pre class="text"><code>Rotation X = 90 degrees
+Rotation Y = 0 degrees
+Rotation Z = -90 degrees
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Scale X = 1
+Scale Y = 1
+Scale Z = 1
+</code></pre>
+<img width="646" height="355" alt="image" src="https://github.com/user-attachments/assets/687c1583-6db0-487b-93b4-c53e75e29dc2" />
+
+<p>These values orient the camera approximately forward along the robot X axis.</p>
+<p>The equivalent USD quaternion is approximately:</p>
+<pre class="text"><code>(w, x, y, z) =
+(0.5, 0.5, -0.5, -0.5)
+</code></pre>
+<p>If the camera is facing backward, set:</p>
+<pre class="text"><code>Rotation Z = 90 degrees
+</code></pre>
+<p>instead and verify the camera view.</p>
+<h2 id="e5-configure-camera-properties">E5. Configure camera properties</h2>
+<p>Select:</p>
+<pre class="text"><code>Camera_1
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Focal Length = 18.0 mm
+Clipping Range Near = 0.01 m
+Clipping Range Far = 100.0 m
+</code></pre>
+<img width="646" height="355" alt="image" src="https://github.com/user-attachments/assets/7861adb8-3aa4-499d-a03c-15f77bb9fd4d" />
+
+<p>If the camera exposes an aperture setting, leave the default value.</p>
+<p>If the camera has an <code>OmniSensorAPI</code> sensor-rate property, set:</p>
+<pre class="text"><code>omni:sensor:tickRate = 10 Hz
+</code></pre>
+<p>Do not use <code>frameSkipCount</code> to define the camera rate unless specifically instructed by the teaching staff. Leave deprecated or unused rate fields at their default value and verify the actual rate using:</p>
+<div class="sourceCode" id="cb224"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb224-1"><a href="#cb224-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /camera/image_raw</span></code></pre></div>
+<h2 id="e6-create-the-camera-action-graph">E6. Create the camera Action Graph</h2>
+<p>Select:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint/Camera_1
+</code></pre>
+<p>Open:</p>
+<pre class="text"><code>Window → Graph Editors → Action Graph
+</code></pre>
+<p>Click:</p>
+<pre class="text"><code>New Action Graph
+</code></pre>
+<p>Name it:</p>
+<pre class="text"><code>ROS_Camera
+</code></pre>
+<p>The expected graph path is:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint/Camera_1/ROS_Camera
+</code></pre>
+<img width="646" height="355" alt="image" src="https://github.com/user-attachments/assets/64dd6620-52ac-4fc8-9808-6f75d66318cb" />
+
+<h2 id="e7-add-camera-graph-nodes">E7. Add camera graph nodes</h2>
+<p>Add:</p>
+<ol>
+<li><code>On Playback Tick</code></li>
+<li><code>ROS2 Context</code></li>
+<li><code>Isaac Run One Simulation Frame</code></li>
+<li><code>Isaac Create Render Product</code></li>
+<li><code>ROS2 Camera Helper</code></li>
+<li><code>ROS2 Camera Info Helper</code></li>
+</ol>
+<h2 id="e8-configure-the-camera-nodes">E8. Configure the camera nodes</h2>
+<!-- ![Annotated camera properties and camera graph](/assets/images/lab-03/camera-graph.png) -->
+
+<p>Configure ROS2 Context:</p>
+<pre class="text"><code>Domain ID = 0
+Use Domain ID Environment Variable = Disabled
+</code></pre>
+<p>Configure Isaac Create Render Product:</p>
+<pre class="text"><code>Camera Prim = /turtlebot3_burger/base_footprint/Camera_1
+Enabled = True
+Width = 640
+Height = 480
+</code></pre>
+<img width="1005" height="637" alt="image" src="https://github.com/user-attachments/assets/cd683ca7-7812-4f50-a6a7-263296659e8b" />
+
+<p>Configure ROS2 Camera Helper:</p>
+<pre class="text"><code>Type = rgb
+Topic Name = /camera/image_raw
+Frame ID = Camera_1
+Enabled = True
+Queue Size = 10
+</code></pre>
+<img width="1005" height="637" alt="image" src="https://github.com/user-attachments/assets/3237e56c-dde5-4313-b6dd-9fb54fbdc891" />
+
+<p>If the helper exposes a <code>Use System Time</code> property, leave it disabled unless told otherwise.</p>
+<p>Configure ROS2 Camera Info Helper:</p>
+<pre class="text"><code>Topic Name = /camera/camera_info
+Frame ID = Camera_1
+Enabled = True
+Queue Size = 10
+</code></pre>
+<img width="582" height="557" alt="image" src="https://github.com/user-attachments/assets/a6972592-3255-450c-8b6b-e5dab9f87abe" />
+
+<p>If the helper exposes a <code>Use System Time</code> property, leave it disabled unless told otherwise.</p>
+<p>If a node contains a <code>frameSkipCount</code> field, leave it at the default value. In Isaac Sim 6.0, the sensor tick rate should be used to control the sensor rate.</p>
+<h2 id="e9-connect-the-camera-graph">E9. Connect the camera graph</h2>
+<h3 id="camera-graph-connection-table">Camera Graph Connection Table</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Source node</th>
+<th>Output port</th>
+<th>Destination node</th>
+<th>Input port</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>On Playback Tick</code></td>
+<td><code>tick</code></td>
+<td><code>Isaac Run One Simulation Frame</code></td>
+<td><code>execIn</code></td>
+</tr>
+<tr class="even">
+<td><code>Isaac Run One Simulation Frame</code></td>
+<td><code>step</code></td>
+<td><code>Isaac Create Render Product</code></td>
+<td><code>execIn</code></td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Create Render Product</code></td>
+<td><code>execOut</code></td>
+<td><code>ROS2 Camera Helper</code></td>
+<td><code>execIn</code></td>
+</tr>
+<tr class="even">
+<td><code>Isaac Create Render Product</code></td>
+<td><code>execOut</code></td>
+<td><code>ROS2 Camera Info Helper</code></td>
+<td><code>execIn</code></td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Create Render Product</code></td>
+<td><code>renderProductPath</code></td>
+<td><code>ROS2 Camera Helper</code></td>
+<td><code>renderProductPath</code></td>
+</tr>
+<tr class="even">
+<td><code>Isaac Create Render Product</code></td>
+<td><code>renderProductPath</code></td>
+<td><code>ROS2 Camera Info Helper</code></td>
+<td><code>renderProductPath</code></td>
+</tr>
+<tr class="odd">
+<td><code>ROS2 Context</code></td>
+<td><code>context</code></td>
+<td><code>ROS2 Camera Helper</code></td>
+<td><code>context</code></td>
+</tr>
+<tr class="even">
+<td><code>ROS2 Context</code></td>
+<td><code>context</code></td>
+<td><code>ROS2 Camera Info Helper</code></td>
+<td><code>context</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Checkpoint:</strong> The render-product output must connect to both camera helper nodes.</p>
+</blockquote>
+<img width="1261" height="814" alt="image" src="https://github.com/user-attachments/assets/a07756f2-5cd2-46b7-88b3-a8ed8d74f2c6" />
+
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+Isaac Run One Simulation Frame.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Run One Simulation Frame.outputs:step
+    →
+Isaac Create Render Product.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Create Render Product.outputs:execOut
+    →
+ROS2 Camera Helper.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Create Render Product.outputs:execOut
+    →
+ROS2 Camera Info Helper.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Create Render Product.outputs:renderProductPath
+    →
+ROS2 Camera Helper.inputs:renderProductPath
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Create Render Product.outputs:renderProductPath
+    →
+ROS2 Camera Info Helper.inputs:renderProductPath
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Camera Helper.inputs:context
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Camera Info Helper.inputs:context
+</code></pre>
+<h2 id="e10-test-camera-topics">E10. Test camera topics</h2>
+<p>Press Play.</p>
+<p>In a sourced terminal, run:</p>
+<div class="sourceCode" id="cb242"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb242-1"><a href="#cb242-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb242-2"><a href="#cb242-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb242-3"><a href="#cb242-3" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> camera</span></code></pre></div>
+<p>Expected output includes:</p>
+<pre class="text"><code>/camera/image_raw
+/camera/camera_info
+</code></pre>
+<p>Check the image message type:</p>
+<div class="sourceCode" id="cb244"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb244-1"><a href="#cb244-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /camera/image_raw</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>sensor_msgs/msg/Image
+</code></pre>
+<p>Check the camera information message type:</p>
+<div class="sourceCode" id="cb246"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb246-1"><a href="#cb246-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /camera/camera_info</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>sensor_msgs/msg/CameraInfo
+</code></pre>
+<p>Check the image rate:</p>
+<div class="sourceCode" id="cb248"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb248-1"><a href="#cb248-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /camera/image_raw</span></code></pre></div>
+<p>Check one camera message:</p>
+<div class="sourceCode" id="cb249"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb249-1"><a href="#cb249-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /camera/image_raw --once</span></code></pre></div>
+<img width="735" height="744" alt="image" src="https://github.com/user-attachments/assets/2eb967dc-b004-4687-8bf6-0812632c0ab0" />
+
+<h2 id="e11-view-the-image">E11. View the image</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb250"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb250-1"><a href="#cb250-1" aria-hidden="true"></a><span class="ex">ros2</span> run rqt_image_view rqt_image_view</span></code></pre></div>
+<p>In the <code>rqt_image_view</code> window, select:</p>
+<pre class="text"><code>/camera/image_raw
+</code></pre>
+<img width="645" height="552" alt="image" src="https://github.com/user-attachments/assets/93815cbf-e821-4568-b94f-85e617a40347" />
+
+<p>The image should show the simulated environment.</p>
+<p>If the image is black:</p>
+<ol>
+<li>Verify that Isaac Sim is playing.</li>
+<li>Verify that the render product is enabled.</li>
+<li>Verify that the camera is facing the environment.</li>
+<li>Verify that the ROS2 Camera Helper type is <code>rgb</code>.</li>
+<li>Verify that the topic is <code>/camera/image_raw</code>.</li>
+<li>Confirm that the camera is not inside the robot mesh.</li>
+</ol>
+<h3 id="validation-checkpoint-e">Validation checkpoint E</h3>
+<p>The following commands must succeed:</p>
+<div class="sourceCode" id="cb252"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb252-1"><a href="#cb252-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /camera/image_raw</span>
+<span id="cb252-2"><a href="#cb252-2" aria-hidden="true"></a><span class="ex">ros2</span> topic type /camera/camera_info</span>
+<span id="cb252-3"><a href="#cb252-3" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /camera/image_raw</span></code></pre></div>
+<h4 id="evidence-to-capture-3">Evidence to Capture</h4>
+<p>Take one screenshot showing:</p>
+<ul>
+<li><code>Camera_1</code> under <code>base_footprint</code>.</li>
+<li>Camera translation:
+<ul>
+<li><code>X = 0.100</code></li>
+<li><code>Y = 0.000</code></li>
+<li><code>Z = 0.200</code></li>
+</ul></li>
+<li>Camera rotation:
+<ul>
+<li><code>X = 90</code></li>
+<li><code>Y = -90</code></li>
+<li><code>Z = 0</code></li>
+</ul></li>
+<li>The complete <code>ROS_Camera</code> graph.</li>
+<li>The camera image in <code>rqt_image_view</code>.</li>
+</ul>
+<p>Save:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_04_camera.usda
+</code></pre>
+<img width="1832" height="1167" alt="image" src="https://github.com/user-attachments/assets/c1ddc440-f12e-4388-94e9-5a1657d0ecdf" />
+
+<h1 id="part-f-publish-odometry-and-robot-tf">Part F: Publish Odometry and Robot TF</h1>
+<h2 id="objective-4">Objective</h2>
+<p>You will publish:</p>
+<pre class="text"><code>/odom
+/tf
+</code></pre>
+<p>The odometry frame relationship must be:</p>
+<pre class="text"><code>odom → base_footprint
+</code></pre>
+<p>The robot link tree must be:</p>
+<pre class="text"><code>base_footprint → base_link
+base_footprint → base_scan
+base_footprint → wheel_left_link
+base_footprint → wheel_right_link
+base_footprint → caster_back_link
+base_footprint → Camera_1
+</code></pre>
+<p>Do not publish:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<p>The official Isaac Sim transform and odometry tutorial is available at:</p>
+<p><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_tf.html">Isaac Sim 6.0.1 ROS2 Transform Trees and Odometry</a></p>
+<pre class="mermaid"><code>flowchart TD
+    Tick[&quot;On Playback Tick&quot;] -.-&gt;|&quot;exec&quot;| ComputeOdom[&quot;Isaac Compute Odometry&quot;]
+
+    ComputeOdom --&gt;|&quot;position&lt;br/&gt;orientation&lt;br/&gt;velocities&quot;| Odom[&quot;ROS2 Publish Odometry&quot;]
+    ComputeOdom --&gt;|&quot;position&lt;br/&gt;orientation&quot;| RawTF[&quot;ROS2 Publish Raw Transform Tree&quot;]
+
+    ComputeTF[&quot;Isaac Compute Transform Tree&quot;] --&gt;|&quot;robot link transforms&quot;| LinkTF[&quot;ROS2 Publish Transform Tree&quot;]
+
+    Odom --&gt;|&quot;/odom&quot;| OdomTopic[&quot;nav_msgs/msg/Odometry&quot;]
+    RawTF --&gt;|&quot;odom → base_footprint&quot;| TF[&quot;/tf&quot;]
+    LinkTF --&gt;|&quot;base_footprint → links&quot;| TF
+
+    Context[&quot;ROS2 Context&quot;] --&gt; Odom
+    Context --&gt; RawTF
+    Context --&gt; LinkTF
+
+    Time[&quot;Isaac Read Simulation Time&quot;] --&gt;|&quot;timeStamp&quot;| Odom
+    Time --&gt;|&quot;timeStamp&quot;| RawTF
+    Time --&gt;|&quot;timeStamp&quot;| LinkTF
+</code></pre>
+<p>The odometry graph must publish:</p>
+<pre class="text"><code>odom → base_footprint
+</code></pre>
+<p>The odometry graph must not publish:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<p>AMCL will publish the later transform:</p>
+<pre class="text"><code>map → odom
+</code></pre>
+<p>The final localization tree is therefore:</p>
+<pre class="mermaid"><code>flowchart TD
+    Map[&quot;map&quot;] --&gt;|&quot;AMCL&quot;| Odom[&quot;odom&quot;]
+    Odom --&gt;|&quot;Isaac Sim odometry&quot;| Base[&quot;base_footprint&quot;]
+    Base --&gt;|&quot;robot TF&quot;| Links[&quot;robot links and sensors&quot;]
+</code></pre>
+<h2 id="f1-select-the-robot-root">F1. Select the robot root</h2>
+<p>In the Stage panel, select:</p>
+<pre class="text"><code>/turtlebot3_burger
+</code></pre>
+<p>Create the graph below the robot root.</p>
+<h2 id="f2-create-the-odometry-graph">F2. Create the odometry graph</h2>
+<p>Open:</p>
+<pre class="text"><code>Window → Graph Editors → Action Graph
+</code></pre>
+<p>Click:</p>
+<pre class="text"><code>New Action Graph
+</code></pre>
+<p>Name the graph:</p>
+<pre class="text"><code>ROS_OdomTF
+</code></pre>
+<p>The expected graph path is:</p>
+<pre class="text"><code>/turtlebot3_burger/ROS_OdomTF
+</code></pre>
+<div class="sourceCode" id="cb268"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb268-1"><a href="#cb268-1" aria-hidden="true"></a><span class="fu">## F3. Add the odometry and TF nodes</span></span>
+<span id="cb268-2"><a href="#cb268-2" aria-hidden="true"></a></span>
+<span id="cb268-3"><a href="#cb268-3" aria-hidden="true"></a>Add these nodes:</span>
+<span id="cb268-4"><a href="#cb268-4" aria-hidden="true"></a></span>
+<span id="cb268-5"><a href="#cb268-5" aria-hidden="true"></a><span class="ss">1. </span><span class="in">`On Playback Tick`</span></span>
+<span id="cb268-6"><a href="#cb268-6" aria-hidden="true"></a><span class="ss">2. </span><span class="in">`ROS2 Context`</span></span>
+<span id="cb268-7"><a href="#cb268-7" aria-hidden="true"></a><span class="ss">3. </span><span class="in">`Isaac Read Simulation Time`</span></span>
+<span id="cb268-8"><a href="#cb268-8" aria-hidden="true"></a><span class="ss">4. </span><span class="in">`Isaac Compute Odometry`</span></span>
+<span id="cb268-9"><a href="#cb268-9" aria-hidden="true"></a><span class="ss">5. </span><span class="in">`ROS2 Publish Odometry`</span></span>
+<span id="cb268-10"><a href="#cb268-10" aria-hidden="true"></a><span class="ss">6. </span><span class="in">`ROS2 Publish Raw Transform Tree`</span></span>
+<span id="cb268-11"><a href="#cb268-11" aria-hidden="true"></a><span class="ss">7. </span><span class="in">`ROS2 Publish Transform Tree`</span></span>
+<span id="cb268-12"><a href="#cb268-12" aria-hidden="true"></a></span>
+<span id="cb268-13"><a href="#cb268-13" aria-hidden="true"></a>Do not add:</span>
+<span id="cb268-14"><a href="#cb268-14" aria-hidden="true"></a></span>
+<span id="cb268-15"><a href="#cb268-15" aria-hidden="true"></a><span class="in">```text</span></span>
+<span id="cb268-16"><a href="#cb268-16" aria-hidden="true"></a><span class="in">Isaac Compute Transform Tree</span></span></code></pre></div>
+<h2 id="f4-configure-on-playback-tick">F4. Configure On Playback Tick</h2>
+<p>Select:</p>
+<pre class="text"><code>On Playback Tick
+</code></pre>
+<p>No property changes are required.</p>
+<p>Use:</p>
+<pre class="text"><code>outputs:tick
+</code></pre>
+<p>to trigger the odometry and TF publisher nodes.</p>
+<h2 id="f5-configure-ros2-context">F5. Configure ROS2 Context</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Context
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Domain ID = 0
+Use Domain ID Environment Variable = Disabled
+</code></pre>
+<p>Use:</p>
+<pre class="text"><code>outputs:context
+</code></pre>
+<p>for all ROS2 publisher context inputs.</p>
+<h2 id="f6-configure-isaac-read-simulation-time">F6. Configure Isaac Read Simulation Time</h2>
+<p>Select:</p>
+<pre class="text"><code>Isaac Read Simulation Time
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>resetOnStop = False
+</code></pre>
+<p>Use:</p>
+<pre class="text"><code>outputs:simulationTime
+</code></pre>
+<p>for the timestamp input of all publisher nodes.</p>
+<h2 id="f7-configure-isaac-compute-odometry">F7. Configure Isaac Compute Odometry</h2>
+<p>Select:</p>
+<pre class="text"><code>Isaac Compute Odometry
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Chassis Prim = /turtlebot3_burger/base_footprint
+</code></pre>
+<p>If the Stage panel includes <code>/World</code>, use:</p>
+<pre class="text"><code>Chassis Prim = /World/turtlebot3_burger/base_footprint
+</code></pre>
+<p>Use the exact path displayed in the Stage panel.</p>
+<p>No other property changes are required.</p>
+<p>The node outputs:</p>
+<pre class="text"><code>position
+orientation
+linearVelocity
+angularVelocity
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+Isaac Compute Odometry.inputs:execIn
+</code></pre>
+<h2 id="f8-configure-ros2-publish-odometry">F8. Configure ROS2 Publish Odometry</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Publish Odometry
+</code></pre>
+<p>Set these properties:</p>
+<pre class="text"><code>Chassis Frame ID = base_footprint
+Odom Frame ID = odom
+Topic Name = /odom
+Queue Size = 10
+</code></pre>
+<p>Leave these properties unchanged or empty:</p>
+<pre class="text"><code>Node Namespace = empty
+QoS Profile = default
+Publish Raw Velocities = False
+Robot Front = default
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Publish Odometry.inputs:context
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:execOut
+    →
+ROS2 Publish Odometry.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:position
+    →
+ROS2 Publish Odometry.inputs:position
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:orientation
+    →
+ROS2 Publish Odometry.inputs:orientation
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:linearVelocity
+    →
+ROS2 Publish Odometry.inputs:linearVelocity
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:angularVelocity
+    →
+ROS2 Publish Odometry.inputs:angularVelocity
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Read Simulation Time.outputs:simulationTime
+    →
+ROS2 Publish Odometry.inputs:timeStamp
+</code></pre>
+<h2 id="f9-configure-ros2-publish-raw-transform-tree">F9. Configure ROS2 Publish Raw Transform Tree</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Publish Raw Transform Tree
+</code></pre>
+<p>This node publishes:</p>
+<pre class="text"><code>odom → base_footprint
+</code></pre>
+<p>Set these properties:</p>
+<pre class="text"><code>Parent Frame ID = odom
+Child Frame ID = base_footprint
+Topic Name = /tf
+Queue Size = 10
+Static Publisher = False
+</code></pre>
+<p>Leave these properties unchanged or empty:</p>
+<pre class="text"><code>Node Namespace = empty
+QoS Profile = default
+</code></pre>
+<p>Do not set:</p>
+<pre class="text"><code>Parent Frame ID = world
+Child Frame ID = odom
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Publish Raw Transform Tree.inputs:context
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:execOut
+    →
+ROS2 Publish Raw Transform Tree.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:position
+    →
+ROS2 Publish Raw Transform Tree.inputs:translation
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Compute Odometry.outputs:orientation
+    →
+ROS2 Publish Raw Transform Tree.inputs:rotation
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Read Simulation Time.outputs:simulationTime
+    →
+ROS2 Publish Raw Transform Tree.inputs:timeStamp
+</code></pre>
+<h2 id="f10-configure-ros2-publish-transform-tree">F10. Configure ROS2 Publish Transform Tree</h2>
+<p>Select:</p>
+<pre class="text"><code>ROS2 Publish Transform Tree
+</code></pre>
+<p>This node publishes the robot link transforms below the selected parent prim.</p>
+<p>Set:</p>
+<pre class="text"><code>Parent Prim = /turtlebot3_burger/base_footprint
+</code></pre>
+<p>If the Stage panel includes <code>/World</code>, use:</p>
+<pre class="text"><code>Parent Prim = /World/turtlebot3_burger/base_footprint
+</code></pre>
+<p>Use the exact path displayed in the Stage panel.</p>
+<p>Under <code>Target Prims</code>, click <code>Add Target...</code> and add:</p>
+<pre class="text"><code>/turtlebot3_burger/base_link
+/turtlebot3_burger/base_scan
+/turtlebot3_burger/caster_back_link
+/turtlebot3_burger/wheel_left_link
+/turtlebot3_burger/wheel_right_link
+/turtlebot3_burger/Camera_1
+</code></pre>
+<p>If the camera is nested under <code>base_footprint</code>, use:</p>
+<pre class="text"><code>/turtlebot3_burger/base_footprint/Camera_1
+</code></pre>
+<p>If the Stage panel includes <code>/World</code>, use the corresponding <code>/World/...</code> paths.</p>
+<p>Set these properties:</p>
+<pre class="text"><code>Topic Name = /tf
+Queue Size = 10
+Static Publisher = False
+</code></pre>
+<p>Leave these properties unchanged or empty:</p>
+<pre class="text"><code>Node Namespace = empty
+QoS Profile = default
+</code></pre>
+<p>The following inputs are generated internally by this node and should not be manually connected:</p>
+<pre class="text"><code>Child Frames
+Parent Frames
+Translations
+Orientations
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>On Playback Tick.outputs:tick
+    →
+ROS2 Publish Transform Tree.inputs:execIn
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>ROS2 Context.outputs:context
+    →
+ROS2 Publish Transform Tree.inputs:context
+</code></pre>
+<p>Connect:</p>
+<pre class="text"><code>Isaac Read Simulation Time.outputs:simulationTime
+    →
+ROS2 Publish Transform Tree.inputs:timeStamp
+</code></pre>
+<h2 id="complete-odometry-and-tf-connection-table">Complete Odometry and TF Connection Table</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Source Node</th>
+<th>Output</th>
+<th>Target Node</th>
+<th>Input</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>On Playback Tick</code></td>
+<td><code>tick</code></td>
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>execIn</code></td>
+<td>Triggers odometry calculation</td>
+</tr>
+<tr class="even">
+<td><code>On Playback Tick</code></td>
+<td><code>tick</code></td>
+<td><code>ROS2 Publish Transform Tree</code></td>
+<td><code>execIn</code></td>
+<td>Triggers robot-link TF publishing</td>
+</tr>
+<tr class="odd">
+<td><code>ROS2 Context</code></td>
+<td><code>context</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>context</code></td>
+<td>Provides ROS2 context</td>
+</tr>
+<tr class="even">
+<td><code>ROS2 Context</code></td>
+<td><code>context</code></td>
+<td><code>ROS2 Publish Raw Transform Tree</code></td>
+<td><code>context</code></td>
+<td>Provides ROS2 context</td>
+</tr>
+<tr class="odd">
+<td><code>ROS2 Context</code></td>
+<td><code>context</code></td>
+<td><code>ROS2 Publish Transform Tree</code></td>
+<td><code>context</code></td>
+<td>Provides ROS2 context</td>
+</tr>
+<tr class="even">
+<td><code>Isaac Read Simulation Time</code></td>
+<td><code>simulationTime</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>timeStamp</code></td>
+<td>Timestamps odometry messages</td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Read Simulation Time</code></td>
+<td><code>simulationTime</code></td>
+<td><code>ROS2 Publish Raw Transform Tree</code></td>
+<td><code>timeStamp</code></td>
+<td>Timestamps the odom transform</td>
+</tr>
+<tr class="even">
+<td><code>Isaac Read Simulation Time</code></td>
+<td><code>simulationTime</code></td>
+<td><code>ROS2 Publish Transform Tree</code></td>
+<td><code>timeStamp</code></td>
+<td>Timestamps robot-link TF messages</td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>execOut</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>execIn</code></td>
+<td>Triggers <code>/odom</code> publishing</td>
+</tr>
+<tr class="even">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>execOut</code></td>
+<td><code>ROS2 Publish Raw Transform Tree</code></td>
+<td><code>execIn</code></td>
+<td>Triggers <code>odom → base_footprint</code> publishing</td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>position</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>position</code></td>
+<td>Publishes robot position</td>
+</tr>
+<tr class="even">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>orientation</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>orientation</code></td>
+<td>Publishes robot orientation</td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>linearVelocity</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>linearVelocity</code></td>
+<td>Publishes linear velocity</td>
+</tr>
+<tr class="even">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>angularVelocity</code></td>
+<td><code>ROS2 Publish Odometry</code></td>
+<td><code>angularVelocity</code></td>
+<td>Publishes angular velocity</td>
+</tr>
+<tr class="odd">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>position</code></td>
+<td><code>ROS2 Publish Raw Transform Tree</code></td>
+<td><code>translation</code></td>
+<td>Publishes odom translation</td>
+</tr>
+<tr class="even">
+<td><code>Isaac Compute Odometry</code></td>
+<td><code>orientation</code></td>
+<td><code>ROS2 Publish Raw Transform Tree</code></td>
+<td><code>rotation</code></td>
+<td>Publishes odom rotation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="required-topics">Required Topics</h2>
+<pre class="text"><code>/odom
+/tf
+</code></pre>
+<h2 id="required-tf-structure">Required TF Structure</h2>
+<p>The resulting TF tree should be:</p>
+<pre class="text"><code>map
+└── odom
+    └── base_footprint
+        ├── base_link
+        ├── base_scan
+        ├── wheel_left_link
+        ├── wheel_right_link
+        ├── caster_back_link
+        └── Camera_1
+</code></pre>
+<p>Before localization starts, the minimum required transform is:</p>
+<pre class="text"><code>odom → base_footprint
+</code></pre>
+<p>Do not publish:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<p>Do not set:</p>
+<pre class="text"><code>Parent Frame ID = world
+Child Frame ID = odom
+</code></pre>
+<p>Do not add:</p>
+<pre class="text"><code>Isaac Compute Transform Tree
+</code></pre>
+<p>Do not create competing parents for the same frame.</p>
+<pre><code></code></pre>
+<img width="1037" height="974" alt="image" src="https://github.com/user-attachments/assets/0b7e0fae-b359-4cc2-9da6-68633e42cc6c" />
+
+<h2 id="f11-check-the-tf-publisher-list">F11. Check the TF publisher list</h2>
+<p>Press Play.</p>
+<p>Generate the TF graph:</p>
+<div class="sourceCode" id="cb320"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb320-1"><a href="#cb320-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_tools view_frames</span></code></pre></div>
+<p>Before localization is started, the TF tree must contain:</p>
+<pre class="text"><code>odom
+└── base_footprint
+    ├── base_link
+    ├── base_scan
+    ├── wheel_left_link
+    ├── wheel_right_link
+    ├── caster_back_link
+    └── Camera_1
+</code></pre>
+<p>The required dynamic transform is:</p>
+<pre class="text"><code>odom → base_footprint
+</code></pre>
+<p>The robot-link transforms must be connected below <code>base_footprint</code>.</p>
+<p>The TF tree must not contain:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<p>Do not use the exact Isaac Sim ROS publisher name as the primary validation method. The graph path and node names can change the generated ROS node name.</p>
+<h2 id="f12-verify-odometry">F12. Verify odometry</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb324"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb324-1"><a href="#cb324-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /odom</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>nav_msgs/msg/Odometry
+</code></pre>
+<p>Run:</p>
+<div class="sourceCode" id="cb326"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb326-1"><a href="#cb326-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /odom</span></code></pre></div>
+<p>The rate should be greater than zero.</p>
+<p>Run:</p>
+<div class="sourceCode" id="cb327"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb327-1"><a href="#cb327-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /odom --once</span></code></pre></div>
+<p>Verify:</p>
+<pre class="text"><code>header.frame_id: odom
+child_frame_id: base_footprint
+</code></pre>
+<img width="736" height="508" alt="image" src="https://github.com/user-attachments/assets/2bae7fd7-939e-4a28-a751-5d0c4c9a7477" />
+
+<h2 id="f13-verify-the-lower-tf-link">F13. Verify the lower TF link</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb329"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb329-1"><a href="#cb329-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo odom base_footprint <span class="kw">\</span></span>
+<span id="cb329-2"><a href="#cb329-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>Expected result:</p>
+<ul>
+<li>Translation values are displayed.</li>
+<li>Rotation values are displayed.</li>
+<li>The command does not remain at “Waiting for transform.”</li>
+</ul>
+<img width="736" height="400" alt="image" src="https://github.com/user-attachments/assets/2186e832-a83f-4e40-8a38-98706f99aaca" />
+
+<h2 id="f14-verify-the-robot-tf-tree">F14. Verify the robot TF tree</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb330"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb330-1"><a href="#cb330-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_tools view_frames</span></code></pre></div>
+<p>Wait approximately five seconds.</p>
+<p>The generated graph should contain:</p>
+<pre class="text"><code>odom
+└── base_footprint
+    ├── base_link
+    ├── base_scan
+    ├── wheel_left_link
+    ├── wheel_right_link
+    ├── caster_back_link
+    └── Camera_1
+</code></pre>
+<p>At this stage, <code>map</code> may not exist because AMCL has not been started.</p>
+<h3 id="validation-checkpoint-f">Validation checkpoint F</h3>
+<p>The following commands must succeed:</p>
+<div class="sourceCode" id="cb332"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb332-1"><a href="#cb332-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /odom</span>
+<span id="cb332-2"><a href="#cb332-2" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /odom</span>
+<span id="cb332-3"><a href="#cb332-3" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo odom base_footprint <span class="kw">\</span></span>
+<span id="cb332-4"><a href="#cb332-4" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span>
+<span id="cb332-5"><a href="#cb332-5" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_tools view_frames</span></code></pre></div>
+<img width="784" height="696" alt="image" src="https://github.com/user-attachments/assets/109fc52b-2485-437f-af50-fe3fd05d5515" />
+
+<h4 id="evidence-to-capture-4">Evidence to Capture</h4>
+<!-- ![Annotated odometry and TF graph](/assets/images/lab-03/odometry-tf-graph.png) -->
+
+<p>Take one screenshot showing:</p>
+<ul>
+<li>The complete <code>ROS_OdomTF</code> graph.</li>
+<li><code>Parent Frame ID = odom</code>.</li>
+<li><code>Child Frame ID = base_footprint</code>.</li>
+<li>The absence of a <code>world → odom</code> publisher.</li>
+<li>The generated TF graph from <code>view_frames</code>.</li>
+</ul>
+<p>Save:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_05_odometry_tf.usda
+</code></pre>
+<h1 id="action-graph-troubleshooting-decision-tree">Action Graph Troubleshooting Decision Tree</h1>
+<p>Use this decision tree instead of randomly changing graph properties.</p>
+<pre class="mermaid"><code>flowchart TD
+    Start[&quot;Expected ROS topic or robot behavior is missing&quot;]
+    Playing{&quot;Is Isaac Sim playing?&quot;}
+    Tick{&quot;Is On Playback Tick connected?&quot;}
+    Context{&quot;Is ROS2 Context connected?&quot;}
+    Property{&quot;Are topic, frame, and target prim properties correct?&quot;}
+    Topic{&quot;Does the ROS2 topic exist?&quot;}
+    Rate{&quot;Is the topic rate greater than zero?&quot;}
+    Fix[&quot;Repair the graph and test again&quot;]
+    Success[&quot;Proceed to the next checkpoint&quot;]
+
+    Start --&gt; Playing
+    Playing --&gt;|&quot;No&quot;| Fix
+    Playing --&gt;|&quot;Yes&quot;| Tick
+    Tick --&gt;|&quot;No&quot;| Fix
+    Tick --&gt;|&quot;Yes&quot;| Context
+    Context --&gt;|&quot;No&quot;| Fix
+    Context --&gt;|&quot;Yes&quot;| Property
+    Property --&gt;|&quot;No&quot;| Fix
+    Property --&gt;|&quot;Yes&quot;| Topic
+    Topic --&gt;|&quot;No&quot;| Fix
+    Topic --&gt;|&quot;Yes&quot;| Rate
+    Rate --&gt;|&quot;No&quot;| Fix
+    Rate --&gt;|&quot;Yes&quot;| Success
+</code></pre>
+<p>Use these commands:</p>
+<div class="sourceCode" id="cb335"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb335-1"><a href="#cb335-1" aria-hidden="true"></a><span class="ex">ros2</span> topic list</span>
+<span id="cb335-2"><a href="#cb335-2" aria-hidden="true"></a><span class="ex">ros2</span> topic type <span class="op">&lt;</span>topic_name<span class="op">&gt;</span></span>
+<span id="cb335-3"><a href="#cb335-3" aria-hidden="true"></a><span class="ex">ros2</span> topic echo <span class="op">&lt;</span>topic_name<span class="op">&gt;</span> --once</span>
+<span id="cb335-4"><a href="#cb335-4" aria-hidden="true"></a><span class="ex">ros2</span> topic hz <span class="op">&lt;</span>topic_name<span class="op">&gt;</span></span>
+<span id="cb335-5"><a href="#cb335-5" aria-hidden="true"></a><span class="ex">ros2</span> topic info <span class="op">&lt;</span>topic_name<span class="op">&gt;</span> --verbose</span></code></pre></div>
+<p>For TF problems, use:</p>
+<div class="sourceCode" id="cb336"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb336-1"><a href="#cb336-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_tools view_frames</span>
+<span id="cb336-2"><a href="#cb336-2" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo odom base_footprint <span class="kw">\</span></span>
+<span id="cb336-3"><a href="#cb336-3" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<h1 id="part-g-understand-and-test-ros2-qos">Part G: Understand and Test ROS2 QoS</h1>
+<h2 id="objective-5">Objective</h2>
+<p>Quality of Service controls how ROS2 publishers and subscribers exchange messages. In this section, you will inspect the QoS settings of the main topics used by the robot and explain why different data streams require different communication guarantees.</p>
+<p>The official ROS2 documentation is available at:</p>
+<p><a href="https://docs.ros.org/en/humble/Concepts/Intermediate/About-Quality-of-Service-Settings.html">ROS2 Humble Quality of Service Settings</a></p>
+<p>The important QoS properties are:</p>
+<ul>
+<li>Reliability</li>
+<li>Durability</li>
+<li>History</li>
+<li>Queue depth</li>
+<li>Liveliness</li>
+<li>Deadline</li>
+</ul>
+<h2 id="g1-inspect-lidar-qos">G1. Inspect lidar QoS</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb337"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb337-1"><a href="#cb337-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /scan --verbose</span></code></pre></div>
+<p>Record the following in your lab report:</p>
+<pre class="text"><code>Reliability:
+Durability:
+History:
+Depth:
+Liveliness:
+</code></pre>
+<p>The sensor publisher should normally use a sensor-compatible profile.</p>
+<h2 id="g2-inspect-camera-qos">G2. Inspect camera QoS</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb339"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb339-1"><a href="#cb339-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /camera/image_raw --verbose</span></code></pre></div>
+<p>Record the QoS values.</p>
+<h2 id="g3-inspect-tf-qos">G3. Inspect TF QoS</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb340"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb340-1"><a href="#cb340-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /tf --verbose</span></code></pre></div>
+<p>Record the QoS values.</p>
+<h2 id="g4-inspect-odometry-qos">G4. Inspect odometry QoS</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb341"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb341-1"><a href="#cb341-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /odom --verbose</span></code></pre></div>
+<p>Record the QoS values.</p>
+<h2 id="g5-compare-topic-behavior">G5. Compare topic behavior</h2>
+<p>Run the following commands separately:</p>
+<div class="sourceCode" id="cb342"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb342-1"><a href="#cb342-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /scan --once</span></code></pre></div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb343-1"><a href="#cb343-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /camera/image_raw --once</span></code></pre></div>
+<div class="sourceCode" id="cb344"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb344-1"><a href="#cb344-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /odom --once</span></code></pre></div>
+<p>Explain why these topics have different data types and potentially different QoS requirements.</p>
+<h2 id="g6-qos-expectations">G6. QoS expectations</h2>
+<p>Use the following as conceptual guidance:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Topic</th>
+<th>Typical durability</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>/scan</code></td>
+<td>Volatile</td>
+<td>Live sensor data</td>
+</tr>
+<tr class="even">
+<td><code>/camera/image_raw</code></td>
+<td>Volatile</td>
+<td>Live image stream</td>
+</tr>
+<tr class="odd">
+<td><code>/odom</code></td>
+<td>Volatile</td>
+<td>Continuously changing state</td>
+</tr>
+<tr class="even">
+<td><code>/tf</code></td>
+<td>Volatile</td>
+<td>Continuously changing transforms</td>
+</tr>
+<tr class="odd">
+<td><code>/tf_static</code></td>
+<td>Transient Local</td>
+<td>Static transforms</td>
+</tr>
+<tr class="even">
+<td><code>/map</code></td>
+<td>Transient Local</td>
+<td>Retained map</td>
+</tr>
+<tr class="odd">
+<td><code>/clock</code></td>
+<td>Volatile</td>
+<td>Simulation time stream</td>
+</tr>
+</tbody>
+</table>
+<p>Do not change QoS settings during the first successful run.</p>
+<p>If a subscriber cannot receive messages, inspect the publisher and subscriber QoS before changing code.</p>
+<h3 id="validation-checkpoint-g">Validation checkpoint G</h3>
+<p>Include the output of the following commands in the report:</p>
+<div class="sourceCode" id="cb345"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb345-1"><a href="#cb345-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /scan --verbose</span>
+<span id="cb345-2"><a href="#cb345-2" aria-hidden="true"></a><span class="ex">ros2</span> topic info /camera/image_raw --verbose</span>
+<span id="cb345-3"><a href="#cb345-3" aria-hidden="true"></a><span class="ex">ros2</span> topic info /tf --verbose</span>
+<span id="cb345-4"><a href="#cb345-4" aria-hidden="true"></a><span class="ex">ros2</span> topic info /odom --verbose</span></code></pre></div>
+<blockquote>
+<p>Quick interpretation: QoS is not a cosmetic setting. It affects whether publishers and subscribers can exchange data reliably, especially for live sensor streams, TF data, and stored map information.</p>
+</blockquote>
+<p>Save:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_06_qos_verified.usda
+</code></pre>
+<pre class="mermaid"><code>flowchart LR
+    Map[&quot;Map Server&quot;]
+    AMCL[&quot;AMCL&quot;]
+    TF[&quot;map to odom&quot;]
+    Nav2[&quot;Nav2&quot;]
+    Cmd[&quot;/cmd_vel&quot;]
+
+    Map --&gt; AMCL
+    AMCL --&gt; TF
+    TF --&gt; Nav2
+    Nav2 --&gt; Cmd
+</code></pre>
+<h1 id="part-h-start-localization">Part H: Start Localization</h1>
+<h2 id="objective-6">Objective</h2>
+<p>You will use a saved map and AMCL to estimate the robot pose.</p>
+<p>The map files are:</p>
+<pre class="text"><code>~/RAS545/Lab3/maps/turtlebot3_map.yaml
+~/RAS545/Lab3/maps/turtlebot3_map.pgm
+</code></pre>
+<h2 id="h1-verify-the-map-files">H1. Verify the map files</h2>
+<p>Open a new terminal:</p>
+<div class="sourceCode" id="cb349"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb349-1"><a href="#cb349-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb349-2"><a href="#cb349-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span></code></pre></div>
+<p>Run:</p>
+<div class="sourceCode" id="cb350"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb350-1"><a href="#cb350-1" aria-hidden="true"></a><span class="fu">ls</span> -l ~/RAS545/Lab3/maps/turtlebot3_map.yaml</span>
+<span id="cb350-2"><a href="#cb350-2" aria-hidden="true"></a><span class="fu">ls</span> -l ~/RAS545/Lab3/maps/turtlebot3_map.pgm</span></code></pre></div>
+<p>Display the YAML file:</p>
+<div class="sourceCode" id="cb351"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb351-1"><a href="#cb351-1" aria-hidden="true"></a><span class="fu">sed</span> -n <span class="st">&#39;1,20p&#39;</span> ~/RAS545/Lab3/maps/turtlebot3_map.yaml</span></code></pre></div>
+<p>The image path must point to an existing file.</p>
+<p>Verify the image path:</p>
+<div class="sourceCode" id="cb352"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb352-1"><a href="#cb352-1" aria-hidden="true"></a><span class="va">map_image=$(</span><span class="fu">sed</span> -n <span class="st">&#39;s/^image:[[:space:]]*//p&#39;</span> <span class="kw">\</span></span>
+<span id="cb352-2"><a href="#cb352-2" aria-hidden="true"></a>  <span class="ex">~/RAS545/Lab3/maps/turtlebot3_map.yaml</span><span class="va">)</span></span>
+<span id="cb352-3"><a href="#cb352-3" aria-hidden="true"></a></span>
+<span id="cb352-4"><a href="#cb352-4" aria-hidden="true"></a><span class="fu">ls</span> -l <span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/RAS545/Lab3/maps/</span><span class="va">$map_image</span><span class="st">&quot;</span></span></code></pre></div>
+<p>The command must find:</p>
+<pre class="text"><code>turtlebot3_map.pgm
+</code></pre>
+<h2 id="h2-start-localization">H2. Start localization</h2>
+<p>Keep Isaac Sim running and playing.</p>
+<p>Run:</p>
+<div class="sourceCode" id="cb354"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb354-1"><a href="#cb354-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb354-2"><a href="#cb354-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb354-3"><a href="#cb354-3" aria-hidden="true"></a></span>
+<span id="cb354-4"><a href="#cb354-4" aria-hidden="true"></a><span class="ex">ros2</span> launch nav2_bringup localization_launch.py <span class="kw">\</span></span>
+<span id="cb354-5"><a href="#cb354-5" aria-hidden="true"></a>  <span class="ex">map</span>:=<span class="va">$HOME</span>/RAS545/Lab3/maps/turtlebot3_map.yaml <span class="kw">\</span></span>
+<span id="cb354-6"><a href="#cb354-6" aria-hidden="true"></a>  <span class="ex">use_sim_time</span>:=true</span></code></pre></div>
+<p>Wait for output indicating:</p>
+<pre class="text"><code>Managed nodes are active
+</code></pre>
+<p>The important nodes are:</p>
+<pre class="text"><code>map_server
+amcl
+lifecycle_manager_localization
+</code></pre>
+<h2 id="h3-check-lifecycle-states">H3. Check lifecycle states</h2>
+<p>In another terminal, run:</p>
+<div class="sourceCode" id="cb357"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb357-1"><a href="#cb357-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb357-2"><a href="#cb357-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb357-3"><a href="#cb357-3" aria-hidden="true"></a></span>
+<span id="cb357-4"><a href="#cb357-4" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /map_server</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>active [3]
+</code></pre>
+<p>Run:</p>
+<div class="sourceCode" id="cb359"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb359-1"><a href="#cb359-1" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /amcl</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>active [3]
+</code></pre>
+<p>If the map server fails to configure, check:</p>
+<ol>
+<li>The YAML path.</li>
+<li>The image path inside the YAML.</li>
+<li>File permissions.</li>
+<li>Whether another <code>/map_server</code> is already running.</li>
+<li>Whether the image file exists.</li>
+</ol>
+<h2 id="h4-verify-map">H4. Verify <code>/map</code></h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb361"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb361-1"><a href="#cb361-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /map</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>nav_msgs/msg/OccupancyGrid
+</code></pre>
+<p>Run:</p>
+<div class="sourceCode" id="cb363"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb363-1"><a href="#cb363-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /map --once</span></code></pre></div>
+<p>Expected map properties include:</p>
+<pre class="text"><code>frame_id: map
+resolution: 0.05
+width: 177
+height: 162
+origin:
+  position:
+    x: -6.2
+    y: -3.32
+    z: 0.0
+</code></pre>
+<p>The map should use transient-local durability so that new subscribers can receive the stored map.</p>
+<h2 id="h5-open-rviz2">H5. Open RViz2</h2>
+<!-- ![RViz localization view with map, laser scan, TF, and robot model](/assets/images/lab-03/rviz-localization.png) -->
+
+<p>Start RViz2:</p>
+<div class="sourceCode" id="cb365"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb365-1"><a href="#cb365-1" aria-hidden="true"></a><span class="ex">rviz2</span> --ros-args -p use_sim_time:=true</span></code></pre></div>
+<p>Set the RViz Fixed Frame:</p>
+<pre class="text"><code>map
+</code></pre>
+<p>Add a Map display:</p>
+<pre class="text"><code>Add → Map
+</code></pre>
+<p>Configure:</p>
+<pre class="text"><code>Topic = /map
+</code></pre>
+<p>If the map is not visible, set:</p>
+<pre class="text"><code>Durability Policy = Transient Local
+</code></pre>
+<p>Add a LaserScan display:</p>
+<pre class="text"><code>Add → LaserScan
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Topic = /scan
+</code></pre>
+<p>Do not enter a separate laser-frame value in RViz2. RViz2 uses the frame contained in the LaserScan message.</p>
+<p>Verify the message frame from a terminal:</p>
+<div class="sourceCode" id="cb372"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb372-1"><a href="#cb372-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /scan --once</span></code></pre></div>
+<p>The message must contain:</p>
+<pre class="text"><code>header:
+  frame_id: base_scan
+</code></pre>
+<p>If the frame is not <code>base_scan</code>, repair the <code>Frame ID</code> property of the <code>ROS2 RTX Lidar Helper</code> node.</p>
+<p>Add:</p>
+<pre class="text"><code>TF
+</code></pre>
+<p>Add:</p>
+<pre class="text"><code>RobotModel
+</code></pre>
+<h2 id="h6-set-the-initial-pose">H6. Set the initial pose</h2>
+<p>In RViz2, select:</p>
+<pre class="text"><code>2D Pose Estimate
+</code></pre>
+<p>Click the approximate center of the robot on the map.</p>
+<p>Drag the arrow in the direction that the robot is facing.</p>
+<p>Release the mouse button.</p>
+<p>The initial pose must be close enough that the lidar scan overlaps the map walls.</p>
+<p>Wait five seconds.</p>
+<p>AMCL should now publish:</p>
+<pre class="text"><code>map → odom
+</code></pre>
+<h2 id="h7-verify-the-complete-transform">H7. Verify the complete transform</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb378"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb378-1"><a href="#cb378-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo map base_footprint <span class="kw">\</span></span>
+<span id="cb378-2"><a href="#cb378-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>Expected result:</p>
+<pre class="text"><code>Translation: [...]
+Rotation: [...]
+</code></pre>
+<p>The command must not repeatedly report:</p>
+<pre class="text"><code>Could not find a connection between map and base_footprint
+</code></pre>
+<p>If the transform does not appear:</p>
+<ol>
+<li>Confirm the initial pose was set in RViz.</li>
+<li>Confirm AMCL is active.</li>
+<li>Confirm <code>/scan</code> is publishing.</li>
+<li>Confirm <code>odom → base_footprint</code> exists.</li>
+<li>Confirm <code>map_server</code> is active.</li>
+<li>Confirm <code>use_sim_time</code> is enabled.</li>
+<li>Confirm Isaac Sim is playing.</li>
+</ol>
+<h3 id="validation-checkpoint-h">Validation checkpoint H</h3>
+<p>The following commands must succeed:</p>
+<div class="sourceCode" id="cb381"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb381-1"><a href="#cb381-1" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /map_server</span>
+<span id="cb381-2"><a href="#cb381-2" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /amcl</span>
+<span id="cb381-3"><a href="#cb381-3" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /map --once</span>
+<span id="cb381-4"><a href="#cb381-4" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo map base_footprint <span class="kw">\</span></span>
+<span id="cb381-5"><a href="#cb381-5" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>Save:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_07_localization.usda
+</code></pre>
+<h1 id="part-i-start-nav2-navigation">Part I: Start Nav2 Navigation</h1>
+<h2 id="objective-7">Objective</h2>
+<p>You will start the Nav2 planning and control system and send the robot to a goal using RViz2.</p>
+<h2 id="i1-start-the-navigation-stack">I1. Start the navigation stack</h2>
+<p>Keep the following running:</p>
+<ul>
+<li>Isaac Sim</li>
+<li>ROS2 clock</li>
+<li>Drive Action Graph</li>
+<li>Lidar graph</li>
+<li>Camera graph</li>
+<li>Odometry and TF graph</li>
+<li>Localization launch</li>
+<li>RViz2</li>
+</ul>
+<p>Open another terminal:</p>
+<div class="sourceCode" id="cb383"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb383-1"><a href="#cb383-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb383-2"><a href="#cb383-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb383-3"><a href="#cb383-3" aria-hidden="true"></a></span>
+<span id="cb383-4"><a href="#cb383-4" aria-hidden="true"></a><span class="ex">ros2</span> launch nav2_bringup navigation_launch.py <span class="kw">\</span></span>
+<span id="cb383-5"><a href="#cb383-5" aria-hidden="true"></a>  <span class="ex">use_sim_time</span>:=true</span></code></pre></div>
+<p>Wait until the terminal reports:</p>
+<pre class="text"><code>Managed nodes are active
+</code></pre>
+<p>Important Nav2 nodes include:</p>
+<pre class="text"><code>controller_server
+planner_server
+behavior_server
+bt_navigator
+waypoint_follower
+velocity_smoother
+lifecycle_manager_navigation
+</code></pre>
+<h2 id="i2-verify-lifecycle-states">I2. Verify lifecycle states</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb386"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb386-1"><a href="#cb386-1" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /controller_server</span>
+<span id="cb386-2"><a href="#cb386-2" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /planner_server</span>
+<span id="cb386-3"><a href="#cb386-3" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /bt_navigator</span></code></pre></div>
+<p>Each should report:</p>
+<pre class="text"><code>active [3]
+</code></pre>
+<h2 id="i3-verify-costmap-scan-topic">I3. Verify costmap scan topic</h2>
+<p>The default Nav2 configuration expects the lidar topic:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<p>Verify that <code>/scan</code> is publishing:</p>
+<div class="sourceCode" id="cb389"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb389-1"><a href="#cb389-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /scan</span></code></pre></div>
+<p>Nav2 costmaps commonly report that they subscribe to:</p>
+<pre class="text"><code>scan
+</code></pre>
+<p>This corresponds to the absolute ROS2 topic:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<p>Do not change the lidar topic to <code>/scan_fixed</code> unless the Nav2 parameters are also changed.</p>
+<p>For this laboratory, use:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<h2 id="i4-verify-the-global-costmap">I4. Verify the global costmap</h2>
+<p>In RViz2, add:</p>
+<pre class="text"><code>Map
+</code></pre>
+<p>Set:</p>
+<pre class="text"><code>Topic = /map
+</code></pre>
+<p>Add:</p>
+<pre class="text"><code>Global Costmap
+</code></pre>
+<p>If the display is available, configure its topic using the Nav2 costmap topic shown by RViz2.</p>
+<p>The global costmap should show:</p>
+<ul>
+<li>Free space</li>
+<li>Occupied cells</li>
+<li>Inflated obstacle areas</li>
+</ul>
+<h2 id="i5-verify-the-local-costmap">I5. Verify the local costmap</h2>
+<p>In RViz2, add:</p>
+<pre class="text"><code>Local Costmap
+</code></pre>
+<p>The local costmap should move with the robot.</p>
+<p>It should use the lidar data from:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<p>If the local costmap is empty:</p>
+<ol>
+<li>Verify <code>/scan</code> is publishing.</li>
+<li>Verify <code>header.frame_id</code> is <code>base_scan</code>.</li>
+<li>Verify the complete TF chain exists.</li>
+<li>Verify the RViz Fixed Frame is <code>map</code>.</li>
+<li>Verify Isaac Sim is playing.</li>
+</ol>
+<h2 id="i6-send-a-navigation-goal">I6. Send a navigation goal</h2>
+<!-- ![RViz navigation goal and planned path](/assets/images/lab-03/rviz-navigation-goal.png) -->
+
+<p>In RViz2, select:</p>
+<pre class="text"><code>2D Goal Pose
+</code></pre>
+<p>Click a nearby free-space position on the map.</p>
+<p>Drag the arrow to select the desired final orientation.</p>
+<p>Release the mouse button.</p>
+<p>Nav2 should:</p>
+<ol>
+<li>Receive the goal.</li>
+<li>Calculate a global path.</li>
+<li>Calculate local velocity commands.</li>
+<li>Publish commands on the configured velocity topic.</li>
+<li>Move the robot.</li>
+<li>Stop at the goal.</li>
+</ol>
+<p>The robot should move at low speed.</p>
+<p>If the robot moves unexpectedly, immediately send zero velocity:</p>
+<div class="sourceCode" id="cb399"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb399-1"><a href="#cb399-1" aria-hidden="true"></a><span class="ex">ros2</span> topic pub --once /cmd_vel geometry_msgs/msg/Twist <span class="kw">\</span></span>
+<span id="cb399-2"><a href="#cb399-2" aria-hidden="true"></a><span class="st">&quot;{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}&quot;</span></span></code></pre></div>
+<h2 id="i7-verify-goal-completion">I7. Verify goal completion</h2>
+<p>Observe the Nav2 terminal and RViz2.</p>
+<p>The goal should change to a successful state.</p>
+<p>Record:</p>
+<ul>
+<li>Initial robot position</li>
+<li>Goal position</li>
+<li>Final robot position</li>
+<li>Approximate navigation time</li>
+<li>Whether the robot stopped within the goal tolerance</li>
+<li>Whether the path avoided obstacles</li>
+</ul>
+<h3 id="validation-checkpoint-i">Validation checkpoint I</h3>
+<p>Demonstrate:</p>
+<ul>
+<li>A visible map in RViz2.</li>
+<li>A visible lidar scan.</li>
+<li>A visible robot TF tree.</li>
+<li>A planned path.</li>
+<li>Robot movement.</li>
+<li>Successful goal completion.</li>
+</ul>
+<p>Save:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/Lab3_08_nav2_complete.usda
+</code></pre>
+<h1 id="part-j-final-diagnostic-verification">Part J: Final Diagnostic Verification</h1>
+<p>Run the following commands and save their output in the lab results directory.</p>
+<h2 id="j1-node-list">J1. Node list</h2>
+<div class="sourceCode" id="cb401"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb401-1"><a href="#cb401-1" aria-hidden="true"></a><span class="ex">ros2</span> node list</span></code></pre></div>
+<h2 id="j2-topic-list">J2. Topic list</h2>
+<div class="sourceCode" id="cb402"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb402-1"><a href="#cb402-1" aria-hidden="true"></a><span class="ex">ros2</span> topic list</span></code></pre></div>
+<h2 id="j3-topic-types">J3. Topic types</h2>
+<div class="sourceCode" id="cb403"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb403-1"><a href="#cb403-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /clock</span>
+<span id="cb403-2"><a href="#cb403-2" aria-hidden="true"></a><span class="ex">ros2</span> topic type /cmd_vel</span>
+<span id="cb403-3"><a href="#cb403-3" aria-hidden="true"></a><span class="ex">ros2</span> topic type /odom</span>
+<span id="cb403-4"><a href="#cb403-4" aria-hidden="true"></a><span class="ex">ros2</span> topic type /scan</span>
+<span id="cb403-5"><a href="#cb403-5" aria-hidden="true"></a><span class="ex">ros2</span> topic type /camera/image_raw</span>
+<span id="cb403-6"><a href="#cb403-6" aria-hidden="true"></a><span class="ex">ros2</span> topic type /map</span></code></pre></div>
+<p>Expected types:</p>
+<pre class="text"><code>/clock              rosgraph_msgs/msg/Clock
+/cmd_vel            geometry_msgs/msg/Twist
+/odom               nav_msgs/msg/Odometry
+/scan               sensor_msgs/msg/LaserScan
+/camera/image_raw   sensor_msgs/msg/Image
+/map                nav_msgs/msg/OccupancyGrid
+</code></pre>
+<h2 id="j4-topic-rates">J4. Topic rates</h2>
+<div class="sourceCode" id="cb405"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb405-1"><a href="#cb405-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /clock</span>
+<span id="cb405-2"><a href="#cb405-2" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /odom</span>
+<span id="cb405-3"><a href="#cb405-3" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /scan</span>
+<span id="cb405-4"><a href="#cb405-4" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /camera/image_raw</span></code></pre></div>
+<p>All active streams must show a nonzero rate.</p>
+<h2 id="j5-tf-graph">J5. TF graph</h2>
+<div class="sourceCode" id="cb406"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb406-1"><a href="#cb406-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_tools view_frames</span></code></pre></div>
+<p>The graph must contain:</p>
+<pre class="text"><code>map → odom → base_footprint
+</code></pre>
+<p>The graph must not contain:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<h2 id="j6-direct-tf-checks">J6. Direct TF checks</h2>
+<div class="sourceCode" id="cb409"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb409-1"><a href="#cb409-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo odom base_footprint <span class="kw">\</span></span>
+<span id="cb409-2"><a href="#cb409-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<div class="sourceCode" id="cb410"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb410-1"><a href="#cb410-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo map base_footprint <span class="kw">\</span></span>
+<span id="cb410-2"><a href="#cb410-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>Both should return transform values after localization is initialized.</p>
+<h2 id="j7-tf-publishers">J7. TF publishers</h2>
+<div class="sourceCode" id="cb411"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb411-1"><a href="#cb411-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /tf --verbose</span></code></pre></div>
+<p>There must not be two publishers assigning different parents to <code>odom</code>.</p>
+<p>The following publisher must not exist:</p>
+<pre class="text"><code>_Graph_ROS_Odometry_TFWorld2Odom
+</code></pre>
+<h1 id="required-deliverables">Required Deliverables</h1>
+<p>This section summarizes the required artifacts for submission. The required submission ends after Part F. Keep every Part A–F checkpoint file and collect the screenshots, command output, validation evidence, observations, and report notes before the Part F check-off.</p>
+<h2 id="required-part-af-evidence">Required Part A–F evidence</h2>
+<p>Submit the following evidence for each required part:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Part</th>
+<th>Checkpoint file</th>
+<th>Required report evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td><code>Lab3_00_student_start.usda</code></td>
+<td>Starter USD scene, TurtleBot hierarchy, physics validation, and observations</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td><code>Lab3_01_ros_clock.usda</code></td>
+<td>ROS2 clock Action Graph screenshot, <code>/clock</code> validation output, and observations</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td><code>Lab3_02_ros_drive.usda</code></td>
+<td>Drive Action Graph screenshot, robot motion using <code>/cmd_vel</code>, and observations</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td><code>Lab3_03_lidar.usda</code></td>
+<td>Lidar Action Graph and RViz2 scan screenshots, <code>/scan</code> validation output, and observations</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td><code>Lab3_04_camera.usda</code></td>
+<td>Camera Action Graph and camera image screenshots, topic validation output, and observations</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td><code>Lab3_05_odometry_tf.usda</code></td>
+<td>Odometry/TF graph and TF tree screenshots, validation output, and observations</td>
+</tr>
+</tbody>
+</table>
+<p>Screenshots are required after each part, not only at the end of the laboratory. Each screenshot should clearly show the relevant Isaac Sim graph or scene, RViz2 result, terminal validation, or other evidence requested by that part.</p>
+<h2 id="61-usd-and-usda-checkpoint-files">6.1 USD and USDA checkpoint files</h2>
+<p>Save the completed stage after each major checkpoint.</p>
+<p>Submit the following required Part A–F files:</p>
+<pre class="text"><code>Lab3_00_student_start.usda
+Lab3_01_ros_clock.usda
+Lab3_02_ros_drive.usda
+Lab3_03_lidar.usda
+Lab3_04_camera.usda
+Lab3_05_odometry_tf.usda
+</code></pre>
+<p>The following files are optional supplementary deliverables for Parts G–J:</p>
+<pre class="text"><code>Lab3_06_qos_verified.usda
+Lab3_07_localization.usda
+Lab3_08_nav2_complete.usda
+</code></pre>
+<p>Use the following directory:</p>
+<pre class="text"><code>~/RAS545/Lab3/work/
+</code></pre>
+<p>Do not overwrite the original starter file.</p>
+<p>If the instructor requires binary USD files, use:</p>
+<pre class="text"><code>.usd
+</code></pre>
+<p>If the instructor requires text-based USD files, use:</p>
+<pre class="text"><code>.usda
+</code></pre>
+<p>Confirm the intended meaning of <code>.uda</code> before submission because <code>.uda</code> is not a standard USD extension.</p>
+<h2 id="62-lab-report">6.2 Lab report</h2>
+<p>Submit one comprehensive formal lab report in the <a href="https://docs.google.com/document/d/1HOYJqnCjeE1o-8Ghffh58nG2FxjORW-J/edit?usp=sharing&amp;ouid=109541660202730576301&amp;rtpof=true&amp;sd=true">RAS 545 Lab Report Template</a>. The report must contain screenshots after each required part, A through F, and must document the work completed rather than only presenting final results.</p>
+<p>The report must contain:</p>
+<ol>
+<li>Title page</li>
+<li>Lab objectives</li>
+<li>Software and hardware configuration</li>
+<li>Procedure</li>
+<li>Results</li>
+<li>Screenshots</li>
+<li>ROS2 topic tables</li>
+<li>TF tree</li>
+<li>QoS analysis</li>
+<li>Troubleshooting observations</li>
+<li>Answers to assigned questions</li>
+<li>Key learnings</li>
+<li>Conclusion</li>
+<li>References</li>
+</ol>
+<p>For each required part, include:</p>
+<ul>
+<li>Procedure followed.</li>
+<li>Results and validation command output.</li>
+<li>Observations, including errors or troubleshooting.</li>
+<li>Supporting screenshots captured immediately after the part.</li>
+<li>The corresponding checkpoint filename.</li>
+<li>Key learning or conclusion from that part.</li>
+</ul>
+<p>Your report must include these supporting images for the required Parts A–F submission:</p>
+<ul>
+<li>Starter USD scene</li>
+<li>TurtleBot hierarchy</li>
+<li>ROS clock graph</li>
+<li>Drive graph</li>
+<li>Lidar graph</li>
+<li>Camera graph</li>
+<li>Odometry and TF graph</li>
+</ul>
+<p>The following images are optional supplementary evidence for Parts G–J:</p>
+<ul>
+<li>RViz map and lidar</li>
+<li>RViz initial pose</li>
+<li>RViz navigation goal</li>
+<li>Final robot position</li>
+</ul>
+<h2 id="63-demonstration-video">6.3 Demonstration video</h2>
+<p>For the required submission, record one or more videos showing the working system through Part F:</p>
+<ol>
+<li>Isaac Sim scene running.</li>
+<li>TurtleBot moving from <code>/cmd_vel</code>.</li>
+<li>Lidar data in RViz2.</li>
+<li>Camera image data.</li>
+<li>TF tree or transform verification.</li>
+</ol>
+<p>Videos showing the following are optional supplementary evidence for Parts G–J:</p>
+<ol start="6">
+<li>Map and localization.</li>
+<li>Nav2 goal execution.</li>
+<li>Robot reaching the desired position.</li>
+</ol>
+<p>Upload the video to an accessible location and submit the link.</p>
+<p>The video must clearly show:</p>
+<ul>
+<li>The simulation is running.</li>
+<li>The robot is receiving commands.</li>
+<li>The robot moves under ROS2 control.</li>
+<li>The robot reaches the navigation goal.</li>
+</ul>
+<h2 id="64-code-and-configuration">6.4 Code and configuration</h2>
+<p>Submit:</p>
+<ul>
+<li>Any ROS2 launch commands or launch files.</li>
+<li>Any custom ROS2 Python scripts.</li>
+<li>Any custom configuration files.</li>
+<li>The map YAML file used.</li>
+<li>The ROS2 topic and diagnostic command logs.</li>
+<li>Any scripts used to validate the setup.</li>
+</ul>
+<h1 id="lab-check-off">Lab Check-Off</h1>
+<p>The Part F check-off is required. After successfully completing and compiling/executing the required work through Part F, notify the teaching staff immediately for verification. Bring or provide the Part A–F checkpoint files, formal report evidence, screenshots, and validation outputs.</p>
+<p>The required Part F check-off must confirm:</p>
+<ol>
+<li>The USD stage saves successfully.</li>
+<li>All required ROS2 graphs are created.</li>
+<li>The ROS2 workspace compiles successfully, if a workspace is required.</li>
+<li><code>/clock</code> is publishing.</li>
+<li><code>/cmd_vel</code> controls the robot.</li>
+<li><code>/scan</code> publishes a valid LaserScan.</li>
+<li><code>/camera/image_raw</code> publishes an image.</li>
+<li><code>/odom</code> publishes odometry.</li>
+<li>The TF tree is connected.</li>
+<li><code>odom → base_footprint</code> exists.</li>
+</ol>
+<p>Parts G–J, including AMCL, Nav2, and final diagnostics, are supplementary after the required Part F check-off. They may be demonstrated separately if completed.</p>
+<p>The check-off demonstration must show a working system through Part F, not only screenshots or code.</p>
+<h1 id="troubleshooting-guide">Troubleshooting Guide</h1>
+<p>Use this section as a quick-reference guide when the robot does not appear to be working. Start with the lowest-level check: whether Isaac Sim is playing, whether the graph is connected, and whether the topic exists in ROS2.</p>
+<h2 id="81-isaac-sim-opens-but-ros-topics-do-not-appear">8.1 Isaac Sim opens but ROS topics do not appear</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb418"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb418-1"><a href="#cb418-1" aria-hidden="true"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb418-2"><a href="#cb418-2" aria-hidden="true"></a><span class="bu">export</span> <span class="va">ROS_DOMAIN_ID=</span>0</span>
+<span id="cb418-3"><a href="#cb418-3" aria-hidden="true"></a><span class="ex">ros2</span> topic list</span></code></pre></div>
+<p>Then verify:</p>
+<ul>
+<li>Isaac Sim is playing.</li>
+<li>The ROS2 bridge extension is enabled.</li>
+<li>The ROS2 Context node exists.</li>
+<li>The graph has an <code>On Playback Tick</code> node.</li>
+<li>The graph is connected to the required publisher or subscriber.</li>
+<li>Isaac Sim was started after sourcing ROS2.</li>
+</ul>
+<h2 id="82-clock-does-not-exist">8.2 <code>/clock</code> does not exist</h2>
+<p>Check:</p>
+<pre class="text"><code>ROS2 Publish Clock topicName = /clock
+ROS2 Context domain ID = 0
+On Playback Tick.tick → Publish Clock.execIn
+Read Simulation Time.simulationTime → Publish Clock.timeStamp
+Context.context → Publish Clock.context
+</code></pre>
+<p>Press Play.</p>
+<p>Run:</p>
+<div class="sourceCode" id="cb420"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb420-1"><a href="#cb420-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /clock --once</span></code></pre></div>
+<h2 id="83-the-robot-does-not-move">8.3 The robot does not move</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb421"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb421-1"><a href="#cb421-1" aria-hidden="true"></a><span class="ex">ros2</span> topic type /cmd_vel</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>geometry_msgs/msg/Twist
+</code></pre>
+<p>Check that the drive graph uses:</p>
+<pre class="text"><code>Topic Name = /cmd_vel
+</code></pre>
+<p>Check:</p>
+<pre class="text"><code>Target Prim = /turtlebot3_burger/base_footprint
+Wheel Distance = 0.16
+Wheel Radius = 0.025
+Left Joint = wheel_left_joint
+Right Joint = wheel_right_joint
+</code></pre>
+<p>Send a slow test command:</p>
+<div class="sourceCode" id="cb425"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb425-1"><a href="#cb425-1" aria-hidden="true"></a><span class="ex">ros2</span> topic pub --rate 5 /cmd_vel geometry_msgs/msg/Twist <span class="kw">\</span></span>
+<span id="cb425-2"><a href="#cb425-2" aria-hidden="true"></a><span class="st">&quot;{linear: {x: 0.05, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}&quot;</span></span></code></pre></div>
+<h2 id="84-the-robot-moves-backward">8.4 The robot moves backward</h2>
+<p>Check:</p>
+<ul>
+<li>The sign of the linear X command.</li>
+<li>Wheel joint order.</li>
+<li>Wheel joint axis.</li>
+<li>Wheel joint orientations.</li>
+</ul>
+<p>The correct joint order is:</p>
+<pre class="text"><code>wheel_left_joint
+wheel_right_joint
+</code></pre>
+<h2 id="85-the-robot-spins-instead-of-moving-straight">8.5 The robot spins instead of moving straight</h2>
+<p>Check:</p>
+<ul>
+<li>Left and right wheel joint names.</li>
+<li>Wheel distance.</li>
+<li>Wheel radius.</li>
+<li>Wheel joint orientations.</li>
+<li>Whether one wheel has an inverted axis.</li>
+</ul>
+<h2 id="86-scan-does-not-exist">8.6 <code>/scan</code> does not exist</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb427"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb427-1"><a href="#cb427-1" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> scan</span></code></pre></div>
+<p>Check:</p>
+<pre class="text"><code>Lidar sensor path = /turtlebot3_burger/base_scan/Lidar2D
+Frame ID = base_scan
+Topic Name = /scan
+Type = laser_scan
+Enabled = True
+</code></pre>
+<p>Verify the render product is connected to the lidar helper.</p>
+<p>Verify Isaac Sim is playing.</p>
+<h2 id="87-scan-exists-but-contains-no-useful-data">8.7 <code>/scan</code> exists but contains no useful data</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb429"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb429-1"><a href="#cb429-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /scan --once</span></code></pre></div>
+<p>Verify:</p>
+<pre class="text"><code>ranges
+angle_min
+angle_max
+range_min
+range_max
+</code></pre>
+<p>Check that the lidar:</p>
+<ul>
+<li>Is not inside the robot.</li>
+<li>Is not below the floor.</li>
+<li>Has translation <code>(0, 0, 0)</code> relative to <code>base_scan</code>.</li>
+<li>Has rotation <code>(0, 0, 0)</code> degrees relative to <code>base_scan</code>.</li>
+<li>Has a working render product.</li>
+</ul>
+<h2 id="88-the-camera-topic-exists-but-no-image-is-visible">8.8 The camera topic exists but no image is visible</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb431"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb431-1"><a href="#cb431-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /camera/image_raw</span></code></pre></div>
+<p>Verify:</p>
+<pre class="text"><code>Camera Prim = /turtlebot3_burger/base_footprint/Camera_1
+Type = rgb
+Topic Name = /camera/image_raw
+Enabled = True
+</code></pre>
+<p>Check the camera transform:</p>
+<pre class="text"><code>X = 0.100 m
+Y = 0.000 m
+Z = 0.200 m
+Rotation X = 90 degrees
+Rotation Y = 0 degrees
+Rotation Z = -90 degrees
+</code></pre>
+<p>Open:</p>
+<div class="sourceCode" id="cb434"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb434-1"><a href="#cb434-1" aria-hidden="true"></a><span class="ex">ros2</span> run rqt_image_view rqt_image_view</span></code></pre></div>
+<p>Select:</p>
+<pre class="text"><code>/camera/image_raw
+</code></pre>
+<h2 id="89-odom-does-not-exist">8.9 <code>/odom</code> does not exist</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb436"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb436-1"><a href="#cb436-1" aria-hidden="true"></a><span class="ex">ros2</span> topic list <span class="kw">|</span> <span class="fu">grep</span> odom</span>
+<span id="cb436-2"><a href="#cb436-2" aria-hidden="true"></a><span class="ex">ros2</span> topic type /odom</span></code></pre></div>
+<p>Verify:</p>
+<pre class="text"><code>Chassis Frame ID = base_footprint
+Odom Frame ID = odom
+Topic Name = /odom
+</code></pre>
+<p>Confirm:</p>
+<pre class="text"><code>Isaac Compute Odometry.execOut
+    → ROS2 Publish Odometry.execIn
+</code></pre>
+<p>Confirm simulation time is connected.</p>
+<h2 id="810-odom--base_footprint-does-not-exist">8.10 <code>odom → base_footprint</code> does not exist</h2>
+<p>Run:</p>
+<div class="sourceCode" id="cb439"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb439-1"><a href="#cb439-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo odom base_footprint <span class="kw">\</span></span>
+<span id="cb439-2"><a href="#cb439-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>Verify:</p>
+<pre class="text"><code>Parent Frame ID = odom
+Child Frame ID = base_footprint
+</code></pre>
+<p>Do not use:</p>
+<pre class="text"><code>Parent Frame ID = world
+Child Frame ID = odom
+</code></pre>
+<p>That transform conflicts with AMCL.</p>
+<h2 id="811-the-tf-tree-contains-world--odom">8.11 The TF tree contains <code>world → odom</code></h2>
+<p>If the TF graph contains:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<p>select the transform publisher that has:</p>
+<pre class="text"><code>Parent Frame ID = world
+Child Frame ID = odom
+</code></pre>
+<p>Delete or deactivate that publisher.</p>
+<p>This laboratory must publish:</p>
+<pre class="text"><code>odom → base_footprint
+</code></pre>
+<p>The laboratory does not require a <code>TFWorld2Odom</code> node. Do not create a world-to-odom transform.</p>
+<p>Verify the result:</p>
+<div class="sourceCode" id="cb445"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb445-1"><a href="#cb445-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_tools view_frames</span></code></pre></div>
+<p>The graph must contain <code>odom → base_footprint</code> and must not contain <code>world → odom</code>.</p>
+<h2 id="812-map--base_footprint-does-not-exist">8.12 <code>map → base_footprint</code> does not exist</h2>
+<p>Check the lower transform first:</p>
+<div class="sourceCode" id="cb446"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb446-1"><a href="#cb446-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo odom base_footprint <span class="kw">\</span></span>
+<span id="cb446-2"><a href="#cb446-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>If this fails, repair odometry and TF before checking AMCL.</p>
+<p>If the lower transform works, check AMCL:</p>
+<div class="sourceCode" id="cb447"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb447-1"><a href="#cb447-1" aria-hidden="true"></a><span class="ex">ros2</span> lifecycle get /amcl</span></code></pre></div>
+<p>Expected:</p>
+<pre class="text"><code>active [3]
+</code></pre>
+<p>Set the initial pose in RViz2:</p>
+<ol>
+<li>Set Fixed Frame to <code>map</code>.</li>
+<li>Select <code>2D Pose Estimate</code>.</li>
+<li>Click the robot’s position.</li>
+<li>Drag the arrow to match the heading.</li>
+<li>Wait five seconds.</li>
+</ol>
+<p>Then run:</p>
+<div class="sourceCode" id="cb449"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb449-1"><a href="#cb449-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo map base_footprint <span class="kw">\</span></span>
+<span id="cb449-2"><a href="#cb449-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<h2 id="813-the-map-server-fails-to-configure">8.13 The map server fails to configure</h2>
+<p>Check the file:</p>
+<div class="sourceCode" id="cb450"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb450-1"><a href="#cb450-1" aria-hidden="true"></a><span class="fu">ls</span> -l ~/RAS545/Lab3/maps/turtlebot3_map.yaml</span></code></pre></div>
+<p>Check the image:</p>
+<div class="sourceCode" id="cb451"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb451-1"><a href="#cb451-1" aria-hidden="true"></a><span class="fu">ls</span> -l ~/RAS545/Lab3/maps/turtlebot3_map.pgm</span></code></pre></div>
+<p>Check the YAML:</p>
+<div class="sourceCode" id="cb452"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb452-1"><a href="#cb452-1" aria-hidden="true"></a><span class="fu">sed</span> -n <span class="st">&#39;1,20p&#39;</span> ~/RAS545/Lab3/maps/turtlebot3_map.yaml</span></code></pre></div>
+<p>The YAML must contain:</p>
+<div class="sourceCode" id="cb453"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb453-1"><a href="#cb453-1" aria-hidden="true"></a><span class="fu">image</span><span class="kw">:</span><span class="at"> turtlebot3_map.pgm</span></span></code></pre></div>
+<p>The image must be in the same directory as the YAML file.</p>
+<h2 id="814-the-map-appears-in-rviz2-but-the-lidar-is-misaligned">8.14 The map appears in RViz2 but the lidar is misaligned</h2>
+<p>Check:</p>
+<ul>
+<li>Initial pose estimate.</li>
+<li>Lidar frame ID.</li>
+<li><code>base_scan</code> transform.</li>
+<li>Camera and lidar sensor placement.</li>
+<li>Map origin.</li>
+<li>Robot orientation.</li>
+<li>Whether the robot is located in the correct map area.</li>
+</ul>
+<p>The map origin is:</p>
+<pre class="text"><code>X = -6.2 m
+Y = -3.32 m
+Z = 0.0 m
+</code></pre>
+<p>Do not change the map origin during this laboratory.</p>
+<h2 id="815-nav2-costmap-is-empty">8.15 Nav2 costmap is empty</h2>
+<p>Check:</p>
+<div class="sourceCode" id="cb455"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb455-1"><a href="#cb455-1" aria-hidden="true"></a><span class="ex">ros2</span> topic hz /scan</span></code></pre></div>
+<p>Check:</p>
+<div class="sourceCode" id="cb456"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb456-1"><a href="#cb456-1" aria-hidden="true"></a><span class="ex">ros2</span> topic echo /scan --once</span></code></pre></div>
+<p>Check:</p>
+<div class="sourceCode" id="cb457"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb457-1"><a href="#cb457-1" aria-hidden="true"></a><span class="ex">ros2</span> run tf2_ros tf2_echo map base_scan <span class="kw">\</span></span>
+<span id="cb457-2"><a href="#cb457-2" aria-hidden="true"></a>  <span class="ex">--ros-args</span> -p use_sim_time:=true</span></code></pre></div>
+<p>Verify that Nav2 uses:</p>
+<pre class="text"><code>/scan
+</code></pre>
+<p>not:</p>
+<pre class="text"><code>/scan_fixed
+</code></pre>
+<p>Check that the global costmap and local costmap are active.</p>
+<h2 id="816-nav2-reports-a-transform-timing-error">8.16 Nav2 reports a transform timing error</h2>
+<p>A timing warning immediately after starting simulation can be transient.</p>
+<p>Wait several seconds and verify that:</p>
+<ul>
+<li>Isaac Sim is playing.</li>
+<li><code>/clock</code> is publishing.</li>
+<li>All ROS2 nodes use <code>use_sim_time:=true</code>.</li>
+<li>The sensor timestamps are simulation timestamps.</li>
+<li>The odometry and TF graphs use Isaac simulation time.</li>
+</ul>
+<p>Restart only the affected ROS2 node if necessary.</p>
+<h2 id="817-ros2-topics-exist-but-the-subscriber-receives-no-data">8.17 ROS2 topics exist but the subscriber receives no data</h2>
+<p>Inspect the topic:</p>
+<div class="sourceCode" id="cb460"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb460-1"><a href="#cb460-1" aria-hidden="true"></a><span class="ex">ros2</span> topic info /scan --verbose</span></code></pre></div>
+<p>Compare:</p>
+<ul>
+<li>Reliability</li>
+<li>Durability</li>
+<li>History</li>
+<li>Depth</li>
+</ul>
+<p>QoS incompatibility can prevent communication even when the topic name is correct.</p>
+<h1 id="required-report-questions">Required Report Questions</h1>
+<p>Answer the following questions in complete sentences.</p>
+<ol>
+<li>What is the function of the ROS2 Context node?</li>
+<li>Why must Isaac Sim publish <code>/clock</code> when using <code>use_sim_time:=true</code>?</li>
+<li>What is the difference between <code>/cmd_vel</code>, <code>/odom</code>, <code>/scan</code>, and <code>/tf</code>?</li>
+<li>How does the Differential Controller convert robot velocity into wheel velocities?</li>
+<li>Why are the wheel radius and wheel distance required?</li>
+<li>Why does the lidar use the frame ID <code>base_scan</code>?</li>
+<li>Why must the camera frame be included in the TF tree?</li>
+<li>What is the difference between an RGB image and a CameraInfo message?</li>
+<li>Why must AMCL publish <code>map → odom</code>?</li>
+<li>Why must Isaac Sim publish <code>odom → base_footprint</code>?</li>
+<li>Why is publishing both <code>world → odom</code> and <code>map → odom</code> problematic?</li>
+<li>What is the purpose of transient-local durability for <code>/map</code>?</li>
+<li>Why are live sensor topics normally not treated like a stored map?</li>
+<li>What is the difference between a topic, service, and action in ROS2?</li>
+<li>What is the purpose of the global costmap?</li>
+<li>What is the purpose of the local costmap?</li>
+<li>What diagnostic command would you use if <code>/scan</code> exists but Nav2 cannot use it?</li>
+<li>What diagnostic command would you use if RViz2 cannot transform <code>map</code> to <code>base_footprint</code>?</li>
+<li>What was the most important error encountered during this laboratory?</li>
+<li>How did you identify and correct that error?</li>
+</ol>
+<h1 id="key-learning-summary">Key Learning Summary</h1>
+<p>The system works because each component has a defined responsibility:</p>
+<pre class="text"><code>Isaac Sim physics
+    → simulates the robot
+
+Drive Action Graph
+    → converts /cmd_vel into wheel motion
+
+Lidar Action Graph
+    → publishes /scan
+
+Camera Action Graph
+    → publishes camera images
+
+Odometry graph
+    → publishes /odom and odom → base_footprint
+
+TF graph
+    → publishes robot link transforms
+
+Map server
+    → publishes /map
+
+AMCL
+    → publishes map → odom
+
+Nav2
+    → plans and controls motion to a goal
+</code></pre>
+<p>The complete navigation chain is:</p>
+<pre class="text"><code>Goal in RViz2
+    ↓
+Nav2 planner
+    ↓
+Global path
+    ↓
+Nav2 controller
+    ↓
+Velocity command
+    ↓
+/cmd_vel
+    ↓
+Isaac Sim differential controller
+    ↓
+Wheel joints
+    ↓
+Robot motion
+    ↓
+Odometry
+    ↓
+TF
+    ↓
+AMCL localization
+</code></pre>
+<p>The most important final verification is:</p>
+<pre class="text"><code>map → odom → base_footprint → base_scan
+</code></pre>
+<p>The system must not contain a competing:</p>
+<pre class="text"><code>world → odom
+</code></pre>
+<h1 id="additional-learning-resources">Additional Learning Resources</h1>
+<ul>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_drive_turtlebot.html">Isaac Sim 6.0.1: Driving TurtleBot Using ROS2 Messages</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_clock.html">Isaac Sim 6.0.1: ROS2 Clock</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_camera.html">Isaac Sim 6.0.1: ROS2 Cameras</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_rtx_lidar.html">Isaac Sim 6.0.1: RTX Lidar Sensors</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_tf.html">Isaac Sim 6.0.1: ROS2 Transform Trees and Odometry</a></li>
+<li><a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/ros2_tutorials/tutorial_ros2_navigation.html">Isaac Sim 6.0.1: ROS2 Navigation</a></li>
+<li><a href="https://docs.ros.org/en/humble/Concepts/Intermediate/About-Quality-of-Service-Settings.html">ROS2 Humble Quality of Service Settings</a></li>
+<li><a href="https://docs.nav2.org/rolling/configuration_and_development/first_time_robot_setup_guide/sensors/mapping_localization/">Nav2 Mapping and Localization</a></li>
+</ul>
+<h1 id="final-completion-checklist">Final Completion Checklist</h1>
+<p>Before submitting, verify every item.</p>
+<h2 id="isaac-sim">Isaac Sim</h2>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Starter USD opened successfully.</li>
+<li><input type="checkbox" disabled="" />
+Robot remains on the ground.</li>
+<li><input type="checkbox" disabled="" />
+Robot physics was not deleted.</li>
+<li><input type="checkbox" disabled="" />
+Robot articulation was not deleted.</li>
+<li><input type="checkbox" disabled="" />
+ROS2 clock graph exists.</li>
+<li><input type="checkbox" disabled="" />
+Drive graph exists.</li>
+<li><input type="checkbox" disabled="" />
+Lidar sensor exists.</li>
+<li><input type="checkbox" disabled="" />
+Lidar graph exists.</li>
+<li><input type="checkbox" disabled="" />
+Camera exists.</li>
+<li><input type="checkbox" disabled="" />
+Camera graph exists.</li>
+<li><input type="checkbox" disabled="" />
+Odometry graph exists.</li>
+<li><input type="checkbox" disabled="" />
+Every Action Graph has a visible <code>On Playback Tick</code> execution connection.</li>
+<li><input type="checkbox" disabled="" />
+Every ROS2 publisher has a connected ROS2 Context.</li>
+<li><input type="checkbox" disabled="" />
+Every timestamped publisher uses Isaac simulation time.</li>
+<li><input type="checkbox" disabled="" />
+Every sensor has the correct parent prim and frame ID.</li>
+<li><input type="checkbox" disabled="" />
+Every Action Graph has been photographed before moving to the next checkpoint.</li>
+<li><input type="checkbox" disabled="" />
+TF graph exists.</li>
+<li><input type="checkbox" disabled="" />
+<code>TFWorld2Odom</code> does not exist.</li>
+<li><input type="checkbox" disabled="" />
+Stage saves successfully.</li>
+</ul>
+<h2 id="ros2">ROS2</h2>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+<code>/clock</code> publishes.</li>
+<li><input type="checkbox" disabled="" />
+<code>/cmd_vel</code> exists.</li>
+<li><input type="checkbox" disabled="" />
+<code>/odom</code> publishes.</li>
+<li><input type="checkbox" disabled="" />
+<code>/scan</code> publishes.</li>
+<li><input type="checkbox" disabled="" />
+<code>/camera/image_raw</code> publishes.</li>
+<li><input type="checkbox" disabled="" />
+<code>/camera/camera_info</code> publishes.</li>
+<li><input type="checkbox" disabled="" />
+<code>/map</code> publishes.</li>
+<li><input type="checkbox" disabled="" />
+<code>odom → base_footprint</code> exists.</li>
+<li><input type="checkbox" disabled="" />
+<code>map → odom</code> exists after AMCL initialization.</li>
+<li><input type="checkbox" disabled="" />
+The final TF tree is connected.</li>
+<li><input type="checkbox" disabled="" />
+The TF tree contains <code>map → odom → base_footprint</code>.</li>
+<li><input type="checkbox" disabled="" />
+The TF tree does not contain <code>world → odom</code>.</li>
+<li><input type="checkbox" disabled="" />
+No frame has two competing parents.</li>
+</ul>
+<h2 id="localization">Localization</h2>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Map server is active.</li>
+<li><input type="checkbox" disabled="" />
+AMCL is active.</li>
+<li><input type="checkbox" disabled="" />
+Initial pose was set.</li>
+<li><input type="checkbox" disabled="" />
+Laser scan approximately overlaps the map.</li>
+<li><input type="checkbox" disabled="" />
+Robot pose changes when the robot moves.</li>
+</ul>
+<h2 id="navigation">Navigation</h2>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Planner server is active.</li>
+<li><input type="checkbox" disabled="" />
+Controller server is active.</li>
+<li><input type="checkbox" disabled="" />
+Global costmap is visible.</li>
+<li><input type="checkbox" disabled="" />
+Local costmap is visible.</li>
+<li><input type="checkbox" disabled="" />
+A path is generated.</li>
+<li><input type="checkbox" disabled="" />
+Robot reaches a goal.</li>
+<li><input type="checkbox" disabled="" />
+Robot stops at the goal.</li>
+</ul>
+<h2 id="submission">Submission</h2>
+<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+All USD or USDA checkpoint files submitted.</li>
+<li><input type="checkbox" disabled="" />
+Lab report submitted.</li>
+<li><input type="checkbox" disabled="" />
+Screenshots included.</li>
+<li><input type="checkbox" disabled="" />
+Video link submitted.</li>
+<li><input type="checkbox" disabled="" />
+Code and configuration files submitted.</li>
+<li><input type="checkbox" disabled="" />
+Diagnostic outputs included.</li>
+<li><input type="checkbox" disabled="" />
+Teaching staff notified for check-off.</li>
+</ul>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Same footer as the main page, minus the nav bar (a reading page
+       does not need it). -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">Built with plain HTML, CSS and a sprinkle of JavaScript - <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <!-- The automatic footer year. -->
+  <script src="../js/main.js"></script>
+
+  <!--
+    The diagram drawer (Mermaid), loaded from the jsDelivr CDN.
+    It finds the guide's "mermaid" code blocks and draws them as
+    diagrams. This is the ONLY external script on the site.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    // When the page is ready, turn every mermaid code block into a drawing.
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.mermaid) { mermaid.initialize({ startOnLoad: true }); }
+    });
+  </script>
+</body>
+</html>
