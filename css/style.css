@@ -1,0 +1,579 @@
+/* ==================================================================
+   RAS LAB WEBSITE - THE PAINT (style.css)
+
+   This file decides how the site LOOKS: colors, sizes, spacing.
+
+   HOW TO READ IT:
+     - Each "selector" (like .hero) names a thing from index.html.
+     - Inside the { } are the rules for that thing.
+     - Every rule has a short comment explaining it in plain words.
+
+   THE COLORS live at the very top in one place (:root), so changing
+   the whole site's color scheme means editing a handful of lines.
+   ================================================================== */
+
+
+/* ------------------------------------------------------------------
+   THE COLOR + SIZE PALETTE
+   ":root" means "the whole page". The names inside are variables:
+   little labeled boxes we reuse everywhere below. Change a color
+   here and it changes everywhere it is used.
+   ------------------------------------------------------------------ */
+:root {
+  --paper:  #faf7f2;   /* the warm off-white background of the page */
+  --card:   #ffffff;   /* the plain white of the cards */
+  --ink:    #1a1512;   /* almost-black, used for main text */
+  --muted:  #6f655b;   /* soft brown-gray, used for quiet text */
+  --line:   #e7ded3;   /* the light hairline borders */
+  --maroon: #8c1d40;   /* ASU maroon - our main accent color */
+  --maroon-dark: #6f1732;  /* darker maroon for when you hover a button */
+  --gold:   #ffc627;   /* ASU gold - small sparks of highlight */
+
+  --max-width: 1080px;   /* the widest the content ever gets */
+  --radius: 14px;        /* how rounded the card corners are */
+}
+
+
+/* ------------------------------------------------------------------
+   RESET + BASE
+   Browsers add their own default margins; these rules calm that
+   down so our design is the one in charge.
+   ------------------------------------------------------------------ */
+* {
+  margin: 0;             /* remove every default outer spacing */
+  padding: 0;            /* remove every default inner spacing */
+  box-sizing: border-box; /* widths include borders + padding (saner math) */
+}
+
+html {
+  scroll-behavior: smooth; /* menu links glide down instead of jumping */
+}
+
+body {
+  background-color: var(--paper);  /* paint the whole page warm off-white */
+  color: var(--ink);               /* main text color */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif;  /* the system's own clean font -
+               nothing to download, fast on every device */
+  line-height: 1.6;      /* breathing room between lines of text */
+}
+
+
+/* ------------------------------------------------------------------
+   SHARED BITS (used by several sections)
+   ------------------------------------------------------------------ */
+
+/* A small, spaced-out, monospace label that sits above titles.
+   It gives the "engineering notebook" feel. */
+.eyebrow,
+.section-eyebrow {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-size: 0.8rem;          /* a little smaller than body text */
+  letter-spacing: 0.12em;     /* spread the letters out slightly */
+  text-transform: uppercase;  /* ALL CAPS look */
+  color: var(--maroon);       /* in our accent color */
+  margin-bottom: 0.75rem;     /* small gap before the title below */
+}
+
+/* Every content section centers its text column and stops it from
+   getting too wide on big monitors. */
+.section-inner,
+.hero-inner,
+.footer-inner,
+.topbar-inner {
+  max-width: var(--max-width);  /* never wider than 1080px */
+  margin-left: auto;            /* these two "auto" margins center it */
+  margin-right: auto;
+  padding-left: 1.5rem;         /* keep text off the screen edges */
+  padding-right: 1.5rem;
+}
+
+/* Each section gets generous vertical space so the page breathes. */
+.section {
+  padding-top: 4.5rem;
+  padding-bottom: 4.5rem;
+}
+
+/* Every other section sits on white so sections are easy to tell apart. */
+.section:nth-of-type(even) {
+  background-color: var(--card);
+  border-top: 1px solid var(--line);    /* thin line above */
+  border-bottom: 1px solid var(--line); /* thin line below */
+}
+
+.section-title {
+  font-size: 2rem;          /* big, but calmer than the hero title */
+  letter-spacing: -0.02em;  /* pull letters slightly together: modern look */
+  margin-bottom: 1rem;
+}
+
+.section-text {
+  color: var(--muted);      /* quieter color for paragraphs */
+  max-width: 44rem;         /* stop lines from getting too long to read */
+  margin-bottom: 1rem;      /* space between paragraphs */
+}
+
+
+/* ------------------------------------------------------------------
+   TOP BAR (navigation)
+   ------------------------------------------------------------------ */
+.topbar {
+  position: sticky;         /* the bar follows you as you scroll */
+  top: 0;                   /* stuck to the very top */
+  z-index: 10;              /* floats above the page content */
+  background-color: var(--paper);  /* same warm color as the page */
+  border-bottom: 1px solid var(--line);  /* hairline under the bar */
+}
+
+.topbar-inner {
+  display: flex;                  /* lay the bar's pieces in a row */
+  align-items: center;            /* center them vertically */
+  justify-content: space-between; /* logo left, links right */
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
+/* The lab "logo": the maroon RAS badge + the word "Lab". */
+.brand {
+  display: flex;              /* badge and word sit side by side */
+  align-items: center;
+  gap: 0.6rem;                /* small gap between badge and word */
+  text-decoration: none;      /* no underline on the logo link */
+  color: var(--ink);
+  font-weight: 700;           /* bold */
+  font-size: 1.15rem;
+}
+
+.brand-mark {
+  background-color: var(--maroon);  /* maroon square */
+  color: #ffffff;                   /* white letters */
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;          /* space inside the square */
+  border-radius: 6px;               /* slightly rounded corners */
+  letter-spacing: 0.08em;
+}
+
+/* The list of links on the right of the bar. */
+.nav-links {
+  display: flex;          /* links in a row */
+  align-items: center;
+  gap: 1.75rem;           /* space between the links */
+  list-style: none;       /* no bullet dots */
+}
+
+.nav-links a {
+  text-decoration: none;  /* no underlines */
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.nav-links a:hover {
+  color: var(--maroon);   /* links turn maroon when hovered */
+}
+
+/* The "Join the lab" link in the bar gets button styling so it stands out. */
+.nav-cta {
+  border: 1.5px solid var(--ink);  /* simple outlined pill */
+  border-radius: 999px;            /* fully rounded ends */
+  padding: 0.4rem 1rem;
+}
+
+.nav-cta:hover {
+  border-color: var(--maroon);     /* the outline turns maroon on hover */
+}
+
+/* The hamburger button is hidden on big screens;
+   the phone rules at the bottom switch it on. */
+.menu-button {
+  display: none;
+  flex-direction: column;    /* stack the 3 lines */
+  gap: 5px;                  /* space between the lines */
+  background: none;          /* no gray button look */
+  border: none;              /* no border */
+  cursor: pointer;           /* show the "you can click me" hand */
+  padding: 0.4rem;
+}
+
+.menu-button-line {
+  width: 24px;                       /* each hamburger line's width */
+  height: 2px;                       /* each hamburger line's thickness */
+  background-color: var(--ink);      /* dark line */
+  border-radius: 2px;
+}
+
+
+/* ------------------------------------------------------------------
+   HERO (the big first block)
+   ------------------------------------------------------------------ */
+.hero {
+  /* The faint "blueprint grid" behind the hero. It is drawn with two
+     repeating gradients (one for vertical lines, one for horizontal).
+     No image file needed - pure CSS. */
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;  /* the size of each grid square */
+
+  padding-top: 6.5rem;      /* lots of air above the headline */
+  padding-bottom: 6.5rem;   /* and below it */
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-title {
+  font-size: 4rem;            /* the biggest text on the page */
+  letter-spacing: -0.03em;    /* tight, confident letters */
+  line-height: 1.05;          /* snug lines so big text doesn't float */
+  margin-bottom: 1.25rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;          /* a bit larger than body text */
+  color: var(--muted);
+  max-width: 38rem;           /* keep the line lengths comfortable */
+  margin-bottom: 2rem;        /* space before the buttons */
+}
+
+/* The two hero buttons sit in a row with a gap. */
+.hero-actions {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;            /* on tiny screens they stack nicely */
+}
+
+/* Shared button shape. */
+.button {
+  display: inline-block;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;       /* pill shape */
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* The solid maroon button (the main thing we want people to click). */
+.button-primary {
+  background-color: var(--maroon);
+  color: #ffffff;
+}
+
+.button-primary:hover {
+  background-color: var(--maroon-dark);  /* a shade darker on hover */
+}
+
+/* The quiet outlined button. */
+.button-ghost {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+}
+
+.button-ghost:hover {
+  border-color: var(--maroon);
+  color: var(--maroon);
+}
+
+
+/* ------------------------------------------------------------------
+   CARDS (projects + people)
+   ------------------------------------------------------------------ */
+
+/* The grid that lines cards up: 3 across on wide screens,
+   and it automatically wraps to fewer on narrow ones. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* 3 equal columns */
+  gap: 1.25rem;                           /* space between cards */
+  margin-top: 2rem;                       /* space above the grid */
+}
+
+/* One card. */
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--line);   /* light hairline border */
+  border-radius: var(--radius);    /* rounded corners */
+  padding: 1.5rem;                 /* space inside the card */
+}
+
+/* A little lift when the mouse is over a card. */
+.card:hover {
+  transform: translateY(-3px);     /* float up by 3 pixels */
+  box-shadow: 0 10px 24px rgba(26, 21, 18, 0.08);  /* soft shadow */
+}
+
+/* Placeholder cards get a dashed border so nobody mistakes
+   an empty slot for a finished project. */
+.card-placeholder {
+  border-style: dashed;
+  border-width: 1.5px;
+  border-color: var(--muted);
+  background-color: var(--paper);   /* same as page: reads as "empty frame" */
+}
+
+/* The small mono tag at the top of a card ("Project slot"). */
+.card-tag {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  margin-bottom: 0.6rem;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 0.9rem;
+}
+
+/* The tiny note at the bottom of a placeholder card. */
+.card-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+
+/* ------------------------------------------------------------------
+   FOOTER
+   ------------------------------------------------------------------ */
+.footer {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.footer-line {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.footer-small {
+  font-size: 0.8rem;    /* the second line is quieter */
+}
+
+
+/* ------------------------------------------------------------------
+   PHONE RULES (screens 760px wide or less)
+   The browser only uses these on small screens: the menu collapses
+   into the hamburger, and the cards stack in one column.
+   ------------------------------------------------------------------ */
+@media (max-width: 760px) {
+
+  .hero-title {
+    font-size: 2.6rem;    /* smaller headline so it fits a phone */
+  }
+
+  .menu-button {
+    display: flex;        /* show the hamburger button */
+  }
+
+  /* The link list becomes a drop-down panel under the bar.
+     It starts hidden; js/main.js adds the ".is-open" class to show it. */
+  .nav-links {
+    display: none;                 /* hidden until the button is tapped */
+    position: absolute;            /* floats under the bar */
+    top: 100%;                     /* start right below the bar */
+    left: 0;
+    right: 0;
+    flex-direction: column;        /* links stacked vertically */
+    align-items: flex-start;
+    gap: 1.1rem;
+    background-color: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  /* When main.js adds this class, the panel appears. */
+  .nav-links.is-open {
+    display: flex;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;    /* one card per row on phones */
+  }
+
+  .section {
+    padding-top: 3rem;             /* slightly tighter sections on phones */
+    padding-bottom: 3rem;
+  }
+}
+
+
+/* ------------------------------------------------------------------
+   REDUCED MOTION
+   Some people ask their device for less animation. Respect that:
+   turn off the smooth scrolling glide for them.
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .card:hover {
+    transform: none;    /* no lift animation */
+  }
+}
+
+
+
+/* ------------------------------------------------------------------
+   v2 ADDITIONS
+   Extra pieces for the directory sections and the lab pages.
+   ------------------------------------------------------------------ */
+
+/* The "do this lab" link inside a card. */
+.card-link a {
+  color: var(--maroon);        /* links in our accent color */
+  font-weight: 600;            /* slightly bolder so they read as actions */
+  text-decoration: none;       /* no underline until hovered */
+}
+
+.card-link a:hover {
+  text-decoration: underline;
+}
+
+/* The quiet credit line under the Isaac Sim lab cards. */
+.credit-line {
+  font-size: 0.85rem;          /* smaller than body text */
+  margin-top: 1.75rem;         /* clear space above it */
+}
+
+.credit-line a {
+  color: var(--maroon);
+}
+
+/* Links inside ordinary paragraphs. */
+.section-text a {
+  color: var(--maroon);
+}
+
+
+/* ------------------------------------------------------------------
+   LAB PAGES (the copied instructional labs, e.g. labs/isaac-sim-lab-1.html)
+   The lab guides are long documents, so they get comfortable reading
+   styles: roomy headings, readable code blocks, images that never
+   overflow the screen.
+   ------------------------------------------------------------------ */
+
+/* The small "back to the directory" link at the top of a lab page. */
+.back-link {
+  display: inline-block;
+  margin-top: 2rem;
+  color: var(--maroon);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* The box at the top of a lab page with title, course and credits. */
+.lab-header {
+  margin-top: 1rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);  /* hairline under the header */
+}
+
+.lab-header h1 {
+  font-size: 2.2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+  line-height: 1.15;
+}
+
+/* The "who wrote this and for which course" line. */
+.lab-meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* The lab document itself. ".prose" just means "long reading text". */
+.prose {
+  max-width: 46rem;            /* keep reading lines comfortable */
+  padding-bottom: 4rem;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;          /* big space before each new part */
+  margin-bottom: 0.75rem;
+}
+
+.prose h3 {
+  font-size: 1.15rem;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--ink);
+  line-height: 1.7;            /* extra breathing room for instructions */
+  margin-bottom: 0.9rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;        /* indent lists so bullets are visible */
+  margin-bottom: 1rem;
+}
+
+/* Code shown inline inside a sentence, like `this`. */
+.prose code {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-size: 0.88em;
+  background-color: #f1ebe1;   /* soft paper-chip background */
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+/* Whole code blocks. */
+.prose pre {
+  background-color: #1a1512;   /* dark block, like a terminal */
+  color: #f5efe6;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  overflow-x: auto;            /* long lines scroll sideways, never break layout */
+  margin-bottom: 1.25rem;
+}
+
+.prose pre code {
+  background: none;            /* no chip background inside dark blocks */
+  padding: 0;
+  color: inherit;
+}
+
+/* Pictures in the lab guides: never wider than the text column. */
+.prose img {
+  max-width: 100%;
+  height: auto;                /* keep the picture's own proportions */
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  margin: 0.5rem 0 1.25rem;
+}
+
+/* Quoted notes in the guides ("> note:" lines in the source). */
+.prose blockquote {
+  border-left: 3px solid var(--gold);   /* a gold bar on the left */
+  padding-left: 1rem;
+  margin: 1.25rem 0;
+  color: var(--muted);
+}
+
+/* Tables, if a guide uses them. */
+.prose table {
+  border-collapse: collapse;   /* tidy shared borders */
+  margin-bottom: 1.25rem;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.8rem;
+  text-align: left;
+}

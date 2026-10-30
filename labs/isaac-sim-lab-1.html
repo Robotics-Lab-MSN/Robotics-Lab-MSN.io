@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  ISAAC SIM - LAB 1 (labs/isaac-sim-lab-1.html)
+
+  WHAT THIS PAGE IS:
+  The full text of Instructional Lab 1, copied onto the lab site.
+  Praj asked for the Isaac Sim labs he co-wrote to live here
+  (voice note, 2026-10-29).
+
+  WHERE THE CONTENT CAME FROM:
+  Source document: _labs/lab-01-isaac-sim/index.md in the GitHub repo
+  RoboX2020/Tatwik19.github.io (MIT license), converted to HTML on
+  2026-10-29. The original is also public at
+  https://tatwik19.github.io/labs/lab-01-isaac-sim/
+
+  HOW TO EDIT:
+  The lab text itself sits inside the <div class="prose"> below.
+  Everything outside that div (header, credits, styling hooks) is
+  ordinary site code with comments, same as index.html.
+
+  ONE EXTRA:
+  This page loads a small drawing library (Mermaid) from a public
+  CDN so the guide's diagrams render. If it ever fails, the diagram
+  just shows as plain text - nothing else on the page depends on it.
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 1: First steps in Isaac Sim - RAS Lab, ASU</title>
+  <meta name="description" content="Instructional Lab 1 for RAS 545: open Isaac Sim, build a small scene, and run a first physics simulation.">
+
+  <!-- The same paint as the rest of the site (one folder up). -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <main>
+    <div class="section-inner">
+
+      <!-- Back to the main directory page. -->
+      <a class="back-link" href="../index.html#isaac-sim">&larr; Back to the lab directory</a>
+
+      <!-- The title block: what this is, who it is for, who wrote it. -->
+      <header class="lab-header">
+        <p class="section-eyebrow">Isaac Sim - Lab 1</p>
+        <h1>Isaac Sim Basic Usage and First Physics Simulation</h1>
+        <p class="lab-meta">
+          Course: RAS 545 - Robotics Systems I &middot; Instructor: Prof. Sangram Redkar<br>
+          Authors: Sai Srinivas Tatwik Meesala, Rajesh S Aouti, Prajval Arora<br>
+          Copied here with permission of the authors under the MIT license;
+          original at
+          <a href="https://tatwik19.github.io/labs/lab-01-isaac-sim/">tatwik19.github.io/labs/lab-01-isaac-sim</a>.
+        </p>
+      </header>
+
+      <!--
+        THE LAB GUIDE ITSELF (converted from the authors' document).
+        Long reading text - the ".prose" styles in css/style.css give it
+        roomy headings, dark code blocks and images that fit the screen.
+      -->
+      <div class="prose">
+<p><strong>Instructor:</strong> Prof. <a href="mailto:Sangram.Redkar@asu.edu">Sangram Redkar</a></p><p><strong>Authors:</strong></p><ul><li><p>Sai Srinivas Tatwik Meesala: <a href="mailto:smeesala@asu.edu">smeesala@asu.edu</a></p></li><li><p>Rajesh S Aouti: <a href="mailto:raouti@asu.edu">raouti@asu.edu</a></p></li><li><p>Prajval Arora: <a href="mailto:parora24@asu.edu">parora24@asu.edu</a></p></li></ul><hr /><blockquote><p><strong>Required scope:</strong> Complete Parts A–G and submit the required checkpoint files, screenshots, formal report, and demonstration video. The final check-off occurs after successful completion of Part G.</p></blockquote><h2 id="start-here">Start Here</h2><p>Complete the laboratory in order:</p><ol><li>Read the software requirements and the linked NVIDIA GUI tutorial.</li><li>Create the <code>Lab1/checkpoints/</code> and <code>Lab1/screenshots/</code> directories.</li><li>Complete each part before moving to the next one.</li><li>Save a checkpoint stage and capture the required screenshot after every part.</li><li>Record the procedure, results, observations, and key learning in the formal report.</li><li>Notify the teaching staff for check-off after the final physics validation succeeds.</li></ol><h2 id="reference-tutorial">Reference Tutorial</h2><p>This laboratory follows the GUI workflow in the official <a href="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/introduction/quickstart_isaacsim.html">Isaac Sim Basic Usage Tutorial</a>.</p><p>Complete only the <strong>GUI</strong> tab. Do not complete the Extension or Standalone Python workflows for this laboratory.</p><h2 id="what-you-will-do">What You Will Do</h2><p>You will:</p><ol><li>Launch Isaac Sim.</li><li>Create and save a new USD stage.</li><li>Add a ground plane and light source.</li><li>Add, rename, move, rotate, and scale a cube.</li><li>Run the scene before physics is added.</li><li>Add rigid-body and collision properties.</li><li>Run the scene with gravity and verify that the cube falls and collides with the ground.</li></ol><h2 id="learning-goals">Learning Goals</h2><p>By the end of this laboratory, you will be able to:</p><ul><li>Navigate the Isaac Sim interface.</li><li>Create and save objects in a USD stage.</li><li>Modify object transforms.</li><li>Distinguish visual geometry from physical geometry.</li><li>Add rigid-body and collision properties.</li><li>Run and stop a simulation.</li><li>Explain the observed physics behavior.</li></ul><h2 id="required-software-and-files">Required Software and Files</h2><ul><li>Isaac Sim 6.0.1</li><li>NVIDIA graphics driver</li><li>A working Isaac Sim installation</li><li>A directory for laboratory files</li></ul><p>Create these folders before starting:</p><pre class="text"><code>Lab1/
+├── checkpoints/
+└── screenshots/
+</code></pre><h2 id="laboratory-roadmap">Laboratory Roadmap</h2><table><thead><tr class="header"><th>Part</th><th>Main task</th><th>Required result</th><th>Checkpoint</th></tr></thead><tbody><tr class="odd"><td>A</td><td>Launch and save a blank stage</td><td>Isaac Sim is loaded and the stage is saved</td><td><code>Lab1_00_blank_stage.usda</code></td></tr><tr class="even"><td>B</td><td>Add a ground plane</td><td>Ground plane exists at approximately <code>(0, 0, 0)</code></td><td><code>Lab1_01_ground_plane.usda</code></td></tr><tr class="odd"><td>C</td><td>Add a distant light</td><td>Scene is visibly illuminated</td><td><code>Lab1_02_lit_stage.usda</code></td></tr><tr class="even"><td>D</td><td>Add and transform a cube</td><td>Cube is at approximately <code>(0, 0, 1)</code> with the required transform</td><td><code>Lab1_03_cube_scene.usda</code></td></tr><tr class="odd"><td>E</td><td>Run without physics</td><td>Cube remains stationary</td><td><code>Lab1_04_cube_without_physics.usda</code></td></tr><tr class="even"><td>F</td><td>Add rigid body and colliders</td><td>Cube has physics properties</td><td><code>Lab1_05_cube_physics.usda</code></td></tr><tr class="odd"><td>G</td><td>Run the physics simulation</td><td>Cube falls, collides, and comes to rest</td><td><code>Lab1_06_final.usda</code></td></tr></tbody></table><h1 id="part-a-launch-isaac-sim">Part A: Launch Isaac Sim</h1><h2 id="a1-launch-the-simulator">A1. Launch the simulator</h2><p>Launch Isaac Sim using the instructions for your operating system in the NVIDIA tutorial.</p><p>For Ubuntu, the command is typically:</p><div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="bu">cd</span> ~/isaacsim</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ex">./isaac-sim.sh</span></span></code></pre></div><p>For Windows, use the Isaac Sim batch file described in the tutorial. Wait until the interface is completely loaded.</p><blockquote><p><strong>Checkpoint:</strong> Do not continue while Isaac Sim is still loading.</p></blockquote><h2 id="a2-identify-the-main-interface-areas">A2. Identify the main interface areas</h2><p>Locate the following areas:</p><table><thead><tr class="header"><th>Interface area</th><th>Purpose</th></tr></thead><tbody><tr class="odd"><td>Viewport</td><td>Displays the simulated scene</td></tr><tr class="even"><td>Stage panel</td><td>Displays the USD scene hierarchy</td></tr><tr class="odd"><td>Property panel</td><td>Displays properties of the selected object</td></tr><tr class="even"><td>Timeline</td><td>Controls simulation time</td></tr><tr class="odd"><td>Play button</td><td>Starts the simulation</td></tr><tr class="even"><td>Stop button</td><td>Stops and resets the simulation</td></tr></tbody></table><p>Capture <code>screenshots/01_isaac_sim_interface.png</code> showing the interface.</p><h2 id="a3-create-a-new-stage">A3. Create a new stage</h2><p>Select <strong>File → New</strong>. If prompted to save the current stage, select <strong>Discard</strong>. Then select <strong>File → Save As</strong> and save:</p><pre class="text"><code>Lab1/checkpoints/Lab1_00_blank_stage.usda
+</code></pre><h3 id="validation-checkpoint-a">Validation checkpoint A</h3><p>The simulator is loaded, the main interface areas are visible, and the blank stage is saved.</p><h1 id="part-b-create-a-ground-plane">Part B: Create a Ground Plane</h1><p>Select <strong>Create → Physics → Ground Plane</strong>. Confirm that the ground plane appears in the viewport and in the Stage panel. Its position should be approximately:</p><pre class="text"><code>Position X = 0.0
+Position Y = 0.0
+Position Z = 0.0
+</code></pre><p>Do not delete the ground plane. Save:</p><pre class="text"><code>Lab1/checkpoints/Lab1_01_ground_plane.usda
+</code></pre><p>Capture <code>screenshots/02_ground_plane.png</code>.</p><h3 id="validation-checkpoint-b">Validation checkpoint B</h3><p>The ground plane exists, is visible in the viewport, and is located approximately at the world origin.</p><h1 id="part-c-add-a-light-source">Part C: Add a Light Source</h1><p>Select <strong>Create → Lights → Distant Light</strong> and rename the light <code>DistantLight</code>. If the scene is too dark, rotate the light until the ground plane is visible. The exact rotation is not important.</p><p>Save:</p><pre class="text"><code>Lab1/checkpoints/Lab1_02_lit_stage.usda
+</code></pre><p>Capture <code>screenshots/03_distant_light.png</code> showing the light in the Stage panel and the illuminated scene.</p><h3 id="validation-checkpoint-c">Validation checkpoint C</h3><p>The Stage panel contains <code>DistantLight</code>, and the scene is sufficiently illuminated to see the ground plane and future cube.</p><h1 id="part-d-add-and-transform-a-cube">Part D: Add and Transform a Cube</h1><h2 id="d1-create-the-cube">D1. Create the cube</h2><p>Select <strong>Create → Shape → Cube</strong> and rename the cube <code>Cube</code>.</p><p><img src="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/_images/isim_4.5_base_tut_gui_add_cube.webp" alt="Adding a cube to an Isaac Sim stage" /></p><h2 id="d2-set-the-cube-transform">D2. Set the cube transform</h2><p>Select <code>Cube</code> and set approximately:</p><pre class="text"><code>Position X = 0.0
+Position Y = 0.0
+Position Z = 1.0
+
+Rotation X = 0.0 degrees
+Rotation Y = 0.0 degrees
+Rotation Z = 0.0 degrees
+
+Scale X = 1.0
+Scale Y = 1.0
+Scale Z = 1.0
+</code></pre><h2 id="d3-practice-the-transform-tools">D3. Practice the transform tools</h2><p>Use the following shortcuts:</p><pre class="text"><code>W = Move tool
+E = Rotate tool
+R = Scale tool
+Esc = Deselect
+</code></pre><p>Move, rotate, and scale the cube, then restore the required transform above.</p><p><img src="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/_images/isim_4.5_base_tut_gui_move_cube.webp" alt="Moving, rotating, and scaling an object" /></p><p>Save:</p><pre class="text"><code>Lab1/checkpoints/Lab1_03_cube_scene.usda
+</code></pre><p>Capture <code>screenshots/04_cube_transform.png</code> showing the cube, Stage panel, and Property panel.</p><h3 id="validation-checkpoint-d">Validation checkpoint D</h3><p>The cube exists, is named <code>Cube</code>, and has the required position, rotation, and scale.</p><h1 id="part-e-run-the-cube-without-physics">Part E: Run the Cube Without Physics</h1><p>Press <strong>Play</strong>, observe the cube, and then press <strong>Stop</strong>.</p><p>Expected result: the cube does not fall because it is currently visual geometry without rigid-body or collision properties.</p><p>Save:</p><pre class="text"><code>Lab1/checkpoints/Lab1_04_cube_without_physics.usda
+</code></pre><p>Capture <code>screenshots/05_cube_without_physics.png</code> showing the cube during the simulation.</p><h3 id="validation-checkpoint-e">Validation checkpoint E</h3><p>The cube remains stationary before physics is added. Record this observation in the report and explain why it occurs.</p><h1 id="part-f-add-physics-to-the-cube">Part F: Add Physics to the Cube</h1><p>Select <code>Cube</code>. In the Property panel, select <strong>Add</strong>, choose the physics properties category, and apply <strong>Rigid Body with Colliders Preset</strong>. This adds both rigid-body and collision properties.</p><p><img src="https://docs.isaacsim.omniverse.nvidia.com/6.0.1/_images/isim_4.5_base_tut_gui_physics_property.webp" alt="Adding physics and collision properties" /></p><p>Save:</p><pre class="text"><code>Lab1/checkpoints/Lab1_05_cube_physics.usda
+</code></pre><p>Capture <code>screenshots/06_cube_physics_properties.png</code> showing the cube selected and the physics properties visible.</p><h3 id="validation-checkpoint-f">Validation checkpoint F</h3><p>The cube has rigid-body and collision properties, and the physics configuration is visible in the Property panel.</p><h1 id="part-g-run-the-physics-simulation">Part G: Run the Physics Simulation</h1><p>Press <strong>Play</strong>. The cube should fall under gravity, collide with the ground plane, and stop when it reaches the ground. Press <strong>Stop</strong> after observing the result.</p><p>If the cube does not fall, check that the cube is selected, the rigid-body preset was applied, the ground plane exists, Isaac Sim is playing, and the cube starts above the ground.</p><p>Save the completed scene:</p><pre class="text"><code>Lab1/checkpoints/Lab1_06_final.usda
+</code></pre><p>Capture <code>screenshots/07_cube_with_physics.png</code> showing the cube in the viewport, the cube selected in the Stage panel, and the rigid-body properties in the Property panel.</p><h3 id="validation-checkpoint-g">Validation checkpoint G</h3><p>The cube falls under gravity, collides with the ground plane, and comes to rest. Record the result, observations, and any troubleshooting in the report.</p><h1 id="required-deliverables">Required Deliverables</h1><p>Submit the following checkpoint files:</p><pre class="text"><code>Lab1_00_blank_stage.usda
+Lab1_01_ground_plane.usda
+Lab1_02_lit_stage.usda
+Lab1_03_cube_scene.usda
+Lab1_04_cube_without_physics.usda
+Lab1_05_cube_physics.usda
+Lab1_06_final.usda
+</code></pre><p>Also submit:</p><pre class="text"><code>screenshots/01_isaac_sim_interface.png
+screenshots/02_ground_plane.png
+screenshots/03_distant_light.png
+screenshots/04_cube_transform.png
+screenshots/05_cube_without_physics.png
+screenshots/06_cube_physics_properties.png
+screenshots/07_cube_with_physics.png
+</code></pre><p>Submit a short demonstration video showing the cube before physics, the physics properties, and the cube falling and colliding with the ground plane.</p><h2 id="report-expectations">Report Expectations</h2><p>Submit one comprehensive formal lab report using the <a href="https://docs.google.com/document/d/1HOYJqnCjeE1o-8Ghffh58nG2FxjORW-J/edit?usp=sharing&amp;ouid=109541660202730576301&amp;rtpof=true&amp;sd=true">RAS 545 Lab Report Template</a>.</p><p>The report must contain:</p><ol><li>Title page.</li><li>Lab objectives and learning goals.</li><li>Software and hardware configuration.</li><li>Procedure for Parts A–G.</li><li>Results and validation evidence.</li><li>Observations and troubleshooting.</li><li>Screenshots after every part, A through G.</li><li>Explanation of visual geometry versus physical geometry.</li><li>Key learnings.</li><li>Conclusion.</li><li>References.</li></ol><p>For each part, include the procedure followed, the corresponding checkpoint filename, the screenshot filename, the observed result, any error and correction, and one key learning. The report must explain why the cube remains stationary without physics and why it falls after the rigid-body and collider preset is added.</p><h1 id="lab-check-off">Lab Check-Off</h1><p>The final check-off is required after Part G. Notify the teaching staff immediately after the final scene is successfully saved and the physics simulation has been compiled, executed, and verified.</p><p>The check-off must confirm:</p><ol><li>Isaac Sim launched successfully.</li><li>The blank stage was created and saved.</li><li>A ground plane and distant light exist.</li><li>The cube exists with the required transform.</li><li>The cube remained stationary before physics was added.</li><li>Rigid-body and collision properties were added.</li><li>The cube fell under gravity and collided with the ground plane.</li><li>The Part A–G checkpoint files, screenshots, report, and video are available.</li></ol><p>The demonstration must show the working simulation, not only screenshots or code.</p><h1 id="final-validation">Final Validation</h1><p>Before submission, verify:</p><ul class="task-list"><li><input type="checkbox" disabled="" />Isaac Sim launched successfully.</li><li><input type="checkbox" disabled="" />A new stage was created and saved.</li><li><input type="checkbox" disabled="" />A ground plane exists at approximately the origin.</li><li><input type="checkbox" disabled="" />A distant light exists and illuminates the scene.</li><li><input type="checkbox" disabled="" />A cube exists and has the required transform.</li><li><input type="checkbox" disabled="" />The cube remained stationary before physics was added.</li><li><input type="checkbox" disabled="" />Rigid-body and collision properties were added.</li><li><input type="checkbox" disabled="" />The cube fell under gravity.</li><li><input type="checkbox" disabled="" />The cube collided with the ground plane and came to rest.</li><li><input type="checkbox" disabled="" />All Part A–G checkpoint files were saved.</li><li><input type="checkbox" disabled="" />Screenshots were captured after every part.</li><li><input type="checkbox" disabled="" />The formal report was completed using the template.</li><li><input type="checkbox" disabled="" />The demonstration video was recorded.</li><li><input type="checkbox" disabled="" />Teaching staff were notified for the final check-off.</li></ul><h2 id="completion-requirement">Completion Requirement</h2><p>The laboratory is complete when the student can demonstrate that a cube was created in Isaac Sim, remained stationary without physics, received rigid-body and collision properties, and then fell and collided with the ground plane under gravity.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Same footer as the main page, minus the nav bar (a reading page
+       does not need it). -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">Built with plain HTML, CSS and a sprinkle of JavaScript - <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <!-- The automatic footer year. -->
+  <script src="../js/main.js"></script>
+
+  <!--
+    The diagram drawer (Mermaid), loaded from the jsDelivr CDN.
+    It finds the guide's "mermaid" code blocks and draws them as
+    diagrams. This is the ONLY external script on the site.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    // When the page is ready, turn every mermaid code block into a drawing.
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.mermaid) { mermaid.initialize({ startOnLoad: true }); }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  ROBOTICS SYSTEMS INSTRUCTIONAL LAB - THE ONE AND ONLY PAGE
+  (index.html)
+======================================================================
+
+  Welcome! This file is the website's skeleton: it says WHAT is on
+  the page. Two friends do the rest:
+    - css/style.css  = the PAINT (colors, sizes, spacing)
+    - js/main.js     = the MUSCLES (mobile menu + automatic year)
+
+  TO EDIT WORDS: find the section below (each has a big comment sign
+  like this one), change the words, save, refresh the browser.
+
+  TO SEE THE SITE: double-click index.html. No installs, no builds.
+
+  WHERE FACTS CAME FROM:
+  Every verified fact has a comment marked SOURCE with the page it
+  came from and the day it was checked (2026-10-29). Anything Praj
+  still needs to supply is marked TODO(Praj).
+
+  THE LAB'S NAME:
+  Praj said the lab has no final name yet ("Robotics Instructional
+  Lab or RAS Lab or whatever"). ASU's own facilities page calls the
+  room the "Robotics Systems Instructional Lab", so that is the title
+  for now, with "RAS Lab" as the short everyday name. When Praj picks
+  a final name, change it in THREE places: <title> in <head>, the
+  hero title below, and the footer.
+======================================================================
+-->
+<html lang="en">
+<head>
+  <!-- Settings the browser needs: character set and phone zoom. -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- The tab title and the short description search engines show. -->
+  <title>Robotics Systems Instructional Lab (RAS Lab) - ASU</title>
+  <meta name="description" content="The Robotics Systems Instructional Lab at Arizona State University: the robots, courses, projects and resources of Room 231, ISTB 12, in plain words.">
+
+  <!-- Load the paint (our stylesheet). -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       TOP BAR (navigation)
+       Stuck to the top of every screen. On phones it collapses into
+       a "hamburger" button (js/main.js runs that).
+       ============================================================ -->
+  <header class="topbar">
+    <nav class="topbar-inner" aria-label="Main navigation">
+
+      <!-- The short everyday name, used as the logo. -->
+      <a class="brand" href="#top">
+        <span class="brand-mark">RAS</span>   <!-- the short badge -->
+        <span class="brand-name">Lab</span>   <!-- the word next to it -->
+      </a>
+
+      <!-- This button only appears on small screens (see style.css). -->
+      <button class="menu-button" id="menu-button" aria-label="Open menu" aria-expanded="false">
+        <span class="menu-button-line"></span>  <!-- hamburger line 1 -->
+        <span class="menu-button-line"></span>  <!-- hamburger line 2 -->
+        <span class="menu-button-line"></span>  <!-- hamburger line 3 -->
+      </button>
+
+      <!-- The actual links. Each one jumps to a section lower down. -->
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#equipment">Equipment</a></li>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#isaac-sim">Isaac Sim labs</a></li>
+        <li><a href="#people">People</a></li>
+        <li><a class="nav-cta" href="#visit">Visit</a></li>
+      </ul>
+
+    </nav>
+  </header>
+
+  <!-- Everything on the page lives inside <main>. -->
+  <main id="top">
+
+    <!-- ============================================================
+         HERO (the big first thing you see)
+         ============================================================ -->
+    <section class="hero">
+      <div class="hero-inner">
+
+        <!--
+          Small mono label above the headline.
+          SOURCE: Praj's voice note, 2026-10-29 - the lab sits in the
+          School of Manufacturing Systems and Networks (MSN), part of
+          the Ira A. Fulton Schools of Engineering at ASU. The school's
+          own site agrees: https://msn.engineering.asu.edu/
+        -->
+        <p class="eyebrow">School of Manufacturing Systems and Networks - Arizona State University</p>
+
+        <!--
+          The headline. This is the name ASU's facilities page uses for
+          Room 231 of ISTB 12. Praj has not picked a final lab name yet,
+          so treat this as the working title.
+          SOURCE: https://msn.engineering.asu.edu/facilities/ (2026-10-29)
+        -->
+        <h1 class="hero-title">Robotics Systems Instructional Lab</h1>
+
+        <!--
+          One sentence that says what this place is and where.
+          SOURCE for the room: the same ASU facilities page lists
+          "Robotics Systems Instructional Lab, Room 231" in ISTB 12
+          (Interdisciplinary Science and Technology Building 12) on the
+          ASU Polytechnic campus. Praj's voice note said the same room
+          (his "ISTB twelve, two thirty-one").
+        -->
+        <p class="hero-subtitle">
+          The RAS lab: the robots, courses, projects and resources of
+          Room 231 in ISTB 12, on ASU's Polytechnic campus - all in
+          plain words.
+        </p>
+
+        <!-- Two friendly doors into the page. -->
+        <div class="hero-actions">
+          <a class="button button-primary" href="#equipment">See the lab</a>
+          <a class="button button-ghost" href="#isaac-sim">Isaac Sim labs</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 01 - ABOUT
+         ============================================================ -->
+    <section class="section" id="about">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">01 - About</p>
+        <h2 class="section-title">What is this lab?</h2>
+
+        <!--
+          The lab's purpose, in Praj's own words from his voice note
+          (2026-10-29): a directory of the projects and resources the
+          lab has and offers, for visitors and for students choosing
+          their major.
+          TODO(Praj): replace or extend with the lab's own story.
+        -->
+        <p class="section-text">
+          This site is the lab's public directory: the robots and
+          equipment it has, the courses taught in it, the projects
+          happening in it, and the resources it offers - for visitors,
+          and for students thinking about the Robotics and Autonomous
+          Systems major.
+        </p>
+        <p class="section-text">
+          Everything here is written so anyone can follow along -
+          no jargon, no gatekeeping.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 02 - ROBOTS & EQUIPMENT
+         The list below is exactly what Praj named in his voice note
+         (2026-10-29): Dobots, URs (UR5), JAKA, FANUC, PLCs,
+         Allen-Bradley. ASU's photo of Room 231 also shows a FANUC
+         arm (msn.engineering.asu.edu/facilities, 2026-10-29).
+         TODO(Praj): how many of each, exact models, and a photo of
+         each - drop them into the cards.
+         ============================================================ -->
+    <section class="section" id="equipment">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">02 - Robots &amp; equipment</p>
+        <h2 class="section-title">What the lab has</h2>
+        <p class="section-text">
+          The machines students get their hands on. Counts, exact model
+          details and photos are on the way.
+        </p>
+
+        <div class="card-grid">
+
+          <!-- One card per machine family. Copy a card to add more. -->
+          <article class="card">
+            <p class="card-tag">Robot arms</p>
+            <h3 class="card-title">Dobot</h3>
+            <p class="card-text">Desktop robot arms for learning motion, pick-and-place and automation basics.</p>
+            <p class="card-note">How many, which models + photo - coming from Praj.</p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Robot arms</p>
+            <h3 class="card-title">Universal Robots (UR5)</h3>
+            <p class="card-text">Collaborative industrial arms - the same family students drive in the Isaac Sim labs.</p>
+            <p class="card-note">How many, which models + photo - coming from Praj.</p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Robot arms</p>
+            <h3 class="card-title">JAKA</h3>
+            <p class="card-text">Collaborative robots (cobots) built to work right next to people.</p>
+            <p class="card-note">How many, which models + photo - coming from Praj.</p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Industrial robots</p>
+            <h3 class="card-title">FANUC</h3>
+            <p class="card-text">Industrial robot arms of the kind used on real factory floors.</p>
+            <p class="card-note">How many, which models + photo - coming from Praj.</p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Controllers</p>
+            <h3 class="card-title">Allen-Bradley PLCs</h3>
+            <p class="card-text">Programmable logic controllers - the rugged computers that run real production lines.</p>
+            <p class="card-note">Models + photo - coming from Praj.</p>
+          </article>
+
+          <!-- ----- EMPTY SLOT (so it is obvious the list grows) ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Equipment slot</p>
+            <h3 class="card-title">More gear goes here</h3>
+            <p class="card-text">Anything else the lab has - sensors, conveyors, cameras, tools.</p>
+            <p class="card-note">Coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 03 - COURSES
+         ============================================================ -->
+    <section class="section" id="courses">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">03 - Courses</p>
+        <h2 class="section-title">Taught in this lab</h2>
+        <p class="section-text">
+          Classes that meet or run their lab sessions here.
+        </p>
+
+        <div class="card-grid">
+
+          <!--
+            GROUNDED: the Isaac Sim lab documents in the course repo name
+            "RAS 545: Robotics Systems I" and list Prof. Sangram Redkar as
+            instructor (repo: RoboX2020/Tatwik19.github.io, file
+            _labs/lab-02-isaac-sim/index.md, checked 2026-10-29).
+            TODO(Praj): confirm RAS 545 actually meets in Room 231, and
+            name the other courses taught here.
+          -->
+          <article class="card">
+            <p class="card-tag">Course</p>
+            <h3 class="card-title">RAS 545 - Robotics Systems I</h3>
+            <p class="card-text">Its hands-on lab sessions use the Isaac Sim instructional labs below.</p>
+            <p class="card-note">Instructor: Prof. Sangram Redkar. Meets here? Confirming with Praj.</p>
+          </article>
+
+          <!-- ----- EMPTY SLOT ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Course slot</p>
+            <h3 class="card-title">Next course goes here</h3>
+            <p class="card-text">Course number, name and one plain sentence about what students do in it.</p>
+            <p class="card-note">Coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 04 - PROJECTS
+         ============================================================ -->
+    <section class="section" id="projects">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">04 - Projects</p>
+        <h2 class="section-title">What's being built here</h2>
+
+        <!--
+          TODO(Praj): the PhD student projects and your own Isaac Sim
+          work you mentioned - one card each: title, one plain sentence,
+          a photo when you have one.
+        -->
+        <p class="section-text">
+          Cool projects from the lab's PhD students and members land
+          here - these are the empty frames waiting for them.
+        </p>
+
+        <div class="card-grid">
+
+          <!-- ----- PROJECT SLOT 1 (copy this whole block per project) ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Project slot</p>
+            <h3 class="card-title">First project goes here</h3>
+            <p class="card-text">One plain-English sentence about what it does and why it's cool.</p>
+            <p class="card-note">Title, sentence and a photo - coming from Praj.</p>
+          </article>
+
+          <!-- ----- PROJECT SLOT 2 ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Project slot</p>
+            <h3 class="card-title">Project two goes here</h3>
+            <p class="card-text">One plain-English sentence about what it does and why it's cool.</p>
+            <p class="card-note">Title, sentence and a photo - coming from Praj.</p>
+          </article>
+
+          <!-- ----- PROJECT SLOT 3 ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Project slot</p>
+            <h3 class="card-title">Project three goes here</h3>
+            <p class="card-text">One plain-English sentence about what it does and why it's cool.</p>
+            <p class="card-note">Title, sentence and a photo - coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 05 - ISAAC SIM INSTRUCTIONAL LABS
+         ============================================================ -->
+    <section class="section" id="isaac-sim">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">05 - Isaac Sim labs</p>
+        <h2 class="section-title">Learn robotics in simulation</h2>
+
+        <!--
+          GROUNDED: these step-by-step instructional labs were written
+          for "RAS 545: Robotics Systems I" by Prajval Arora together
+          with Sai Srinivas Tatwik Meesala (and Rajesh S Aouti on
+          Lab 2); instructor Prof. Sangram Redkar. Source documents:
+          _labs/lab-0X-isaac-sim/index.md in the GitHub repo
+          RoboX2020/Tatwik19.github.io (a copy of Tatwik's site,
+          MIT license), checked 2026-10-29. The originals currently
+          live at https://tatwik19.github.io/labs/ - Praj asked for
+          them to be copied onto this site (voice note, 2026-10-29).
+        -->
+        <p class="section-text">
+          Step-by-step lab guides that take a student from opening
+          NVIDIA Isaac Sim to driving a simulated robot - written by
+          the lab's own members for RAS 545.
+        </p>
+
+        <div class="card-grid">
+
+          <!-- Lab 1 is already copied onto this site - the card links
+               to the local page, not the outside world. -->
+          <article class="card">
+            <p class="card-tag">Lab 1</p>
+            <h3 class="card-title">First steps in Isaac Sim</h3>
+            <p class="card-text">Open Isaac Sim, build a small scene with lights and objects, and run your first physics simulation.</p>
+            <p class="card-link"><a href="labs/isaac-sim-lab-1.html">Do Lab 1 on this site &rarr;</a></p>
+          </article>
+
+          <!-- Labs 2 and 3: cards for now; their full pages are being
+               moved onto this site next. -->
+          <article class="card">
+            <p class="card-tag">Lab 2</p>
+            <h3 class="card-title">Drive a UR5e robot arm</h3>
+            <p class="card-text">Control a six-joint UR5e arm in Isaac Sim - by hand, with inverse kinematics, and from Python.</p>
+            <p class="card-note">Full page being moved here. Until then: <a href="https://tatwik19.github.io/labs/lab-02-isaac-sim/">the original</a>.</p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Lab 3</p>
+            <h3 class="card-title">TurtleBot 3 + ROS 2</h3>
+            <p class="card-text">Give a simulated TurtleBot 3 sensors, let it work out where it is, and set it navigating on its own.</p>
+            <p class="card-note">Full page being moved here. Until then: <a href="https://tatwik19.github.io/labs/lab-03-isaac-sim/">the original</a>.</p>
+          </article>
+
+        </div>
+
+        <!-- The credit line, kept visible on purpose. -->
+        <p class="section-text credit-line">
+          Written by Prajval Arora and Sai Srinivas Tatwik Meesala
+          (with Rajesh S Aouti on Lab 2) for RAS 545, instructor
+          Prof. Sangram Redkar. Shared under the MIT license;
+          originals at
+          <a href="https://tatwik19.github.io/labs/">tatwik19.github.io/labs</a>.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 06 - PEOPLE
+         ============================================================ -->
+    <section class="section" id="people">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">06 - People</p>
+        <h2 class="section-title">The people in the lab</h2>
+
+        <div class="card-grid">
+
+          <!--
+            GROUNDED: Praj said in his voice note (2026-10-29) that the
+            lab facility "belongs to or is under" Prof. Sangram Redkar,
+            and Redkar is the instructor named on the lab documents.
+            Title "Associate Professor, The Polytechnic School" from his
+            ASU group page: labs.engineering.asu.edu/rads/person/sangram-redkar
+            (checked 2026-10-29).
+            TODO(Praj): his photo (you said you'll send it) and the exact
+            wording you want for his role.
+          -->
+          <article class="card">
+            <p class="card-tag">Faculty</p>
+            <h3 class="card-title">Prof. Sangram Redkar</h3>
+            <p class="card-text">Associate Professor at The Polytechnic School - oversees the lab.</p>
+            <p class="card-note">Photo - coming from Praj.</p>
+          </article>
+
+          <!--
+            GROUNDED: Praj co-wrote the Isaac Sim instructional labs
+            (authors block on the lab documents) and said he is doing
+            Isaac Sim work in the lab (voice note, 2026-10-29).
+            TODO(Praj): your preferred title/role line + a photo.
+          -->
+          <article class="card">
+            <p class="card-tag">Lab member</p>
+            <h3 class="card-title">Prajval Arora</h3>
+            <p class="card-text">Co-writes the Isaac Sim instructional labs and works on simulation projects in the lab.</p>
+            <p class="card-note">Role line + photo - coming from Praj.</p>
+          </article>
+
+          <!-- ----- PERSON SLOT ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Person slot</p>
+            <h3 class="card-title">Team member</h3>
+            <p class="card-text">Name and what they do, in plain words.</p>
+            <p class="card-note">Coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 07 - WHAT'S HAPPENING (news)
+         ============================================================ -->
+    <section class="section" id="happening">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">07 - What's happening</p>
+        <h2 class="section-title">Lab news</h2>
+        <p class="section-text">
+          Demos, events and new arrivals in the lab.
+        </p>
+
+        <div class="card-grid">
+
+          <!-- ----- NEWS SLOT ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">News slot</p>
+            <h3 class="card-title">First bit of news goes here</h3>
+            <p class="card-text">A demo day, a new robot arriving, a finished project - anything worth sharing.</p>
+            <p class="card-note">Coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 08 - VISIT
+         ============================================================ -->
+    <section class="section" id="visit">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">08 - Visit</p>
+        <h2 class="section-title">Find the lab</h2>
+
+        <!--
+          GROUNDED location (public on ASU's own facilities page,
+          checked 2026-10-29): Robotics Systems Instructional Lab,
+          Room 231, ISTB 12 (Interdisciplinary Science and Technology
+          Building 12), ASU Polytechnic campus.
+          No opening hours or access rules are stated anywhere here -
+          nobody knows them yet.
+          TODO(Praj): how should people get in touch? An email, a
+          Discord, walk-in hours - whatever is true.
+        -->
+        <p class="section-text">
+          Room 231, ISTB 12 (Interdisciplinary Science and Technology
+          Building 12), ASU Polytechnic campus, Mesa, Arizona.
+        </p>
+        <p class="section-text">
+          Contact details and visit info land here soon.
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER. The year updates itself (see js/main.js).
+       ============================================================ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">
+        Built with plain HTML, CSS and a sprinkle of JavaScript -
+        <span id="year">2026</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Load the muscles last, so the page shows up before any script. -->
+  <script src="js/main.js"></script>
+</body>
+</html>
