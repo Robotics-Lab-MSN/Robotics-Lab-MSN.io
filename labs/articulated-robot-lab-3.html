@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  ARTICULATED ROBOTS - LAB 3 (labs/articulated-robot-lab-3.html)
+
+  WHAT THIS PAGE IS:
+  The full text of one of the lab's articulated-robot instructional
+  labs, copied onto the lab site.
+
+  WHERE THE CONTENT CAME FROM:
+  Source document: the authors' Google Doc linked from
+  https://tatwik19.github.io/labs/ ("Object Detection, Classification, and Sorting"),
+  exported and converted to HTML on 2026-10-30. The authors are
+  credited in the header below.
+
+  HOW TO EDIT:
+  The lab text itself sits inside the <div class="prose"> below.
+  Everything outside that div (header, credits, styling hooks) is
+  ordinary site code with comments, same as index.html.
+  This guide's pictures live in labs/images/articulated-robot-lab-3/ .
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 3: Object Detection, Classification, and Sorting - RAS Lab, ASU</title>
+  <meta name="description" content="Instructional lab 3 for RAS 545: object Detection, Classification, and Sorting.">
+
+  <!-- The same paint as the rest of the site (one folder up). -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <main>
+    <div class="section-inner">
+
+      <!-- Back to the main directory page. -->
+      <a class="back-link" href="../index.html#articulated-robot">&larr; Back to the lab directory</a>
+
+      <!-- The title block: what this is, who it is for, who wrote it. -->
+      <header class="lab-header">
+        <p class="section-eyebrow">Articulated robots - Lab 3</p>
+        <h1>Object Detection, Classification, and Sorting</h1>
+        <p class="lab-meta">
+          Course: RAS 545 - Robotics Systems I &middot; Instructor: Prof. Sangram Redkar &middot; Robot: Dobot Magician Lite<br>
+          Authors: Sai Srinivas Tatwik Meesala, Rajesh S Aouti<br>
+          Adapted from the authors' original document; the original is linked from
+          <a href="https://tatwik19.github.io/labs/">tatwik19.github.io/labs</a>.
+        </p>
+      </header>
+
+      <!--
+        THE LAB GUIDE ITSELF (converted from the authors' document).
+        Long reading text - the ".prose" styles in css/style.css give it
+        roomy headings and images that fit the screen.
+      -->
+      <div class="prose">
+<p>Instructor: Prof. <a href="mailto:Sangram.Redkar@asu.edu">Sangram Redkar</a></p><p>Authors: </p><ul><li>Sai Srinivas Tatwik Meesala: <a href="mailto:smeesala@asu.edu">smeesala@asu.edu</a> </li><li>Rajesh S Aouti: <a href="mailto:raouti@asu.edu">raouti@asu.edu</a></li></ul><p>Duration: 2 hours<br>Robot: Dobot Magician Lite</p><h3>Deliverables</h3><ol><li>Lab Report</li></ol><ul><li>Write in IEEE/IJRR format.</li><li>Include:</li></ul><ol><li>Problem statement/mission</li><li>Procedure with detailed steps in a paragraph</li><li>Results with annotated figures and tables</li><li>Reflection and lessons learned</li><li>Conclusion</li><li>Serial number of the robot used (find under the robot when turned off)</li><li>Add a proper title page, page numbers, and references.</li><li>Use the IJRA template: <a href="https://iaescore.com/gfa/ijra.docx?utm_source">https://iaescore.com/gfa/ijra.docx?utm_source</a>.</li><li>Reports must be publication-ready in clarity and formatting.</li></ol><ol><li>Python Source Files</li></ol><ul><li>Submit all `.py` scripts developed.</li><li>Ensure code is commented and organized.</li></ul><ol><li>Demonstration Video</li></ol><ul><li>Record a clear video showing successful task execution.</li><li>Ensure the video is professional, public, and well-presented.</li><li>Include visual cues or graphics to highlight key steps.</li><li>Clearly state the objective of the problem being solved.</li><li>Upload to YouTube or LinkedIn and provide a shareable link in your submission.</li><li>The video audience may or may not have technical expertise.</li><li>Tag ASU, your professor, and the teaching staff.</li></ul><ol><li>Lab Check-Off</li></ol><ul><li>After running your implementation, show it live to the teaching staff.</li><li>No grade will be assigned without in-person verification.</li><li>You will only get 2 chances to get a live demo check-off</li></ul><p>**You may combine Lab 3 and 4 together in the report.**<hr></p><h3>Preparations before class</h3><ol><li>Operating System: Ubuntu 22.04 (and above, depending on the laptop), and all drivers, including the GPU. Get familiar with Ubuntu.</li><li>Software Installation:</li></ol><ul><li>Install pydobot2 and YOLO.</li></ul><ul><li>pip install pydobot2 ultralytics</li><li>Weight File (If required, asu email only) : <a href="https://drive.google.com/file/d/19ugnc1EfGttuvBZDVt8N-5mptPxCSO9q/view?usp=sharing">https://drive.google.com/file/d/19ugnc1EfGttuvBZDVt8N-5mptPxCSO9q/view?usp=sharing</a> </li><li>And other packages that you may require for the lab.</li></ul><ul><li>Install camera utilities:</li></ul><ul><li>sudo apt update</li><li>sudo apt install v4l-utils ffmpeg cheese</li></ul><ul><li>Confirm camera port:</li></ul><ul><li>v4l2-ctl --list-devices</li><li>Cheese</li></ul><ul><li>Make sure you have permission to access your port.</li></ul><ol><li>Permissions</li></ol><ul><li>Ensure user has access to /dev/video* and /dev/ttyUSB*.</li><li>Add user to the dialout group if necessary:</li></ul><ol><li>sudo usermod -a -G dialout $USER</li></ol><ol><li>Read the entire document before coming to the lab.</li><li>Verify all dependencies are installed.</li><li>Get familiar with all the packages you have installed. Write an example code for yourself to test it on the robot. You may not have time to play around in the lab.</li><li>Before coming to the lab, test the code with your webcam.</li><li>Robot Connection</li></ol><ul><li>Identify COM port:</li><li>ls /dev/tty*</li><li>Note down the correct /dev/ttyUSB* path for later use.<hr></li></ul><h3>Introduction</h3><p>This laboratory exercise focuses on integrating computer vision with robotic manipulation to perform an autonomous palletizing task. Students will use the Dobot Magician Lite robot, equipped with a suction cup gripper and an external camera, to detect, classify, and sort objects. The core challenge is to combine real-time object detection with precise robotic motion control for reliable manipulation.</p><h4>Objectives:</h4><ul><li>Apply computer vision for real-time object detection.</li><li>Control the Dobot Magician Lite with pydobot2.</li><li>Use YOLO to identify and classify objects.</li><li>Perform palletizing tasks by placing objects into designated boxes.</li></ul><h4>Core Concept:</h4><p>The robot must autonomously perform the following sequence:</p><ol><li>Detects an object below the end-effector using the camera.</li><li>Classify the object using YOLOv5 (e.g., food vs. vehicle).</li><li>Pick up the object using the suction cup gripper.</li><li>Place the object in the correct pallet according to its class.</li><li>Return to the HOME position and repeat the cycle.</li></ol><h2>Preparations</h2><ul><li>System Update</li></ul><table><tr><td><p>sudo apt update</p></td></tr></table><ul><li>Install Camera Tools</li></ul><table><tr><td><p>sudo apt install v4l-utils ffmpeg cheese</p></td></tr></table><ul><li>Verify Camera Connection</li></ul><ul><li>List devices:</li></ul><table><tr><td><p>v4l2-ctl --list-devices</p></td></tr></table><ul><li>Test video stream:</li></ul><table><tr><td><p>Cheese</p></td></tr></table><ul><li>Robot Port Identification</li></ul><ul><li>Check available serial ports:</li></ul><table><tr><td><p>ls /dev/tty*</p></td></tr></table><ul><li>Note down the port for the Dobot (e.g., /dev/ttyUSB0).</li></ul><ul><li>Libraries and Documentation</li></ul><ul><li>pydobot2 reference: <a href="https://pypi.org/project/pydobot2/">https://pypi.org/project/pydobot2/</a> </li><li>YOLOv5 reference: <a href="https://docs.ultralytics.com/">https://docs.ultralytics.com/</a> </li><li>Print the following and check the instructions in the document</li></ul><ul><li><a href="https://docs.google.com/document/d/1Z5A9RDu8Kce4EOLDCaPF9BqytFWKYY8MiuGSDeCtfZc/edit?usp=sharing">Print</a></li><li><a href="https://docs.google.com/document/d/1Z5A9RDu8Kce4EOLDCaPF9BqytFWKYY8MiuGSDeCtfZc/edit?usp=sharing">https://docs.google.com/document/d/1Z5A9RDu8Kce4EOLDCaPF9BqytFWKYY8MiuGSDeCtfZc/edit?usp=sharing</a><hr></li></ul><h2>Using Python</h2><p>After the above preparations are completed, the manipulation of the robotic arm can be implemented. First, open the installed PyCharm/VS Code/Jupyter NB, create a new Python file, and import the library by entering the following code:</p><p>Go through all Python commands: <a href="https://pypi.org/project/pydobot2/">https://pypi.org/project/pydobot2/</a></p><p>from pydobot.Dobot import MODE_PTP</p><p>import pydobot</p><p>device = pydobot.Dobot(port=&quot;/dev/tty&quot;)</p><p># device = pydobot.Dobot(port=&quot;/dev/tty.usbserial-XXXX&quot;)</p><p>device.home()  # Home the robot to the origin position</p><p>(pose, joint) = device.get_pose()  # Get the current position and joint angles</p><p>print(f&quot;pose: {pose}, j: {joint}&quot;)</p><p>[x, y, z, r] = pose</p><p>[j1, j2, j3, j4] = joint</p><p># position, joint = pose.position, pose.joints</p><p>print(pose)</p><p>device.speed(1000, 1000)</p><p># Preferred way to move</p><p>device.move_to(mode=int(MODE_PTP.MOVJ_XYZ), x=230, y=30.0, z=20, r=0.0)  # Move to position (x=250, y=0, z=50) with r=0</p><p>device.move_to(mode=int(MODE_PTP.MOVJ_ANGLE), x=20, y=0.0, z=50, r=0.0)  # Move to joint angles (j1=0, j2=0, j3=0, j4=0)</p><p># Control gripper and suction cup</p><p>device.suck(True)  # Turn on the suction cup</p><p>device.suck(False)  # Turn off the suction cup</p><p>device.close()</p><p># Advanced way to move</p><p>device.move_to(mode=int(MODE_PTP.JUMP_XYZ), x=230, y=30.0, z=20, r=0.0)  # Lift and move to position (x=250, y=0, z=50) with r=0</p><p>device.move_to(mode=int(MODE_PTP.JUMP_ANGLE), x=20, y=30.0, z=20, r=0.0)  # Lift and move to joint angles (j1=0, j2=0, j3=0, j4=0)</p><p># Move by relative amounts</p><p>device.move_to(mode=int(MODE_PTP.MOVJ_INC), x=-10, y=-10.0, z=-10, r=0.0)  # Move relative to current angles by (dj1=-10, dj2=-10, dj3=-10, dj4=0)</p><p>device.move_to(mode=int(MODE_PTP.MOVJ_XYZ_INC), x=10, y=10.0, z=30, r=0.0)  # Move relative to current position by (dx=10, dy=10, dz=10) with dr=0</p><hr><h2>Lab 3:</h2><p>The objective of this laboratory exercise is to integrate computer vision with robotic manipulation to perform an autonomous palletizing task. A Dobot Magician Lite robot equipped with a suction cup gripper and an external camera is used. The robot must detect objects placed in a defined workspace using YOLO-based real-time object detection, classify them into categories (e.g., food vs. vehicle), and sort them into corresponding pallets.</p><p>The mission requires the robot to:</p><ol><li>Identify and classify objects beneath the end-effector.</li><li>Pick up each object with the suction cup.</li><li>Place the object in the appropriate pallet according to its class.</li><li>Return to the home position to repeat the cycle.<br></li></ol><p>This task demonstrates the application of perception-driven robotic manipulation, combining real-time detection with precise motion control.</p><p>Use of generative AI is permitted only for coding and encouraged.<hr></p><h3>Mounting and Workspace</h3><ul><li>Attach the suction cup</li></ul><p><img src="images/articulated-robot-lab-3/image1.png" alt="Lab guide figure"></p><ul><li>Attach the camera to the suction-cup end effector.</li></ul><ul><li>The Allen key is stored in a bag inside the cabinet below. The same bag also contains a small screw and a suction cup. Open the bag carefully to avoid losing or damaging any parts.</li></ul><p><img src="images/articulated-robot-lab-3/image2.png" alt="Lab guide figure"><img src="images/articulated-robot-lab-3/image3.png" alt="Lab guide figure"></p><ul><li>Define a clear workspace with two pallets and a fixed pick-up location: A and B. Mark their bin centers in robot coordinates.</li></ul><ul><li>Robot States</li></ul><ul><li>Define named poses: HOME, PICK_UP, PALLET_A_DROP, PALLET_B_DROP.</li><li>Home at the start and between cycles.</li></ul><hr><h3>Object Recognition</h3><ul><li>Example Code YOLO Object Detection: </li></ul><ul><li><a href="https://drive.google.com/file/d/1MupeieE9CzdDPEdeIRC8uP_oINGtrtgB/view?usp=sharing">https://drive.google.com/file/d/1MupeieE9CzdDPEdeIRC8uP_oINGtrtgB/view?usp=sharing</a> </li><li>Extract the label names based on the images provided.</li></ul><ul><li>As it detects an image below the end effector.</li></ul><ul><li>If food: place it in pallet A.</li><li>If Vehicle: place it in pallet B.</li></ul><ul><li>Come back to the home position and start again.</li></ul><p>After you are done, contact the teaching staff for check-off</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Same footer as the main page, minus the nav bar (a reading page
+       does not need it). -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">Built with plain HTML, CSS and a sprinkle of JavaScript - <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <!-- The automatic footer year. -->
+  <script src="../js/main.js"></script>
+</body>
+</html>

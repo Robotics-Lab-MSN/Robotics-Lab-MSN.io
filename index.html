@@ -60,7 +60,7 @@
           <li><a href="#about">About</a></li>
           <li><a href="#facilities">Facilities</a></li>
           <li><a href="#teaching">Teaching</a></li>
-          <li><a href="#isaac-sim">Isaac Sim labs</a></li>
+          <li><a href="#isaac-sim">Labs</a></li>
           <li><a class="nav-cta" href="#visit">Visit</a></li>
         </ul>
     </nav>
@@ -72,7 +72,16 @@
       THE HERO: the opening statement of the site.
       Keep it factual - this is the first thing a visitor reads.
     -->
-    <section class="hero">
+    <section class="hero" id="hero">
+      <!--
+        ROTATING PLACE PHOTOS (scaffold, waiting for Praj's pictures).
+        This empty div is where large background photographs of the lab
+        will fade from one to the next, like a company landing page.
+        js/main.js fills it from the HERO_PHOTOS list; while that list
+        is empty the hero keeps its plain blueprint-grid look and this
+        div stays invisible. Photos go in images/hero/ when supplied.
+      -->
+      <div class="hero-bg" id="hero-bg" aria-hidden="true"></div>
       <div class="hero-inner">
         <p class="hero-eyebrow">School of Manufacturing Systems and Networks &middot; Arizona State University</p>
         <h1 class="hero-title">Robotics Systems Instructional Lab</h1>
@@ -136,36 +145,42 @@
             <p class="card-tag">Industrial robots</p>
             <h3 class="card-title">FANUC robot arms</h3>
             <p class="card-text">Industrial robot arms of the kind widely used on production lines, including the FANUC ER-4iA.</p>
+            <p class="card-link"><a href="equipment/fanuc-robot-arms.html">About the FANUC arms &rarr;</a></p>
           </article>
 
           <article class="card">
             <p class="card-tag">Collaborative robots</p>
             <h3 class="card-title">Universal Robots UR5</h3>
             <p class="card-text">A collaborative robot arm designed to work safely alongside people.</p>
+            <p class="card-link"><a href="equipment/universal-robots-ur5.html">About the UR5 &rarr;</a></p>
           </article>
 
           <article class="card">
             <p class="card-tag">Collaborative robots</p>
             <h3 class="card-title">JAKA cobots</h3>
             <p class="card-text">Lightweight collaborative arms used for pick-and-place and assembly exercises.</p>
+            <p class="card-link"><a href="equipment/jaka-cobots.html">About the JAKA cobots &rarr;</a></p>
           </article>
 
           <article class="card">
             <p class="card-tag">Desktop robots</p>
             <h3 class="card-title">Dobot arms</h3>
             <p class="card-text">Compact desktop robot arms used for introductory programming instruction.</p>
+            <p class="card-link"><a href="equipment/dobot-arms.html">About the Dobot arms &rarr;</a></p>
           </article>
 
           <article class="card">
             <p class="card-tag">Industrial automation</p>
             <h3 class="card-title">Allen-Bradley PLCs</h3>
             <p class="card-text">Programmable logic controllers - the industrial computers that run automated machinery.</p>
+            <p class="card-link"><a href="equipment/allen-bradley-plcs.html">About the PLCs &rarr;</a></p>
           </article>
 
           <article class="card">
             <p class="card-tag">Simulation</p>
             <h3 class="card-title">NVIDIA Isaac Sim workstations</h3>
             <p class="card-text">Physics-based robot simulation used for the lab's guided instructional laboratories.</p>
+            <p class="card-link"><a href="equipment/isaac-sim-workstations.html">About the sim workstations &rarr;</a></p>
           </article>
         </div>
       </div>
@@ -239,25 +254,133 @@
           </article>
         </div>
 
-        <!-- Authorship of the lab guides, kept visible on purpose. -->
-        <p class="section-text credit-line">
-          The instructional lab series was written by Sai Srinivas Tatwik Meesala,
-          Rajesh S Aouti, and Prajval Arora for RAS 545, instructor Prof. Sangram
-          Redkar. The guides are adapted here from the authors' originals under
-          the MIT license; the originals are at
-          <a href="https://tatwik19.github.io/labs/">tatwik19.github.io/labs</a>.
+        <!--
+          Authorship and license: each lab guide page carries its own
+          author and reuse credits in its header. Praj asked (2026-10-30)
+          for no separate credit paragraph here on the home page.
+        -->
+      </div>
+    </section>
+
+
+    <!--
+      SECTION 5 - ARTICULATED ROBOT LABS.
+      The Dobot Magician Lite teaching series, moved over from the
+      authors' originals (linked from tatwik19.github.io/labs).
+      Each card opens the full step-by-step guide on this site.
+    -->
+    <section class="section" id="articulated-robot">
+      <div class="section-inner">
+        <p class="section-eyebrow">05 - Instructional labs</p>
+        <h2 class="section-title">Articulated robot labs</h2>
+        <p class="section-text">
+          A hands-on series on the Dobot Magician Lite desktop arm, written
+          for RAS 545. Students start with safe manual control and end at
+          camera-guided sorting and robot kinematics.
         </p>
+
+        <div class="card-grid">
+          <article class="card">
+            <p class="card-tag">Lab 1</p>
+            <h3 class="card-title">Robot operation and drawing</h3>
+            <p class="card-text">Move the arm safely in X, Y and Z, record its coordinates, and program it to draw letters with Blockly.</p>
+            <p class="card-link"><a href="labs/articulated-robot-lab-1.html">Open Lab 1 &rarr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Lab 2</p>
+            <h3 class="card-title">Pick-and-place</h3>
+            <p class="card-text">Pick and place objects with suction-cup and gripper end effectors, programmed in Python.</p>
+            <p class="card-link"><a href="labs/articulated-robot-lab-2.html">Open Lab 2 &rarr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Lab 3</p>
+            <h3 class="card-title">Object detection and sorting</h3>
+            <p class="card-text">Detect, classify and sort objects with a camera, then palletize them with the robot.</p>
+            <p class="card-link"><a href="labs/articulated-robot-lab-3.html">Open Lab 3 &rarr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Lab 4</p>
+            <h3 class="card-title">Forward and inverse kinematics</h3>
+            <p class="card-text">Work out the arm's forward and inverse kinematics and verify them on the real robot.</p>
+            <p class="card-link"><a href="labs/articulated-robot-lab-4.html">Open Lab 4 &rarr;</a></p>
+          </article>
+        </div>
       </div>
     </section>
 
     <!--
-      SECTION 5 - VISIT.
+      SECTION 6 - INDUSTRIAL AUTOMATION LABS.
+      A six-lab series on the lab's PLC workcell, from safe wiring up to
+      smart-factory data. The full guides are still being written by the
+      teaching team - the dashed cards are placeholders, not mistakes.
+    -->
+    <section class="section section-alt" id="industrial-automation">
+      <div class="section-inner">
+        <p class="section-eyebrow">06 - Instructional labs</p>
+        <h2 class="section-title">Industrial automation labs</h2>
+        <p class="section-text">
+          Six progressive laboratories covering industrial controllers, PLC
+          programming, automated workcells, HMI and SCADA development,
+          collaborative robots, and smart-factory integration.
+        </p>
+
+        <div class="card-grid">
+          <article class="card card-placeholder">
+            <p class="card-tag">Lab 1</p>
+            <h3 class="card-title">Cell power, safety, and network setup</h3>
+            <p class="card-text">Build the workcell foundation: safe 24 VDC power, an E-stop input, an isolated Ethernet network, and a first Modbus TCP exchange with a Micro850 PLC.</p>
+            <p class="card-note">Guide in preparation - check back soon.</p>
+          </article>
+
+          <article class="card card-placeholder">
+            <p class="card-tag">Lab 2</p>
+            <h3 class="card-title">PLC programming</h3>
+            <p class="card-text">Develop, test, and troubleshoot PLC programs using Ladder Logic, Structured Text, timers, counters, interlocks, and reusable routines.</p>
+            <p class="card-note">Guide in preparation - check back soon.</p>
+          </article>
+
+          <article class="card card-placeholder">
+            <p class="card-tag">Lab 3</p>
+            <h3 class="card-title">Conveyor, sensors, and pneumatics</h3>
+            <p class="card-text">Integrate a conveyor, industrial sensors, and pneumatic actuators into an interlocked automatic material-handling sequence.</p>
+            <p class="card-note">Guide in preparation - check back soon.</p>
+          </article>
+
+          <article class="card card-placeholder">
+            <p class="card-tag">Lab 4</p>
+            <h3 class="card-title">HMI and SCADA with Ignition</h3>
+            <p class="card-text">Build an operator interface for commanding, monitoring, alarming, and trending an automated workcell using Ignition and PLC data.</p>
+            <p class="card-note">Guide in preparation - check back soon.</p>
+          </article>
+
+          <article class="card card-placeholder">
+            <p class="card-tag">Lab 5</p>
+            <h3 class="card-title">Collaborative robot and PLC integration</h3>
+            <p class="card-text">Integrate a FANUC or Universal Robots platform with a PLC, exchange commands and status, and validate an interlocked workcell sequence.</p>
+            <p class="card-note">Guide in preparation - check back soon.</p>
+          </article>
+
+          <article class="card card-placeholder">
+            <p class="card-tag">Lab 6</p>
+            <h3 class="card-title">Smart factory integration</h3>
+            <p class="card-text">Connect the automated workcell to a smart-manufacturing data layer using MQTT, dashboards, production metrics, and a digital twin of system state.</p>
+            <p class="card-note">Guide in preparation - check back soon.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      SECTION 7 - VISIT.
       Where the lab is. Deliberately says nothing about access rules -
       visiting arrangements are made through the school.
     -->
     <section class="section" id="visit">
       <div class="section-inner">
-        <p class="section-eyebrow">05 - Visit</p>
+        <p class="section-eyebrow">07 - Visit</p>
         <h2 class="section-title">Location</h2>
         <p class="section-text">
           Room 231, ISTB 12 (Interdisciplinary Science and Technology Building 12)<br>

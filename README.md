@@ -14,6 +14,8 @@ tiny bit of JavaScript. No frameworks, no build tools, no packages to install.
 | ------------------- | ---------- | ------- |
 | `index.html`        | The directory page: what the lab is, has and does | the skeleton |
 | `labs/`             | Full copies of the instructional lab guides | extra chapters |
+| `equipment/`        | One page per equipment family in the lab | the exhibit rooms |
+| `images/`           | Photos of the lab and its equipment | the photo album |
 | `css/style.css`     | How everything looks | the paint |
 | `js/main.js`        | Small movements (mobile menu, footer year) | the muscles |
 
@@ -44,11 +46,29 @@ Double-click `index.html`. That is genuinely it.
 
 ## The lab guide pages
 
-`labs/isaac-sim-lab-1.html` is the full text of RAS 545's Lab 1, copied from
-the authors' original document (source and license are named in a comment at
-the top of the file). Labs 2 and 3 are being moved the same way: convert the
-source document to HTML, wrap it in the same page template, and link it from
-the Isaac Sim section of `index.html`.
+`labs/` holds the full text of every instructional lab guide, copied from the
+authors' original documents (each file names its source in a comment at the
+top): the three Isaac Sim simulation labs and the four articulated robot
+(Dobot) labs. The six industrial automation labs are listed on the home page
+as placeholders until the teaching team finishes their guides.
+
+## The equipment pages
+
+`equipment/` has one page per equipment family (FANUC, Universal Robots,
+JAKA, Dobot, Allen-Bradley PLCs, Isaac Sim workstations). Each says what the
+equipment is and which labs use it, and links back to the matching guides.
+
+## Add the hero photos
+
+The home page is ready to show large rotating photos of the lab behind the
+headline (company landing-page style). To switch that on:
+
+1. Put the photo files in `images/hero/`.
+2. Open `js/main.js`, find `HERO_PHOTOS`, and list the file names there.
+3. Save and push. The hero crossfades between them every 6 seconds.
+
+Equipment photos work the same way: drop them in `images/equipment/` and
+uncomment the `TODO(Praj)` image line on the matching equipment page.
 
 ## How publishing works
 

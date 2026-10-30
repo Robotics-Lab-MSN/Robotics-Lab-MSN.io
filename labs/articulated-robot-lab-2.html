@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  ARTICULATED ROBOTS - LAB 2 (labs/articulated-robot-lab-2.html)
+
+  WHAT THIS PAGE IS:
+  The full text of one of the lab's articulated-robot instructional
+  labs, copied onto the lab site.
+
+  WHERE THE CONTENT CAME FROM:
+  Source document: the authors' Google Doc linked from
+  https://tatwik19.github.io/labs/ ("Pick-and-Place with Suction and Gripper End Effectors"),
+  exported and converted to HTML on 2026-10-30. The authors are
+  credited in the header below.
+
+  HOW TO EDIT:
+  The lab text itself sits inside the <div class="prose"> below.
+  Everything outside that div (header, credits, styling hooks) is
+  ordinary site code with comments, same as index.html.
+  This guide's pictures live in labs/images/articulated-robot-lab-2/ .
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 2: Pick-and-Place with Suction and Gripper End Effectors - RAS Lab, ASU</title>
+  <meta name="description" content="Instructional lab 2 for RAS 545: pick-and-Place with Suction and Gripper End Effectors.">
+
+  <!-- The same paint as the rest of the site (one folder up). -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <main>
+    <div class="section-inner">
+
+      <!-- Back to the main directory page. -->
+      <a class="back-link" href="../index.html#articulated-robot">&larr; Back to the lab directory</a>
+
+      <!-- The title block: what this is, who it is for, who wrote it. -->
+      <header class="lab-header">
+        <p class="section-eyebrow">Articulated robots - Lab 2</p>
+        <h1>Pick-and-Place with Suction and Gripper End Effectors</h1>
+        <p class="lab-meta">
+          Course: RAS 545 - Robotics Systems I &middot; Instructor: Prof. Mostafa Yourdkhani &middot; Robot: Dobot Magician Lite<br>
+          Authors: Sai Srinivas Tatwik Meesala, Rajesh S Aouti<br>
+          Adapted from the authors' original document; the original is linked from
+          <a href="https://tatwik19.github.io/labs/">tatwik19.github.io/labs</a>.
+        </p>
+      </header>
+
+      <!--
+        THE LAB GUIDE ITSELF (converted from the authors' document).
+        Long reading text - the ".prose" styles in css/style.css give it
+        roomy headings and images that fit the screen.
+      -->
+      <div class="prose">
+<p>Instructor: Prof. <a href="mailto:Mostafa.Yourdkhani@asu.edu">Mostafa Yourdkhani</a></p><p>Author: </p><ul><li>Tatwik Meesala: <a href="mailto:smeesala@asu.edu">smeesala@asu.edu</a> </li><li>Rajesh S Aouti: <a href="mailto:raouti@asu.edu">raouti@asu.edu</a></li></ul><p>Duration: 2 hours<br>Robot: Dobot Magician Lite</p><h3>Preparations before class</h3><ol><li>Software: Python with <a href="https://pypi.org/project/pydobot/">pydobot</a>, and <a href="https://pypi.org/project/pydobot2/">pydobot2</a>. You may need to update your drivers.</li><li>Read the entire document before coming to the lab.</li><li>Get familiar with all the packages you have installed. Write an example code for yourself. </li></ol><h3>Deliverables</h3><ol><li>Lab Report</li></ol><ul><li>Template: <a href="https://docs.google.com/document/d/1HOYJqnCjeE1o-8Ghffh58nG2FxjORW-J/edit?usp=sharing&amp;ouid=109541660202730576301&amp;rtpof=true&amp;sd=true">https://docs.google.com/document/d/1HOYJqnCjeE1o-8Ghffh58nG2FxjORW-J/edit?usp=sharing&amp;ouid=109541660202730576301&amp;rtpof=true&amp;sd=true</a> </li></ul><ol><li>Python Source Files</li><li>Demonstration Video</li><li>Lab Check-Off</li></ol><h3>Introduction</h3><p>This lab introduces students to robotic pick-and-place operations using the Robot Magician Lite. </p><p>Key objectives:</p><ul><li>Gain practical experience with suction cups as end effectors.</li><li>Implement motion sequences using Python and the pydobot library.</li><li>Understand teaching, touching up points, and coordinate accuracy.</li></ul><p>NOTE: Install both the versions: pydobot, pydobot2. You can use pip for installing in case of windows or you use brew in case of mac.</p><h2>Preparations</h2><p>To find the COM port of the robot:</p><p>Open the Device Manager and expand the ports, and find the COM port number</p><p><img src="images/articulated-robot-lab-2/image4.png" alt="Lab guide figure"></p><p>(Mac: ls /dev/tty.* | grep usb) (Linux: ls /dev/tty*)</p><h2>Using Python</h2><p>After the above preparations are completed, the manipulation of the robotic arm can be implemented. First, open the installed PyCharm/VS Code/Jupyter NB, create a new Python file, and use the template provided.</p><h3>Key Vocabulary</h3><ul><li>Pick and Place – Sequential moving of objects between points.</li><li>Relative positions – Positions defined relative to a reference frame.</li><li>Home – Safe rest position.</li><li>Linear vs. Joint Movements – Cartesian vs. rotational motion.</li><li>End Effector (EoAT or EE) – Suction cup or gripper attached to the robot.</li><li>Teaching/Touching Up – Recording and refining robot coordinates.</li></ul><hr><h3>Blocks/Pallets</h3><ol><li>Find the Blocks, Pallets, and all required components in the cabinet below the table.</li></ol><p><img src="images/articulated-robot-lab-2/image3.jpg" alt="Lab guide figure"></p><p>You are responsible for returning the blocks/pallets to the original bag and placing them in the cabinet below. All components and grippers must also be stored in the cabinet below.<hr></p><h2>Lab 2: Pick and Place with Suction Cup</h2><p>Robotic arms are well-suited for performing pick-and-place operations, such as placing small electronic components on circuit boards, as well as large boxes on pallets.  </p><p>Goal: Use the suction cup end effector to perform multi-position pick-and-place operations using cubes.</p><h4>Procedure</h4><ol><li>Turn off the robot and then attach the suction cup to the Dobot Magician Lite.</li></ol><p><img src="images/articulated-robot-lab-2/image1.png" alt="Lab guide figure"></p><ol><li>Find a home position.</li><li>Record positions:</li></ol><ul><li>Home</li><li>Intermediate Point</li><li>Record the positions of the corner blocks of both the palletization pallet, as shown in the figure below. </li><li>NOTE: Total Record Points: 8 points for the corners, 1 intermediate point, and 1 home position.</li></ul><p>Make sure to secure the pallet using tape, place all the surplus cubes back in the bag.</p><p><img src="images/articulated-robot-lab-2/image2.jpg" alt="Lab guide figure"></p><ul><li>Pick one block and place it in the same corner on the other pallet. Repeat this process to transfer all the blocks from the filled pallet to the empty one. After which you will have to return all the blocks to the original position.</li><li>NOTE: Make sure to record the points using the jog button. Note: When trying to get the current coordinates of the robot, make sure to have a delay (as the robot motion takes some time).</li></ul><ol><li>Write a Python program:</li></ol><ul><li>Enable suction with .suck(True) at the pick point.</li><li>Disable suction with .suck(False) at drop points.</li><li>Add appropriate time.sleep() delays.</li></ul><ol><li>Execute sequence:</li></ol><ul><li>Pick a block from Pallet 1.</li><li>Place in Pallet 2 → hold 2s → release.</li><li>Repeat it with 3 more blocks.</li><li>Return all the blocks to their original position.</li></ul><p><img src="images/articulated-robot-lab-2/image5.png" alt="Lab guide figure"></p><p><img src="images/articulated-robot-lab-2/image6.png" alt="Lab guide figure"></p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Same footer as the main page, minus the nav bar (a reading page
+       does not need it). -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">Built with plain HTML, CSS and a sprinkle of JavaScript - <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <!-- The automatic footer year. -->
+  <script src="../js/main.js"></script>
+</body>
+</html>

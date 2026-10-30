@@ -77,3 +77,59 @@ if (yearSpan) {
   yearSpan.textContent = new Date().getFullYear();
 }
 
+
+
+/* ------------------------------------------------------------------
+   JOB 3: THE ROTATING HERO PHOTOS
+
+   Praj asked for a company-style landing page: big photographs of the
+   lab behind the hero text, gently changing from one to the next.
+
+   HOW TO ADD THE PHOTOS (when Praj supplies them):
+     1. Put the image files in the images/hero/ folder.
+     2. List their file names in HERO_PHOTOS below, in the order they
+        should appear, for example:
+            const HERO_PHOTOS = ["lab-wide.jpg", "robot-cell.jpg"];
+     3. Done - the hero crossfades between them every few seconds.
+
+   While the list is empty this code does nothing at all, and the hero
+   keeps its plain blueprint-grid look.
+   ------------------------------------------------------------------ */
+
+// The hero photos, as file names inside images/hero/. Empty for now:
+// TODO(Praj): list the lab's real photos here once they are supplied.
+const HERO_PHOTOS = [];
+
+// Only run when there is both a hero photo layer and at least one photo.
+const heroSection = document.getElementById('hero');
+const heroBg = document.getElementById('hero-bg');
+
+if (heroSection && heroBg && HERO_PHOTOS.length > 0) {
+
+  // Put one <img> per photo into the photo layer.
+  HERO_PHOTOS.forEach(function (fileName, index) {
+    const img = document.createElement('img');
+    img.src = 'images/hero/' + fileName;
+    img.alt = '';              /* decorative background; the hero text says it all */
+    if (index === 0) {
+      img.classList.add('is-active');  /* the first photo starts visible */
+    }
+    heroBg.appendChild(img);
+  });
+
+  // Tell the stylesheet there are photos to show.
+  heroSection.classList.add('hero-has-photos');
+
+  // Every 6 seconds, fade to the next photo (looping back to the first).
+  let currentPhoto = 0;
+  const photos = heroBg.querySelectorAll('img');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (photos.length > 1 && !reduceMotion) {
+    setInterval(function () {
+      photos[currentPhoto].classList.remove('is-active');
+      currentPhoto = (currentPhoto + 1) % photos.length;
+      photos[currentPhoto].classList.add('is-active');
+    }, 6000);
+  }
+}
