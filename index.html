@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  RAS LAB WEBSITE - THE ONE AND ONLY PAGE (index.html)
+======================================================================
+
+  Welcome! This file is the whole website's skeleton.
+
+  HOW A WEBSITE WORKS, IN 3 FRIENDLY FILES:
+    1. index.html   (this file)  = the SKELETON. It says WHAT is on
+                                   the page: headings, paragraphs,
+                                   buttons, cards.
+    2. css/style.css             = the PAINT. It says how everything
+                                   LOOKS: colors, sizes, spacing.
+    3. js/main.js                = the MUSCLES. The tiny bit of
+                                   movement (the mobile menu button
+                                   and the automatic year).
+
+  TO EDIT WORDS ON THE SITE:
+    Find the section below (every section has a big comment sign
+    like the one you are reading now), change the words between
+    the tags, save the file, refresh your browser. Done.
+
+  TO SEE THE SITE ON YOUR COMPUTER:
+    Just double-click index.html. No installs, no build tools,
+    no commands. It is a plain, honest website.
+
+  THINGS PRAJ WILL FILL IN LATER:
+    Real projects, real people and real contact details are marked
+    with comments that start with:  TODO(Praj)
+======================================================================
+-->
+<html lang="en">
+<head>
+  <!-- Settings the browser needs: character set and phone zoom. -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- The tab title and the short description search engines show. -->
+  <title>RAS Lab - Arizona State University</title>
+  <meta name="description" content="The RAS lab at Arizona State University: what the lab is up to, in plain words.">
+
+  <!-- Load the paint (our stylesheet). -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       TOP BAR (navigation)
+       The bar stuck to the top of every screen. On phones it
+       collapses into a "hamburger" button (js/main.js runs that).
+       ============================================================ -->
+  <header class="topbar">
+    <nav class="topbar-inner" aria-label="Main navigation">
+
+      <!-- The lab "logo": just words, so it loads fast and is easy to change. -->
+      <a class="brand" href="#top">
+        <span class="brand-mark">RAS</span>   <!-- the short badge -->
+        <span class="brand-name">Lab</span>   <!-- the word next to it -->
+      </a>
+
+      <!-- The button that only appears on small screens (see style.css). -->
+      <button class="menu-button" id="menu-button" aria-label="Open menu" aria-expanded="false">
+        <span class="menu-button-line"></span>  <!-- hamburger line 1 -->
+        <span class="menu-button-line"></span>  <!-- hamburger line 2 -->
+        <span class="menu-button-line"></span>  <!-- hamburger line 3 -->
+      </button>
+
+      <!-- The actual links. "nav-links" gets a class toggle from main.js on phones. -->
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">What we're up to</a></li>
+        <li><a href="#people">People</a></li>
+        <li><a class="nav-cta" href="#join">Join the lab</a></li>
+      </ul>
+
+    </nav>
+  </header>
+
+  <!-- Everything on the page lives inside <main>. -->
+  <main id="top">
+
+    <!-- ============================================================
+         HERO (the big first thing you see)
+         One honest headline, one line about the lab, two buttons.
+         The faint grid behind it is pure CSS - no image needed.
+         ============================================================ -->
+    <section class="hero">
+      <div class="hero-inner">
+
+        <!-- Small mono label above the headline. -->
+        <p class="eyebrow">Arizona State University</p>
+
+        <!-- The headline. -->
+        <h1 class="hero-title">The RAS Lab</h1>
+
+        <!--
+          One sentence that says what this place is.
+          NOTE: "Robotics & Autonomous Systems" is the full name of the
+          RAS major at ASU. If the lab calls itself something else,
+          change it right here - this is the only place it appears.
+        -->
+        <p class="hero-subtitle">
+          The home of the Robotics &amp; Autonomous Systems major's lab at ASU -
+          what we're building, testing and learning, in plain words.
+        </p>
+
+        <!-- Two friendly doors into the page. -->
+        <div class="hero-actions">
+          <a class="button button-primary" href="#projects">See what we're up to</a>
+          <a class="button button-ghost" href="#join">Join the lab</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 01 - ABOUT
+         A short, human paragraph about the lab.
+         TODO(Praj): replace this paragraph with your own words
+         about the lab's story.
+         ============================================================ -->
+    <section class="section" id="about">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">01 - About</p>
+        <h2 class="section-title">What is the RAS lab?</h2>
+
+        <p class="section-text">
+          The RAS lab is the hands-on home of the Robotics &amp; Autonomous Systems
+          major at Arizona State University - a room full of robots, tools and
+          students learning by building.
+        </p>
+        <p class="section-text">
+          This page is the lab's public window: what we're up to, who we are,
+          and how to get involved. Everything here is written so anyone can
+          follow along - no jargon, no gatekeeping.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 02 - WHAT WE'RE UP TO (projects)
+         A grid of cards. Each card = one lab project.
+         The cards below are EMPTY SLOTS with honest placeholder
+         words - not real projects yet.
+         TODO(Praj): for each real project, copy one <article> card,
+         paste it, and fill in title, one plain sentence and a photo.
+         ============================================================ -->
+    <section class="section" id="projects">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">02 - Projects</p>
+        <h2 class="section-title">What we're up to</h2>
+        <p class="section-text">
+          The lab's current builds and experiments. Real projects land here
+          as they're ready - these are the empty frames waiting for them.
+        </p>
+
+        <!-- The grid that holds the cards. -->
+        <div class="card-grid">
+
+          <!-- ----- PROJECT SLOT 1 (copy this whole block for a new project) ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Project slot</p>
+            <h3 class="card-title">Your first project goes here</h3>
+            <p class="card-text">
+              One plain-English sentence about what it does and why it's cool.
+            </p>
+            <p class="card-note">Title, sentence and a photo - coming from Praj.</p>
+          </article>
+
+          <!-- ----- PROJECT SLOT 2 ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Project slot</p>
+            <h3 class="card-title">Project two goes here</h3>
+            <p class="card-text">
+              One plain-English sentence about what it does and why it's cool.
+            </p>
+            <p class="card-note">Title, sentence and a photo - coming from Praj.</p>
+          </article>
+
+          <!-- ----- PROJECT SLOT 3 ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Project slot</p>
+            <h3 class="card-title">Project three goes here</h3>
+            <p class="card-text">
+              One plain-English sentence about what it does and why it's cool.
+            </p>
+            <p class="card-note">Title, sentence and a photo - coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 03 - PEOPLE
+         Who runs and uses the lab.
+         TODO(Praj): replace each placeholder with a real person:
+         name, role (in plain words) and a photo when you have one.
+         ============================================================ -->
+    <section class="section" id="people">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">03 - People</p>
+        <h2 class="section-title">The people in the lab</h2>
+        <p class="section-text">
+          Faces and names go here - the people who build, teach and tinker
+          in the space.
+        </p>
+
+        <div class="card-grid">
+
+          <!-- ----- PERSON SLOT 1 ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Person slot</p>
+            <h3 class="card-title">Team member</h3>
+            <p class="card-text">Name and what they do, in plain words.</p>
+            <p class="card-note">Photo optional - coming from Praj.</p>
+          </article>
+
+          <!-- ----- PERSON SLOT 2 ----- -->
+          <article class="card card-placeholder">
+            <p class="card-tag">Person slot</p>
+            <h3 class="card-title">Team member</h3>
+            <p class="card-text">Name and what they do, in plain words.</p>
+            <p class="card-note">Photo optional - coming from Praj.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 04 - JOIN / CONTACT
+         How someone gets involved.
+         TODO(Praj): add the real way to reach the lab (an email,
+         a Discord, a room number and hours - whatever is true).
+         ============================================================ -->
+    <section class="section" id="join">
+      <div class="section-inner">
+
+        <p class="section-eyebrow">04 - Join</p>
+        <h2 class="section-title">Come build with us</h2>
+        <p class="section-text">
+          Curious about robots? The lab door is the friendliest way in.
+          Contact details and visit info land here soon.
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER (the strip at the bottom)
+       The year updates itself (see js/main.js) so it never goes stale.
+       ============================================================ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">RAS Lab - Arizona State University</p>
+      <p class="footer-line footer-small">
+        Built with plain HTML, CSS and a sprinkle of JavaScript -
+        <span id="year">2026</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Load the muscles (the tiny bit of JavaScript) last, so the page
+       shows up before any script runs. -->
+  <script src="js/main.js"></script>
+</body>
+</html>
