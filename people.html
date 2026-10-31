@@ -3,12 +3,20 @@
 ======================================================================
   PEOPLE PAGE (people.html)
 
-  Faculty lead, teaching team, and PhD researchers. Each card: portrait,
-  name, role, program, what they do in the lab, and their projects.
-  Portraits are official ASU directory photos or the person's own
-  portfolio portrait - never picked from event photos by face.
+  Three groups, each in the same card shape:
+    1. Faculty        - the faculty lead of the lab
+    2. PhD researchers - doctoral researchers working in the lab
+    3. Lab assistants  - the students who support courses and training
+
+  Portraits come only from official ASU directory photos or the
+  person's own portfolio portrait - never picked from event photos by
+  face. Cards for people without such a portrait are text-only for
+  now; Praj can supply photos.
+
   Sources: search.asu.edu profiles 1114748 (Redkar) and 3467992
-  (Tatwik), prajvalarora.com. Page photo: images/pages/people.jpg.
+  (Tatwik), the author credits in this site's lab guides (Rajesh,
+  Praj), prajvalarora.com, and each person's public LinkedIn profile
+  (linked on their card). Page photo: images/pages/people.jpg.
   Do not name people in event photos without Praj's mapping.
 ======================================================================
 -->
@@ -17,12 +25,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>People - RAS Lab, ASU</title>
-  <meta name="description" content="The faculty and teaching team of the Robotics Systems Instructional Lab at ASU.">
+  <meta name="description" content="The faculty, PhD researchers, and lab assistants of the Robotics Systems Instructional Lab at ASU.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-  <!-- Same top bar as the home page, with links back to it. -->
+  <!-- Same top bar as every page. -->
   <header class="topbar">
     <nav class="topbar-inner">
       <a class="brand" href="index.html">
@@ -40,6 +48,8 @@
           <li><a href="index.html#isaac-sim">Labs</a></li>
           <li><a href="people.html">People</a></li>
           <li><a href="projects.html">Projects</a></li>
+          <li><a href="media.html">Media</a></li>
+          <li><a href="alumni.html">Alumni</a></li>
           <li><a class="nav-cta" href="index.html#visit">Visit</a></li>
         </ul>
     </nav>
@@ -50,11 +60,12 @@
       <header class="page-header">
         <p class="section-eyebrow">People</p>
         <h1 class="page-title">The people of the lab</h1>
-        <p class="page-lede">The faculty member who leads the lab's instruction and the student assistants who support its courses and training.</p>
+        <p class="page-lede">The faculty member who leads the lab, the doctoral researchers working in it, and the lab assistants who support its courses and training.</p>
       </header>
       <img class="section-photo" src="images/pages/people.jpg" alt="Instruction in the lab: a mentor and a student working with electronics">
       <p class="photo-caption">Instruction in the lab.</p>
 
+      <!-- FACULTY -->
       <h2 class="section-title">Faculty</h2>
       <div class="card-grid">
         <article class="card">
@@ -64,23 +75,24 @@
           <p class="card-text">
             Professor and Associate Director in the School of Manufacturing
             Systems and Networks, working in robotics, dynamics and control
-            systems. The lab and its instruction sit under his direction,
-            and he teaches RAS 545 Robotic Systems I, whose guided
-            laboratory series lives on this site.
+            systems. The lab and its instruction are built through his
+            leadership, and he teaches RAS 545 Robotic Systems I, whose
+            guided laboratory series lives on this site.
           </p>
           <p class="card-link"><a href="https://search.asu.edu/profile/1114748">ASU profile &rarr;</a></p>
         </article>
       </div>
 
-      <h2 class="section-title">Teaching team</h2>
+      <!-- PHD RESEARCHERS -->
+      <h2 class="section-title">PhD researchers</h2>
       <div class="card-grid">
         <article class="card">
           <img class="person-photo" src="images/people/tatwik-meesala.jpg" alt="Portrait of Sai Srinivas Tatwik Meesala">
-          <p class="card-tag">Teaching assistant</p>
+          <p class="card-tag">PhD researcher</p>
           <h3 class="card-title">Sai Srinivas Tatwik Meesala</h3>
           <p class="card-text">
-            Graduate Teaching Assistant in the Redkar Research Group and
-            PhD candidate in Robotics and Autonomous Systems, with his
+            PhD candidate in Robotics and Autonomous Systems and Graduate
+            Teaching Assistant in the Redkar Research Group, with his
             master's and bachelor's degrees in robotics from ASU. He
             develops and teaches the lab's hands-on robotics laboratories -
             ROS 2, NVIDIA Isaac Sim, FANUC and Universal Robots arms, and
@@ -95,6 +107,22 @@
           <p class="card-link"><a href="https://tatwik19.github.io">Personal site &rarr;</a></p>
         </article>
 
+        <article class="card">
+          <p class="card-tag">PhD researcher</p>
+          <h3 class="card-title">Rajesh S Aouti</h3>
+          <p class="card-text">
+            PhD student in Robotics and Autonomous Systems at ASU. He
+            co-authors every instructional lab guide on this site - the
+            NVIDIA Isaac Sim series and the articulated robot series used
+            in RAS 545.
+          </p>
+          <p class="card-link"><a href="https://www.linkedin.com/in/rajeshaouti/">LinkedIn &rarr;</a></p>
+        </article>
+      </div>
+
+      <!-- LAB ASSISTANTS -->
+      <h2 class="section-title">Lab assistants</h2>
+      <div class="card-grid">
         <article class="card">
           <img class="person-photo" src="images/people/prajval-arora.jpg" alt="Portrait of Prajval Arora">
           <p class="card-tag">Lab assistant</p>
@@ -115,14 +143,53 @@
           </ul>
           <p class="card-link"><a href="https://www.prajvalarora.com">Portfolio &rarr;</a></p>
         </article>
-      </div>
 
-      <h2 class="section-title">PhD researchers</h2>
-      <p class="section-text">
-        Doctoral researchers in the school's robotics and manufacturing
-        programs carry out research projects in the lab.
-        <!-- TODO(Praj): names, photos, and one-line research descriptions. -->
-      </p>
+        <article class="card">
+          <p class="card-tag">Lab assistant</p>
+          <h3 class="card-title">Akshan Bhelkar</h3>
+          <p class="card-text">
+            Lab assistant in the Robotics Systems Instructional Lab and an
+            undergraduate at ASU and Barrett, The Honors College. He is
+            president of ARMS, the campus robotics and automation student
+            organization.
+          </p>
+          <p class="card-link"><a href="https://www.linkedin.com/in/akshanbhelkar/">LinkedIn &rarr;</a></p>
+        </article>
+
+        <article class="card">
+          <p class="card-tag">Lab assistant</p>
+          <h3 class="card-title">Sara Doyle</h3>
+          <p class="card-text">
+            Lab assistant in the Robotics Systems Instructional Lab and an
+            undergraduate in ASU's Robotics and Autonomous Systems
+            program, supporting automation instruction in the lab.
+          </p>
+          <p class="card-link"><a href="https://www.linkedin.com/in/sara-doyle-285458382">LinkedIn &rarr;</a></p>
+        </article>
+
+        <article class="card">
+          <p class="card-tag">Lab assistant</p>
+          <h3 class="card-title">Ela Chachulski</h3>
+          <p class="card-text">
+            Lab assistant in the Robotics Systems Instructional Lab and an
+            undergraduate in ASU's Robotics and Autonomous Systems
+            Engineering program. She also works in industrial automation
+            at OPEX.
+          </p>
+          <p class="card-link"><a href="https://www.linkedin.com/in/elachachulski">LinkedIn &rarr;</a></p>
+        </article>
+
+        <article class="card">
+          <p class="card-tag">Lab assistant</p>
+          <h3 class="card-title">Nick Nekrasov</h3>
+          <p class="card-text">
+            Lab assistant in the Robotics Systems Instructional Lab, and a
+            research aide, lab technician, and ARMS club project lead at
+            ASU.
+          </p>
+          <p class="card-link"><a href="https://www.linkedin.com/in/nick-nekrasov5">LinkedIn &rarr;</a></p>
+        </article>
+      </div>
 
     </div>
   </main>

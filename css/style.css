@@ -743,3 +743,52 @@ body {
     font-size: 2rem;
   }
 }
+
+/* A photo at the top of a facility or equipment card. */
+.card-photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;          /* wide crop */
+  object-fit: cover;             /* fill the frame without distortion */
+  border-radius: calc(var(--radius) - 4px);
+  margin-bottom: 1rem;
+}
+
+/* A small portrait shown next to the leadership note on the home page. */
+.leader-photo {
+  width: 180px;
+  max-width: 100%;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  margin: 1.5rem 0 0.4rem;
+}
+
+/* An embedded public social post (LinkedIn's embed frame). */
+.post-embed {
+  margin-top: 1rem;
+}
+.post-embed iframe {
+  width: 100%;
+  max-width: 560px;
+  height: 660px;
+  border: 0;
+  background: #fff;
+}
+
+/* A plain data table, used for the salary figures on the alumni page. */
+.salary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.95rem;
+}
+.salary-table th,
+.salary-table td {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.salary-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
