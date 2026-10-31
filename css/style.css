@@ -660,3 +660,66 @@ body {
     transition: none;
   }
 }
+
+
+/* ------------------------------------------------------------------
+   v4 ADDITIONS (2026-10-30, evening)
+   Page headers for the new top-level pages (courses, people,
+   projects), photos with captions, and plain lists.
+   ------------------------------------------------------------------ */
+
+/* The big intro block at the top of a top-level page. */
+.page-header {
+  margin-top: 3rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.page-title {
+  font-size: 2.6rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.9rem;
+}
+
+.page-lede {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 44rem;
+}
+
+/* Photos that illustrate a section or page, with their captions. */
+.section-photo {
+  max-width: 44rem;         /* line up with the text column */
+  width: 100%;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  margin: 1.5rem 0 0.4rem;
+}
+
+.photo-caption {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+
+/* Photos inside the long-reading prose of equipment pages. */
+.prose img {
+  max-width: 100%;
+}
+
+/* A plain bulleted list outside .prose (curriculum lists). */
+.plain-list {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+/* Phones: slightly smaller page titles. */
+@media (max-width: 760px) {
+  .page-title {
+    font-size: 2rem;
+  }
+}

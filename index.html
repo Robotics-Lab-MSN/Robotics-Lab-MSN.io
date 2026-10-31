@@ -59,8 +59,10 @@
         <ul class="nav-links" id="nav-links">
           <li><a href="#about">About</a></li>
           <li><a href="#facilities">Facilities</a></li>
-          <li><a href="#teaching">Teaching</a></li>
+          <li><a href="courses.html">Courses</a></li>
           <li><a href="#isaac-sim">Labs</a></li>
+          <li><a href="people.html">People</a></li>
+          <li><a href="projects.html">Projects</a></li>
           <li><a class="nav-cta" href="#visit">Visit</a></li>
         </ul>
     </nav>
@@ -125,14 +127,61 @@
     </section>
 
     <!--
-      SECTION 2 - FACILITIES & EQUIPMENT.
+      SECTION 2 - WHAT THE LAB OFFERS.
+      The short answer to "what do you have to offer?": courses and
+      training, facilities and equipment, the instructional lab guides,
+      and project work. Each card links to its page or section.
+    -->
+    <section class="section" id="offers">
+      <div class="section-inner">
+        <p class="section-eyebrow">02 - What the lab offers</p>
+        <h2 class="section-title">What the lab offers</h2>
+        <p class="section-text">
+          The lab is a teaching space first: everything in it exists so
+          students can learn robotics and manufacturing by doing.
+        </p>
+
+        <div class="card-grid">
+          <article class="card">
+            <p class="card-tag">Learn</p>
+            <h3 class="card-title">Courses and training</h3>
+            <p class="card-text">Graduate coursework in robotic systems and hands-on automation training for industry, taught in the lab.</p>
+            <p class="card-link"><a href="courses.html">Courses and training &rarr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Build</p>
+            <h3 class="card-title">Facilities and equipment</h3>
+            <p class="card-text">Industrial and collaborative robot arms, PLC workbenches, 3D printing, CNC machining, and simulation workstations.</p>
+            <p class="card-link"><a href="#facilities">See the facilities &darr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Guides</p>
+            <h3 class="card-title">Instructional lab guides</h3>
+            <p class="card-text">Complete, step-by-step laboratory guides - simulation, articulated robots, and industrial automation.</p>
+            <p class="card-link"><a href="#isaac-sim">Open the lab guides &darr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Research</p>
+            <h3 class="card-title">Projects and research</h3>
+            <p class="card-text">Course projects and PhD research built on the lab's robots, PLCs, and simulation platforms.</p>
+            <p class="card-link"><a href="projects.html">See the projects &rarr;</a></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      SECTION 3 - FACILITIES & EQUIPMENT.
       A factual list of the equipment families in the room.
       Only names we know belong here - specifications and photographs are
       added as they are documented, so nothing below invents details.
     -->
     <section class="section section-alt" id="facilities">
       <div class="section-inner">
-        <p class="section-eyebrow">02 - Facilities</p>
+        <p class="section-eyebrow">03 - Facilities</p>
         <h2 class="section-title">Facilities and equipment</h2>
         <p class="section-text">
           Instruction in the lab centers on the same kinds of systems used in
@@ -151,7 +200,7 @@
           <article class="card">
             <p class="card-tag">Collaborative robots</p>
             <h3 class="card-title">Universal Robots UR5</h3>
-            <p class="card-text">A collaborative robot arm designed to work safely alongside people.</p>
+            <p class="card-text">The lab's lead robot arm: a collaborative arm designed to work safely alongside people.</p>
             <p class="card-link"><a href="equipment/universal-robots-ur5.html">About the UR5 &rarr;</a></p>
           </article>
 
@@ -177,6 +226,20 @@
           </article>
 
           <article class="card">
+            <p class="card-tag">Additive manufacturing</p>
+            <h3 class="card-title">3D printing</h3>
+            <p class="card-text">Building parts layer by layer - prototypes, fixtures, and structures that cannot be machined.</p>
+            <p class="card-link"><a href="equipment/3d-printing-additive.html">About 3D printing &rarr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">Subtractive manufacturing</p>
+            <h3 class="card-title">CNC machining</h3>
+            <p class="card-text">Computer-controlled machining up to 5 axes, with robots tending the machine tools.</p>
+            <p class="card-link"><a href="equipment/cnc-machining.html">About CNC machining &rarr;</a></p>
+          </article>
+
+          <article class="card">
             <p class="card-tag">Simulation</p>
             <h3 class="card-title">NVIDIA Isaac Sim workstations</h3>
             <p class="card-text">Physics-based robot simulation used for the lab's guided instructional laboratories.</p>
@@ -192,7 +255,7 @@
     -->
     <section class="section" id="teaching">
       <div class="section-inner">
-        <p class="section-eyebrow">03 - Teaching</p>
+        <p class="section-eyebrow">04 - Teaching</p>
         <h2 class="section-title">Teaching in the lab</h2>
         <p class="section-text">
           The lab's instruction is led by
@@ -201,15 +264,28 @@
           dynamics and control systems.
         </p>
 
+        <img class="section-photo" src="images/pages/teaching.jpg" alt="Students working together in the lab with robot cells behind them">
+        <p class="photo-caption">Teaching in the lab.</p>
+
         <div class="card-grid">
           <article class="card">
             <p class="card-tag">Course</p>
-            <h3 class="card-title">RAS 545 - Robotics Systems I</h3>
+            <h3 class="card-title">RAS 545 - Robotic Systems I</h3>
             <p class="card-text">
               Graduate coursework in robotic systems, with guided laboratories that
               move from simulation in NVIDIA Isaac Sim to real robot hardware.
             </p>
             <p class="card-link"><a href="#isaac-sim">See the instructional labs &darr;</a></p>
+          </article>
+
+          <article class="card">
+            <p class="card-tag">More</p>
+            <h3 class="card-title">Courses and training</h3>
+            <p class="card-text">
+              The full picture: what is taught in the lab, industry training,
+              and related RAS and manufacturing courses.
+            </p>
+            <p class="card-link"><a href="courses.html">Courses and training &rarr;</a></p>
           </article>
         </div>
       </div>
@@ -223,7 +299,7 @@
     -->
     <section class="section section-alt" id="isaac-sim">
       <div class="section-inner">
-        <p class="section-eyebrow">04 - Instructional labs</p>
+        <p class="section-eyebrow">05 - Instructional labs</p>
         <h2 class="section-title">Instructional labs in NVIDIA Isaac Sim</h2>
         <p class="section-text">
           A guided laboratory series in physics-based robot simulation, written
@@ -271,7 +347,7 @@
     -->
     <section class="section" id="articulated-robot">
       <div class="section-inner">
-        <p class="section-eyebrow">05 - Instructional labs</p>
+        <p class="section-eyebrow">06 - Instructional labs</p>
         <h2 class="section-title">Articulated robot labs</h2>
         <p class="section-text">
           A hands-on series on the Dobot Magician Lite desktop arm, written
@@ -319,7 +395,7 @@
     -->
     <section class="section section-alt" id="industrial-automation">
       <div class="section-inner">
-        <p class="section-eyebrow">06 - Instructional labs</p>
+        <p class="section-eyebrow">07 - Instructional labs</p>
         <h2 class="section-title">Industrial automation labs</h2>
         <p class="section-text">
           Six progressive laboratories covering industrial controllers, PLC
@@ -380,7 +456,7 @@
     -->
     <section class="section" id="visit">
       <div class="section-inner">
-        <p class="section-eyebrow">07 - Visit</p>
+        <p class="section-eyebrow">08 - Visit</p>
         <h2 class="section-title">Location</h2>
         <p class="section-text">
           Room 231, ISTB 12 (Interdisciplinary Science and Technology Building 12)<br>

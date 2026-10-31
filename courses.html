@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  COURSES & TRAINING PAGE (courses.html)
+
+  Courses taught in the lab, industry training, and the surrounding
+  RAS / manufacturing curriculum. Photo: images/pages/courses.jpg
+  (from the lab photo shoot Praj supplied, 2026-10-30).
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courses and training - RAS Lab, ASU</title>
+  <meta name="description" content="Graduate courses and industry training taught in the Robotics Systems Instructional Lab at ASU.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- Same top bar as the home page, with links back to it. -->
+  <header class="topbar">
+    <nav class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">RAS</span> Robotics Systems Instructional Lab
+      </a>
+      <button id="menu-button" class="menu-button" aria-label="Menu" aria-expanded="false">
+          <span class="menu-button-line"></span>
+          <span class="menu-button-line"></span>
+          <span class="menu-button-line"></span>
+        </button>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#facilities">Facilities</a></li>
+          <li><a href="courses.html">Courses</a></li>
+          <li><a href="index.html#isaac-sim">Labs</a></li>
+          <li><a href="people.html">People</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a class="nav-cta" href="index.html#visit">Visit</a></li>
+        </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="section-inner">
+      <header class="page-header">
+        <p class="section-eyebrow">Courses &amp; training</p>
+        <h1 class="page-title">Courses and training in the lab</h1>
+        <p class="page-lede">Graduate coursework and hands-on industry training that use the lab's robot cells, PLC workbenches, and simulation workstations.</p>
+      </header>
+      <img class="section-photo" src="images/pages/courses.jpg" alt="Students studying at a workbench inside the lab, with robot cells behind them">
+      <p class="photo-caption">Coursework in progress in the lab.</p>
+
+      <h2 class="section-title">Taught in the lab</h2>
+      <div class="card-grid">
+        <article class="card">
+          <p class="card-tag">Graduate course</p>
+          <h3 class="card-title">RAS 545 - Robotic Systems I</h3>
+          <p class="card-text">
+            A core course of ASU's Robotics and Autonomous Systems master's
+            program, taught by Prof. Sangram Redkar. Its guided laboratories
+            run on this lab's Dobot arms, Isaac Sim workstations, and ROS 2
+            tooling - the full guides live on this site.
+          </p>
+          <p class="card-link"><a href="index.html#isaac-sim">See the instructional labs &darr;</a></p>
+        </article>
+
+        <article class="card">
+          <p class="card-tag">Industry training</p>
+          <h3 class="card-title">PLC and automation training</h3>
+          <p class="card-text">
+            Hands-on programmable logic controller and industrial automation
+            training delivered by the lab's teaching team for industry
+            partners, using the lab's Allen-Bradley PLC workbenches and
+            robot cells.
+          </p>
+        </article>
+      </div>
+
+      <h2 class="section-title">From the RAS and manufacturing curriculum</h2>
+      <p class="section-text">
+        The lab sits in the School of Manufacturing Systems and Networks,
+        whose Robotics and Autonomous Systems and manufacturing programs
+        include these related courses (program curriculum, per the school's
+        <a href="https://msn.engineering.asu.edu/degrees/graduate/">graduate degrees page</a>):
+      </p>
+      <ul class="plain-list">
+        <li>RAS 546 - Robotic Systems II</li>
+        <li>RAS 550 - Mechatronic Systems</li>
+        <li>RAS 557 - Foldable Robotics</li>
+        <li>RAS 585 - Machine Learning and AI</li>
+        <li>MFG 524 - Engineering Computing with Python</li>
+        <li>MFG 598 - Programming of Industrial Robotics System</li>
+        <li>MFG 598 - Additive Manufacturing</li>
+        <li>MFG 598 - CNC Computer Programming</li>
+      </ul>
+      <p class="section-text">
+        The university's <a href="https://ras.engineering.asu.edu/masters-degree/courses/">Robotics and Autonomous Systems courses page</a>
+        has the full program structure and elective lists.
+      </p>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">School of Manufacturing Systems and Networks, Ira A. Fulton Schools of Engineering &middot; <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

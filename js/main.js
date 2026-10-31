@@ -96,9 +96,10 @@ if (yearSpan) {
    keeps its plain blueprint-grid look.
    ------------------------------------------------------------------ */
 
-// The hero photos, as file names inside images/hero/. Empty for now:
-// TODO(Praj): list the lab's real photos here once they are supplied.
-const HERO_PHOTOS = [];
+// The hero photos, as file names inside images/hero/.
+// First set selected from Praj's lab photo folder, 2026-10-30:
+// robot cells, machine tending, and the robotics hall.
+const HERO_PHOTOS = ["hero-1.jpg", "hero-2.jpg", "hero-3.jpg", "hero-4.jpg"];
 
 // Only run when there is both a hero photo layer and at least one photo.
 const heroSection = document.getElementById('hero');

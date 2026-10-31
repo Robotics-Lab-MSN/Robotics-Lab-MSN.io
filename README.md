@@ -15,6 +15,9 @@ tiny bit of JavaScript. No frameworks, no build tools, no packages to install.
 | `index.html`        | The directory page: what the lab is, has and does | the skeleton |
 | `labs/`             | Full copies of the instructional lab guides | extra chapters |
 | `equipment/`        | One page per equipment family in the lab | the exhibit rooms |
+| `courses.html`      | Courses and training taught in the lab | the syllabus |
+| `people.html`       | Faculty, TAs, and researchers | the staff board |
+| `projects.html`     | Ongoing lab projects | the project wall |
 | `images/`           | Photos of the lab and its equipment | the photo album |
 | `css/style.css`     | How everything looks | the paint |
 | `js/main.js`        | Small movements (mobile menu, footer year) | the muscles |
@@ -58,17 +61,18 @@ as placeholders until the teaching team finishes their guides.
 JAKA, Dobot, Allen-Bradley PLCs, Isaac Sim workstations). Each says what the
 equipment is and which labs use it, and links back to the matching guides.
 
-## Add the hero photos
+## The hero photos
 
-The home page is ready to show large rotating photos of the lab behind the
-headline (company landing-page style). To switch that on:
+The home page shows large rotating photos of the lab behind the headline
+(company landing-page style). The photos live in `images/hero/` and the
+`HERO_PHOTOS` list at the bottom of `js/main.js` names them in rotation
+order; the hero crossfades every 6 seconds. To change the set, swap files
+in `images/hero/` and edit that one list.
 
-1. Put the photo files in `images/hero/`.
-2. Open `js/main.js`, find `HERO_PHOTOS`, and list the file names there.
-3. Save and push. The hero crossfades between them every 6 seconds.
-
-Equipment photos work the same way: drop them in `images/equipment/` and
-uncomment the `TODO(Praj)` image line on the matching equipment page.
+The first set came from Praj's lab photo folder (selected 2026-10-30).
+Equipment and page photos work the same way: files in `images/equipment/`
+and `images/pages/`, referenced from the matching page. Some equipment
+pages still wait for their photo - they carry a `TODO(Praj)` comment.
 
 ## How publishing works
 

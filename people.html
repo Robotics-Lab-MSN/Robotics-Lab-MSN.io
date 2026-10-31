@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+======================================================================
+  PEOPLE PAGE (people.html)
+
+  Faculty lead, teaching assistants, and (soon) PhD researchers.
+  Photo: images/pages/people.jpg (lab photo shoot, 2026-10-30).
+  Do not name people in photos without Praj's mapping.
+======================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People - RAS Lab, ASU</title>
+  <meta name="description" content="The faculty and teaching assistants of the Robotics Systems Instructional Lab at ASU.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- Same top bar as the home page, with links back to it. -->
+  <header class="topbar">
+    <nav class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">RAS</span> Robotics Systems Instructional Lab
+      </a>
+      <button id="menu-button" class="menu-button" aria-label="Menu" aria-expanded="false">
+          <span class="menu-button-line"></span>
+          <span class="menu-button-line"></span>
+          <span class="menu-button-line"></span>
+        </button>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#facilities">Facilities</a></li>
+          <li><a href="courses.html">Courses</a></li>
+          <li><a href="index.html#isaac-sim">Labs</a></li>
+          <li><a href="people.html">People</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a class="nav-cta" href="index.html#visit">Visit</a></li>
+        </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="section-inner">
+      <header class="page-header">
+        <p class="section-eyebrow">People</p>
+        <h1 class="page-title">The people of the lab</h1>
+        <p class="page-lede">The faculty member who leads the lab's instruction and the teaching assistants who build and run its courses.</p>
+      </header>
+      <img class="section-photo" src="images/pages/people.jpg" alt="Instruction in the lab: a mentor and a student working with electronics">
+      <p class="photo-caption">Instruction in the lab.</p>
+
+      <h2 class="section-title">Faculty</h2>
+      <div class="card-grid">
+        <article class="card">
+          <p class="card-tag">Faculty lead</p>
+          <h3 class="card-title">Prof. Sangram Redkar</h3>
+          <p class="card-text">
+            Associate Professor in The Polytechnic School, whose work spans
+            robotics, dynamics and control systems. The lab and its
+            instruction sit under his direction.
+            <!-- TODO(Praj): add his photo when supplied. -->
+          </p>
+          <p class="card-link"><a href="https://labs.engineering.asu.edu/rads/person/sangram-redkar/">ASU profile &rarr;</a></p>
+        </article>
+      </div>
+
+      <h2 class="section-title">Teaching assistants</h2>
+      <div class="card-grid">
+        <article class="card">
+          <p class="card-tag">Lab TA</p>
+          <h3 class="card-title">Sai Srinivas Tatwik Meesala</h3>
+          <p class="card-text">
+            Co-author of the lab's articulated robot and Isaac Sim
+            instructional lab series for RAS 545.
+          </p>
+        </article>
+
+        <article class="card">
+          <p class="card-tag">Lab assistant</p>
+          <h3 class="card-title">Prajval Arora</h3>
+          <p class="card-text">
+            Lab assistant and instructor on the lab's automation training
+            work; co-author of the Isaac Sim instructional lab series.
+          </p>
+        </article>
+      </div>
+
+      <h2 class="section-title">PhD researchers</h2>
+      <p class="section-text">
+        Doctoral researchers use the lab for robotics and manufacturing
+        research. Individual profiles are being collected and will appear
+        here.
+        <!-- TODO(Praj): names, photos, and one-line research descriptions. -->
+      </p>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-line">Robotics Systems Instructional Lab (RAS Lab) - Arizona State University</p>
+      <p class="footer-line footer-small">School of Manufacturing Systems and Networks, Ira A. Fulton Schools of Engineering &middot; <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
