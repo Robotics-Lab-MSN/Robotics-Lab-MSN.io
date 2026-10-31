@@ -337,6 +337,26 @@ body {
   font-style: italic;
 }
 
+/* A portrait at the top of a person card. */
+.person-photo {
+  width: 100%;
+  aspect-ratio: 1 / 1;           /* square crop */
+  object-fit: cover;             /* fill the square without distortion */
+  border-radius: calc(var(--radius) - 4px);
+  margin-bottom: 1rem;
+}
+
+/* A short list of named links inside a card (a person's projects). */
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.9rem;
+  font-size: 0.95rem;
+}
+.card-list li {
+  margin-bottom: 0.35rem;
+}
+
 
 /* ------------------------------------------------------------------
    FOOTER
