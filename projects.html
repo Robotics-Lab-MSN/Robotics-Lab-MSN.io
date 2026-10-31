@@ -3,8 +3,11 @@
 ======================================================================
   PROJECTS PAGE (projects.html)
 
-  Ongoing lab projects. Placeholder slots wait for Praj's write-ups;
-  nothing here is invented. Photo: images/pages/projects.jpg.
+  Projects built in the lab by its people. Every card names who did
+  the work and links to that person's own portfolio page; individual
+  projects are not joint or lab-owned unless the card says so.
+  Sources: prajvalarora.com and tatwik19.github.io (2026-10-30).
+  Photo: images/pages/projects.jpg.
 ======================================================================
 -->
 <html lang="en">
@@ -51,13 +54,110 @@
       <p class="photo-caption">Project work in the lab.</p>
 
       <p class="section-text">
-        The lab hosts course projects, PhD research builds, and simulation
-        work - from robot programming and workcell automation to
-        physics-based simulation in NVIDIA Isaac Sim.
-        <!-- TODO(Praj): project names, descriptions, and photos as supplied. -->
+        Work from the lab's teaching team: simulation and digital-twin
+        projects, PLC and automation builds, and robot-arm
+        experiments. Each project belongs to the person named on the
+        card; the links go to their own portfolios, where the full
+        write-ups, videos, and documentation live.
       </p>
 
+      <h2 class="section-title">Simulation and digital twins</h2>
+      <div class="card-grid">
+        <article class="card">
+          <p class="card-tag">Tatwik Meesala</p>
+          <h3 class="card-title">Stellantis industrial Physical AI demonstrator</h3>
+          <p class="card-text">
+            An industrial Physical AI workcell that combines collaborative-robot
+            execution, Wandelbots NOVA software-defined orchestration, and an
+            NVIDIA Isaac Sim digital twin. Lab assistant Prajval Arora
+            designed and built the demonstrator's table.
+          </p>
+          <p class="card-link"><a href="https://tatwik19.github.io/portfolio/">Tatwik's portfolio &rarr;</a></p>
+        </article>
+        <article class="card">
+          <p class="card-tag">Prajval Arora</p>
+          <h3 class="card-title">Unitree Go2 training in Isaac Sim</h3>
+          <p class="card-text">
+            Reinforcement-learning training of a Unitree Go2 quadruped in
+            NVIDIA Isaac Sim - walking and flipping as target skills - using
+            ROS 2 and Omniverse digital-twin workflows.
+          </p>
+          <p class="card-link"><a href="https://www.prajvalarora.com/projects/unitree-go2">Prajval's project page &rarr;</a></p>
+        </article>
+        <article class="card">
+          <p class="card-tag">Prajval Arora</p>
+          <h3 class="card-title">Petoi Bittle: sim-to-real control loop</h3>
+          <p class="card-text">
+            A small quadruped robot with an Isaac Sim digital twin and a
+            camera-feedback loop, connecting commanded motion, simulated
+            motion, and observed motion in one system.
+          </p>
+          <p class="card-link"><a href="https://www.prajvalarora.com/projects/bittle">Prajval's project page &rarr;</a></p>
+        </article>
+        <article class="card">
+          <p class="card-tag">Tatwik Meesala</p>
+          <h3 class="card-title">SmartFollower: TurtleBot 4 target tracking</h3>
+          <p class="card-text">
+            An autonomous TurtleBot 4 that follows an ArUco-tagged target,
+            predicts through short occlusions, and enforces LiDAR safety -
+            built on ROS 2 with an OAK-D camera and RPLidar.
+          </p>
+          <p class="card-link"><a href="https://tatwik19.github.io/portfolio/">Tatwik's portfolio &rarr;</a></p>
+        </article>
+      </div>
 
+      <h2 class="section-title">PLC and automation</h2>
+      <div class="card-grid">
+        <article class="card">
+          <p class="card-tag">Prajval Arora and team</p>
+          <h3 class="card-title">Truffle packaging line</h3>
+          <p class="card-text">
+            A miniature factory - machine vision, conveyors, an Arduino Opta
+            PLC, and Dobot arms - that sorts 3D-printed truffles and boxes
+            them untouched. A seven-person RAS 102 course project shown at
+            the ASU Innovation Showcase in May 2026; Prajval built the
+            communication between the arms and the PLC.
+          </p>
+          <p class="card-link"><a href="https://www.prajvalarora.com/projects/manufacturing-line">Prajval's project page &rarr;</a></p>
+        </article>
+        <article class="card">
+          <p class="card-tag">Prajval Arora</p>
+          <h3 class="card-title">Dobot + Opta PLC control layer</h3>
+          <p class="card-text">
+            A control layer that drives four Dobot Magician Lite arms from an
+            Arduino Opta PLC over raw GPIO handshakes - no educational
+            wrapper - so each stage of a line starts the next, like a real
+            factory.
+          </p>
+          <p class="card-link"><a href="https://www.prajvalarora.com/projects/dobot-plc">Prajval's project page &rarr;</a></p>
+        </article>
+        <article class="card">
+          <p class="card-tag">Prajval Arora</p>
+          <h3 class="card-title">Tic-tac-toe on paper</h3>
+          <p class="card-text">
+            A Dobot Magician Lite arm plays tic-tac-toe against a person with
+            real blocks on a paper grid, reading the board with computer
+            vision before each move.
+          </p>
+          <p class="card-link"><a href="https://www.prajvalarora.com/projects/paper-tic-tac-toe">Prajval's project page &rarr;</a></p>
+        </article>
+      </div>
+
+      <h2 class="section-title">From project work to teaching material</h2>
+      <div class="card-grid">
+        <article class="card">
+          <p class="card-tag">Prajval Arora &amp; Tatwik Meesala</p>
+          <h3 class="card-title">Isaac Sim + ROS 2 TurtleBot lab guide</h3>
+          <p class="card-text">
+            The pair's co-authored RAS 545 Robotic Systems I laboratory guide:
+            from a simulated TurtleBot to a ROS 2 robot - movement, sensors,
+            and a transform tree - with validation checkpoints at every
+            layer. Written for Prof. Sangram Redkar's course.
+          </p>
+          <p class="card-link"><a href="https://www.prajvalarora.com/projects/isaac-sim-lab-3">Prajval's project page &rarr;</a></p>
+          <p class="card-link"><a href="index.html#isaac-sim">The lab guides on this site &darr;</a></p>
+        </article>
+      </div>
     </div>
   </main>
 
